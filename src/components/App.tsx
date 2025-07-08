@@ -348,6 +348,8 @@ function App() {
           <div className="color-box">{colorWithAlpha}</div>
         </div>
       </div>
+
+      <div className="storage-box"></div>
     </div>
   );
 }
