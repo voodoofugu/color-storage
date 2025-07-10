@@ -15,6 +15,7 @@ import handleCanvasClick from "../helpers/handleCanvasClick";
 
 import ColorSlider from "./ColorSlider";
 import Button from "./Button";
+import StorageColors from "./StorageColors";
 
 function App() {
   // State:
@@ -349,7 +350,7 @@ function App() {
         </div>
       </div>
 
-      <div className="storage-box"></div>
+      <StorageColors />
     </div>
   );
 }

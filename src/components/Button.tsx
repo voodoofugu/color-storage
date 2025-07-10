@@ -14,6 +14,7 @@ function Button({ className, svgID, color, onClick, children }: ButtonT) {
   return (
     <button
       className={`btn${className ? ` ${className}` : ""}`}
+      {...(color && { "data-color": `${color}` })}
       onClick={onClick}
     >
       {color && <div className="btn-bg" style={{ backgroundColor: color }} />}
