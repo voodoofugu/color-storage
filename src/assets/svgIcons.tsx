@@ -31,4 +31,22 @@ const CopyIcon = () => {
   );
 };
 
-export { PickerIcon, CopyIcon };
+const PlusIcon = () => {
+  return (
+    <g>
+      <line className="svgLine" x1="44" y1="66" x2="44" y2="22" />
+      <line className="svgLine" x1="66" y1="44" x2="22" y2="44" />
+    </g>
+  );
+};
+
+const DragIcon = () => {
+  return (
+    <g>
+      <line className="svgLine" x1="58" y1="66" x2="58" y2="22" />
+      <line className="svgLine" x1="30" y1="66" x2="30" y2="22" />
+    </g>
+  );
+};
+
+export { PickerIcon, CopyIcon, PlusIcon, DragIcon };

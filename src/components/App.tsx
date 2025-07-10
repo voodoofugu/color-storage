@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
 import "../styles/App.scss";
 import "../styles/animations.scss";
+import "../styles/elements.scss";
 
 import {
   hexToRgb,
@@ -55,7 +56,7 @@ function App() {
   }, [paletteThumbXY.current.x, paletteThumbXY.current.y]);
 
   // Functions:
-  const pickColor = useCallback(async () => {
+  const pickColor = async () => {
     try {
       // @ts-expect-error нет типа EyeDropper в TypeScript
       const eyeDropper = new EyeDropper();
@@ -80,6 +81,7 @@ function App() {
 
       const { width, height } = canvas;
       const xy = findClosestColorPosition(ctx, width, height, result.sRGBHex);
+      console.log("xy", xy);
       paletteThumbXY.current = xy;
       hueThumbX.current = Math.round((h / 360) * width);
 
@@ -87,7 +89,7 @@ function App() {
     } catch (e) {
       console.error("Error picking color", e);
     }
-  }, []);
+  };
 
   const clearAnimation = () => {
     if (animation.current !== null) {
@@ -97,18 +99,22 @@ function App() {
   };
 
   const copyColor = useCallback(() => {
-    navigator.clipboard.writeText(colorWithAlpha);
-
-    const copyBtn = document.querySelector(".copy");
-    if (copyBtn) {
-      copyBtn.classList.add("copied");
-
-      clearAnimation();
-
-      animation.current = window.setTimeout(() => {
-        copyBtn.classList.remove("copied");
-      }, 300);
-    }
+    navigator.clipboard
+      .writeText(colorWithAlpha)
+      .then(() => {
+        // Показать "copied" только если всё прошло успешно
+        const copyBtn = document.querySelector(".copy");
+        if (copyBtn) {
+          copyBtn.classList.add("copied");
+          clearAnimation();
+          animation.current = window.setTimeout(() => {
+            copyBtn.classList.remove("copied");
+          }, 300);
+        }
+      })
+      .catch((e) => {
+        console.error("Clipboard write failed", e);
+      });
   }, [colorWithAlpha]);
 
   const handlePaletteClick = useCallback((e: React.MouseEvent) => {
@@ -134,26 +140,32 @@ function App() {
     });
   }, []);
 
-  const handleHueClick = useCallback((e: React.MouseEvent) => {
-    handleCanvasClick(e, {
-      canvasRef: hueCanvasRef,
-      cursorDuringDrag: "ew-resize",
-      onMove: (e: MouseEvent, rect: DOMRect) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { h, s, l } = hexToHsl(color.current);
-        const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width - 1);
-        if (x === hueThumbX.current) return;
+  const handleHueClick = useCallback(
+    (e: React.MouseEvent) => {
+      handleCanvasClick(e, {
+        canvasRef: hueCanvasRef,
+        cursorDuringDrag: "ew-resize",
+        onMove: (e: MouseEvent, rect: DOMRect) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { h, s, l } = hexToHsl(color.current);
+          const x = Math.min(
+            Math.max(e.clientX - rect.left, 0),
+            rect.width - 1
+          );
+          if (x === hueThumbX.current) return;
 
-        const hueValue = (x / rect.width) * 360;
+          const hueValue = (x / rect.width) * 360;
 
-        hueThumbX.current = x;
-        hueColor.current = `hsl(${Math.round(hueValue)}, 100%, 50%)`;
-        color.current = hslToHex(hueValue, s, l);
+          hueThumbX.current = x;
+          hueColor.current = `hsl(${Math.round(hueValue)}, 100%, 50%)`;
+          color.current = hslToHex(hueValue, s, l);
 
-        triggerUpdate();
-      },
-    });
-  }, []);
+          triggerUpdate();
+        },
+      });
+    },
+    [color.current]
+  );
 
   const handleAlphaClick = useCallback((e: React.MouseEvent) => {
     handleCanvasClick(e, {
@@ -331,7 +343,7 @@ function App() {
         </div>
 
         <div className="color-wrap">
-          <div className="select">
+          <div className="select-box">
             <select
               className="color-format"
               value={colorFormat.current}
