@@ -70,9 +70,14 @@ function App() {
       // Обновляем цветовой круг
       const { h } = hexToHsl(result.sRGBHex);
       hueColor.current = `hsl(${h}, 100%, 50%)`;
+      triggerUpdate();
 
       // Ждём следующего рендера (обновление useEffect)
-      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) =>
+        requestAnimationFrame(() => {
+          requestAnimationFrame(resolve);
+        })
+      );
 
       const canvas = paletteCanvasRef.current;
       if (!canvas) return;

@@ -10,8 +10,9 @@ type ButtonT = {
   color?: string;
   text?: string;
   bgColor?: boolean;
-  onClick: () => void;
   children?: React.ReactNode;
+  onClick?: (e: React.MouseEvent) => void;
+  onMouseDown?: (e: React.MouseEvent) => void;
 };
 
 function Button({
@@ -20,15 +21,17 @@ function Button({
   color,
   text,
   bgColor,
-  onClick,
   children,
+  onClick,
+  onMouseDown,
 }: ButtonT) {
   return (
     <button
       className={`btn${className ? ` ${className}` : ""}`}
       {...(color && { "data-color": `${color}` })}
       style={{ ...(bgColor && color && { background: color }) }}
-      onClick={onClick}
+      onClick={onClick && onClick}
+      onMouseDown={onMouseDown && onMouseDown}
     >
       {color && !bgColor && (
         <div className="btn-bg" style={{ backgroundColor: color }} />

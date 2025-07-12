@@ -149,6 +149,9 @@ select {
     background: #d1d1d1;
     box-shadow: unset;
     margin: unset;
+    &:hover {
+      background: #afafaf;
+    }
     .svgIcon {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -183,5 +186,30 @@ select {
       border: 1px #d1d1d1 dashed;
       pointer-events: none;
     }
+  }
+}
+
+.scroll-thumb {
+  width: 2px;
+  height: 100%;
+  border-radius: 2px;
+  background: #d1d1d1;
+  transition: all 0.1s ease-in-out;
+  &:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+  }
+  &:hover {
+    background: #bdbdbd;
+  }
+  &:active {
+    width: 3px;
+    margin-left: -0.5px;
+    background: #7c7c7c;
   }
 }
