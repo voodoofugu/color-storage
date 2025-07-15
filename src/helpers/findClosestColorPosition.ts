@@ -6,7 +6,6 @@ function findClosestColorPosition(
   height: number,
   targetHex: string
 ) {
-  console.log("targetHex", targetHex);
   const { r: tr, g: tg, b: tb } = hexToRgb(targetHex);
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;

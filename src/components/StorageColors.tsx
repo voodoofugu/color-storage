@@ -1,5 +1,8 @@
 import React, { useRef, useCallback } from "react";
 
+// import useStore from "../stateMachine/useStore";
+import { store } from "../stateMachine/allStore";
+
 import { MorphScroll } from "morphing-scroll";
 import Button from "./Button";
 
@@ -17,7 +20,6 @@ function resizeWidth(
 
       const rect = el.getBoundingClientRect();
       if (!maxWidth.current) maxWidth.current = rect.width;
-      console.log("maxWidth", maxWidth.current);
 
       el.style.width = `${Math.min(
         Math.max(moveEvent.clientX - rect.left, 180),
@@ -38,6 +40,27 @@ function resizeWidth(
 }
 
 function StorageColors() {
+  // const [count, setCount] = useStore("count");
+  // console.log("count", count);
+
+  // const allStore = store.useStore();
+  // const allStore = store.getState();
+
+  // const count = store.useStore("count");
+  const count = store.getState().count;
+  console.log("count", count);
+
+  // const sum = store.useSelector(
+  //   (state) => state.count + state.count2,
+  //   ["count", "count2"]
+  // );
+  // console.log("sum", sum);
+
+  const countUp = () => {
+    // store.setState({ count: count + 1 });
+    // store.update({ count: store.getState().count + 1 });
+  };
+
   const resizeWrap = useRef<HTMLDivElement | null>(null);
   const maxWidth = useRef(0);
 
@@ -85,7 +108,7 @@ function StorageColors() {
                 className="storage-btn"
                 color="yellow"
                 bgColor
-                onClick={() => {}}
+                onClick={() => countUp()}
               />
               <Button
                 className="storage-btn default"

@@ -86,7 +86,6 @@ function App() {
 
       const { width, height } = canvas;
       const xy = findClosestColorPosition(ctx, width, height, result.sRGBHex);
-      console.log("xy", xy);
       paletteThumbXY.current = xy;
       hueThumbX.current = Math.round((h / 360) * width);
 
