@@ -1,10 +1,25 @@
 import React, { useRef, useCallback } from "react";
 
-// import useStore from "../stateMachine/useStore";
-import { store } from "../stateMachine/allStore";
+// import useNexus from "../stateMachine/useNexus";
+import { state, actions } from "../stateMachine/allStore";
 
 import { MorphScroll } from "morphing-scroll";
 import Button from "./Button";
+
+// types for Redux DevTools
+interface ReduxDevToolsConnection {
+  send: (action: unknown, state: unknown) => void;
+  init: (state: unknown) => void;
+}
+interface ReduxDevToolsExtension {
+  connect(options: { name: string }): ReduxDevToolsConnection;
+}
+declare global {
+  interface Window {
+    __REDUX_DEVTOOLS_EXTENSION__?: ReduxDevToolsExtension;
+  }
+}
+// ----------------
 
 function resizeWidth(
   el: HTMLElement,
@@ -40,25 +55,31 @@ function resizeWidth(
 }
 
 function StorageColors() {
-  // const [count, setCount] = useStore("count");
-  // console.log("count", count);
+  // const allStore = state.useNexus(); // react
+  // const allStore = state.getNexus(); // node
 
-  // const allStore = store.useStore();
-  // const allStore = store.getState();
+  const count = state.useNexus("count"); // react
+  // const count = state.getNexus().count; // node
 
-  // const count = store.useStore("count");
-  const count = store.getState().count;
   console.log("count", count);
 
-  // const sum = store.useSelector(
+  // const sum = state.useNexusSelector(
   //   (state) => state.count + state.count2,
   //   ["count", "count2"]
   // );
   // console.log("sum", sum);
 
   const countUp = () => {
-    // store.setState({ count: count + 1 });
-    // store.update({ count: store.getState().count + 1 });
+    // state.setNexus({ count: state.getNexus().count + 1 });
+    state.setNexus((prev) => ({
+      count: prev.count + 1,
+    }));
+
+    // actions.increment();
+    // actions.increment();
+    // console.log("count", state.getNexus().count);
+
+    // actions.incrementBy(20);
   };
 
   const resizeWrap = useRef<HTMLDivElement | null>(null);
@@ -68,6 +89,17 @@ function StorageColors() {
     if (!resizeWrap.current) return;
     resizeWidth(resizeWrap.current!, maxWidth);
   }, []);
+
+  // middleWare
+  // const devtools = window.__REDUX_DEVTOOLS_EXTENSION__?.connect({
+  //   name: "MyStore",
+  // });
+  // devtools?.init(state.getNexus());
+
+  // state.nexusGate((_, next) => {
+  //   devtools?.send?.({ type: "UPDATE" }, next);
+  // });
+  // ----------------
 
   return (
     <div className="storage-box">

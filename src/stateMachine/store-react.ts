@@ -1,61 +1,70 @@
 import { useSyncExternalStore, useEffect, useState, useRef } from "react";
-
 import createStore from "./store-core";
-import type { Store } from "./store-core";
 
-function createReactBindings<T extends Record<string, unknown>>(
-  initialState: T
-): Store<T> & {
-  setState: (partial: Partial<T>) => void;
-  useStore: {
-    (): T;
-    <K extends keyof T>(key: K): T[K];
-  };
-  useSelector: <R>(selector: (state: T) => R, dependencies: (keyof T)[]) => R;
-} {
-  const store = createStore(initialState);
+interface CreateReactStoreOptions<
+  T extends Record<string, unknown>,
+  A extends Record<string, (...args: unknown[]) => unknown>
+> {
+  state: T;
+  actions?: (
+    set: (updater: Partial<T> | ((prev: T) => Partial<T>)) => void
+  ) => A;
+}
 
-  function useStore(): T;
-  function useStore<K extends keyof T>(key: K): T[K];
-  function useStore<K extends keyof T>(key?: K): T | T[K] {
+function createReactStore<
+  T extends Record<string, unknown>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  A extends Record<string, (...args: any[]) => unknown> = Record<
+    string,
+    (...args: unknown[]) => unknown
+  >
+>(options: CreateReactStoreOptions<T, A>) {
+  const { state: store, actions: actionsInstance } = createStore(options);
+
+  const actions = actionsInstance;
+
+  function useNexus(): T;
+  function useNexus<K extends keyof T>(key: K): T[K];
+  function useNexus<K extends keyof T>(key?: K): T | T[K] {
     return useSyncExternalStore(
-      (callback) => store.subscribe(key ? [key] : "*", callback),
-      () => (key ? store.getState()[key] : store.getState())
+      (callback) => store.nexusSubscribe(key ? [key] : "*", callback),
+      () => (key ? store.getNexus()[key] : store.getNexus())
     );
   }
 
-  function useSelector<R>(
+  function useNexusSelector<R>(
     selector: (state: T) => R,
     dependencies: (keyof T)[]
   ) {
-    const lastSelected = useRef<R>(selector(store.getState()));
-    const [selected, setSelected] = useState(() => selector(store.getState()));
+    const lastSelected = useRef<R>(selector(store.getNexus()));
+    const [selected, setSelected] = useState(() => selector(store.getNexus()));
 
     useEffect(() => {
       const callback = () => {
-        const newSelected = selector(store.getState());
+        const newSelected = selector(store.getNexus());
         if (newSelected !== lastSelected.current) {
           lastSelected.current = newSelected;
           setSelected(newSelected);
         }
       };
 
-      const unsubscribe = store.subscribe(dependencies, callback);
+      const unsubscribe = store.nexusSubscribe(dependencies, callback);
       callback();
 
       return unsubscribe;
-      // eslint-disable-next-line
     }, [selector]);
 
     return selected;
   }
 
   return {
-    ...store,
-    setState: store.update,
-    useStore,
-    useSelector,
+    state: {
+      ...store,
+      useNexus,
+      useNexusSelector,
+    },
+    actions,
   };
 }
 
-export default createReactBindings;
+export default createReactStore;
