@@ -1,4 +1,5 @@
 function hexToRgb(hex: string) {
+  // Убираем символ #
   hex = hex.replace(/^#/, "");
 
   if (hex.length === 3) {
@@ -167,10 +168,11 @@ function rgbToHex(r: number, g: number, b: number, a: number): string {
 
 function formatColor(
   hex: string,
-  format: "hex" | "rgb" | "hsl",
-  alpha: number
+  format?: "hex" | "rgb" | "hsl",
+  alpha?: number
 ) {
-  if (format === "hex") {
+  // Вернём hex если формат hex
+  if (format === "hex" && alpha !== undefined) {
     if (alpha < 1) {
       const aHex = Math.round(alpha * 255)
         .toString(16)
@@ -181,16 +183,24 @@ function formatColor(
     return hex;
   }
 
+  // Преобразуем в rgb
   const { r, g, b } = hexToRgb(hex);
-  if (format === "rgb")
+  if (format === "rgb" && alpha !== undefined) {
     return alpha < 1
       ? `rgba(${r}, ${g}, ${b}, ${alpha})`
       : `rgb(${r}, ${g}, ${b})`;
+  }
 
+  // Преобразуем в hsl
   const { h, s, l } = rgbToHsl(r, g, b);
-  return alpha < 1
-    ? `hsla(${h}, ${s}%, ${l}%, ${alpha})`
-    : `hsl(${h}, ${s}%, ${l}%)`;
+  if (format === "hsl" && alpha !== undefined) {
+    return alpha < 1
+      ? `hsla(${h}, ${s}%, ${l}%, ${alpha})`
+      : `hsl(${h}, ${s}%, ${l}%)`;
+  }
+
+  // Если формат не указан, вернём hex
+  return hex;
 }
 
 export {

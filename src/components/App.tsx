@@ -1,18 +1,19 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
+import { state, actions } from "../../nexusConfig.ts";
+
 import "../styles/App.scss";
 import "../styles/animations.scss";
 import "../styles/elements.scss";
 
-import {
-  hexToRgb,
-  hexToHsl,
-  hslToHex,
-  hslToRgb,
-  formatColor,
-} from "../helpers/colorFormatter";
+import { hexToHsl, hslToHex, formatColor } from "../helpers/colorFormatter";
 import findClosestColorPosition from "../helpers/findClosestColorPosition";
 import handleCanvasClick from "../helpers/handleCanvasClick";
+import {
+  drawColorCanvas,
+  drawHueCanvas,
+  drawAlphaCanvas,
+} from "../helpers/allCanvases";
 
 import ColorSlider from "./ColorSlider";
 import Button from "./Button";
@@ -20,14 +21,13 @@ import StorageColors from "./StorageColors";
 
 function App() {
   // State:
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, forceUpdate] = useState<number>(0); // для принудительного обновления
   const triggerUpdate = () => {
     forceUpdate((x) => (typeof x === "number" && x < 1000 ? x + 1 : 0));
   };
 
   // Refs:
-  const paletteCanvasRef = useRef<HTMLCanvasElement>(null);
+  const colorCanvasRef = useRef<HTMLCanvasElement>(null);
   const hueCanvasRef = useRef<HTMLCanvasElement>(null);
   const alphaCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -38,12 +38,32 @@ function App() {
   const alphaThumbX = useRef(0);
   const colorFormat = useRef<"hex" | "rgb" | "hsl">("hex");
   const alpha = useRef(1);
-  const animation = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isColorCanvasReady = useRef(false);
+
+  // nexus-state
+  const activeColor = state.useNexus("activeColor");
+  const copiedColorFlag = state.useNexus("copiedColorFlag");
 
   // Variables:
+  const { hex, activeAlpha } = useMemo(() => {
+    if (activeColor.length === 9) {
+      const hexAlpha = activeColor.slice(7, 9);
+      const activeAlpha = parseInt(hexAlpha, 16) / 255;
+      const hex = activeColor.slice(0, 7);
+
+      return { hex, activeAlpha };
+    }
+
+    return { hex: activeColor, activeAlpha: 1 };
+  }, [activeColor]);
+
   const colorWithAlpha = useMemo(() => {
     return formatColor(color.current, colorFormat.current, alpha.current);
   }, [color.current, colorFormat.current, alpha.current]);
+
+  const hexColorWithAlpha = useMemo(() => {
+    return formatColor(color.current, "hex", alpha.current);
+  }, [color.current, alpha.current]);
 
   const onChangeColor = (e: React.ChangeEvent<HTMLSelectElement>) => {
     colorFormat.current = e.target.value as "hex" | "rgb" | "hsl";
@@ -56,65 +76,73 @@ function App() {
   }, [paletteThumbXY.current.x, paletteThumbXY.current.y]);
 
   // Functions:
+  function waitForCanvasReady() {
+    return new Promise<void>((resolve) => {
+      const check = () => {
+        if (isColorCanvasReady.current) {
+          resolve();
+        } else {
+          requestAnimationFrame(check);
+        }
+      };
+      check();
+    });
+  }
+
+  const getColor = async (hexColor: string, fromPick = true) => {
+    color.current = hexColor;
+    if (fromPick) {
+      alpha.current = 1;
+      alphaThumbX.current = 0;
+    }
+
+    // Обновляем цветовой круг
+    const { h } = hexToHsl(hexColor);
+    const newHueColor = `hsl(${h}, 100%, 50%)`;
+    if (newHueColor !== hueColor.current) {
+      hueColor.current = newHueColor;
+      isColorCanvasReady.current = false;
+
+      triggerUpdate();
+
+      // Ждём следующего обновления canvas
+      await waitForCanvasReady();
+    }
+
+    const canvas = colorCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+
+    const { width, height } = canvas;
+    const xy = findClosestColorPosition(ctx, width, height, hexColor);
+    paletteThumbXY.current = xy;
+    hueThumbX.current = Math.round((h / 360) * width);
+
+    triggerUpdate();
+  };
+
   const pickColor = async () => {
     try {
       // @ts-expect-error нет типа EyeDropper в TypeScript
       const eyeDropper = new EyeDropper();
       const result = await eyeDropper.open();
 
-      color.current = result.sRGBHex;
-      alpha.current = 1;
-      alphaThumbX.current = 0;
-      await navigator.clipboard.writeText(result.sRGBHex);
-
-      // Обновляем цветовой круг
-      const { h } = hexToHsl(result.sRGBHex);
-      hueColor.current = `hsl(${h}, 100%, 50%)`;
-      triggerUpdate();
-
-      // Ждём следующего рендера (обновление useEffect)
-      await new Promise((resolve) =>
-        requestAnimationFrame(() => {
-          requestAnimationFrame(resolve);
-        })
-      );
-
-      const canvas = paletteCanvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
-      if (!ctx) return;
-
-      const { width, height } = canvas;
-      const xy = findClosestColorPosition(ctx, width, height, result.sRGBHex);
-      paletteThumbXY.current = xy;
-      hueThumbX.current = Math.round((h / 360) * width);
-
-      triggerUpdate();
+      if (result && result.sRGBHex) {
+        await navigator.clipboard.writeText(result.sRGBHex);
+        await getColor(result.sRGBHex);
+      }
     } catch (e) {
       console.error("Error picking color", e);
     }
   };
 
-  const clearAnimation = () => {
-    if (animation.current !== null) {
-      clearTimeout(animation.current);
-      animation.current = null;
-    }
-  };
-
   const copyColor = useCallback(() => {
     navigator.clipboard
-      .writeText(colorWithAlpha)
+      .writeText(colorWithAlpha as string)
       .then(() => {
         // Показать "copied" только если всё прошло успешно
-        const copyBtn = document.querySelector(".copy");
-        if (copyBtn) {
-          copyBtn.classList.add("copied");
-          clearAnimation();
-          animation.current = window.setTimeout(() => {
-            copyBtn.classList.remove("copied");
-          }, 300);
-        }
+        actions.setStateWithTimeout("copiedColorFlag", true, 300);
       })
       .catch((e) => {
         console.error("Clipboard write failed", e);
@@ -123,7 +151,7 @@ function App() {
 
   const handlePaletteClick = useCallback((e: React.MouseEvent) => {
     handleCanvasClick(e, {
-      canvasRef: paletteCanvasRef,
+      canvasRef: colorCanvasRef,
       cursorDuringDrag: "all-scroll",
       onMove: (e: MouseEvent, rect: DOMRect, ctx: CanvasRenderingContext2D) => {
         const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width - 1);
@@ -189,118 +217,48 @@ function App() {
 
   // Effects:
   useEffect(() => {
-    const canvas = paletteCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (!ctx) return;
+    // if (!isColorCanvasReady.current) isColorCanvasReady.current = false;
+    // triggerUpdate();
 
-    const { width, height } = canvas;
+    drawColorCanvas(colorCanvasRef.current!, hueColor.current);
 
-    const borderOffset = 1 / width;
-    const borderOffsetY = 1 / height;
-
-    // Конвертируем hueColor.current из HSL в RGB
-    const hslMatch = hueColor.current.match(
-      /hsl\((\d+),\s*(\d+)%?,\s*(\d+)%?\)/
-    );
-    if (!hslMatch) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, hStr, sStr, lStr] = hslMatch;
-    const h = parseInt(hStr, 10);
-    const s = parseInt(sStr, 10);
-    const l = parseInt(lStr, 10);
-    const { r, g, b } = hslToRgb(h, s, l);
-
-    // 1. Горизонтальный градиент: от белого к цвету
-    const whiteHueGradient = ctx.createLinearGradient(0, 0, width, 0);
-
-    whiteHueGradient.addColorStop(0, `rgba(255, 255, 255, 1)`);
-    whiteHueGradient.addColorStop(borderOffset, `rgba(255, 255, 255, 1)`);
-    whiteHueGradient.addColorStop(
-      1 - borderOffset,
-      `rgba(${r}, ${g}, ${b}, 1)`
-    );
-    whiteHueGradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 1)`);
-
-    ctx.fillStyle = whiteHueGradient;
-    ctx.fillRect(0, 0, width, height);
-
-    // 2. Вертикальный градиент: прозрачный → чёрный
-    const blackGradient = ctx.createLinearGradient(0, 0, 0, height);
-    blackGradient.addColorStop(0, `rgba(0, 0, 0, 0)`);
-    blackGradient.addColorStop(borderOffsetY, `rgba(0, 0, 0, 0)`);
-    blackGradient.addColorStop(1 - borderOffsetY, `rgba(0, 0, 0, 1)`);
-    blackGradient.addColorStop(1, `rgba(0, 0, 0, 1)`);
-
-    ctx.fillStyle = blackGradient;
-    ctx.fillRect(0, 0, width, height);
+    isColorCanvasReady.current = true;
+    triggerUpdate();
   }, [hueColor.current]);
 
   useEffect(() => {
-    const canvas = hueCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const { width, height } = canvas;
-    const gradient = ctx.createLinearGradient(0, 0, width, 0);
-
-    const borderOffset = 1 / width;
-
-    for (let i = 0; i <= 360; i += 60) {
-      const stop = i / 360;
-
-      const start = Math.max(0, stop - borderOffset / 2);
-      const end = Math.min(1, stop + borderOffset / 2);
-
-      const { r, g, b } = hslToRgb(i, 100, 50); // s=100%, l=50%
-      const rgba = `rgba(${r}, ${g}, ${b}, 1)`;
-
-      gradient.addColorStop(start, rgba);
-      gradient.addColorStop(end, rgba);
-    }
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    drawHueCanvas(hueCanvasRef.current!);
   }, []);
 
   useEffect(() => {
-    const canvas = alphaCanvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const { width, height } = canvas;
-
-    // Шаг клеток (чекерборда)
-    const step = 3;
-
-    // 1. Рисуем шахматный фон (checkerboard)
-    for (let y = 0; y < height; y += step) {
-      for (let x = 0; x < width; x += step) {
-        const isDark = (x / step + y / step) % 2 === 0;
-        ctx.fillStyle = isDark ? "#ccc" : "#fff";
-        ctx.fillRect(x, y, step, step);
-      }
-    }
-
-    // 2. Накладываем градиент color → transparent
-    const { r, g, b } = hexToRgb(color.current);
-    const gradient = ctx.createLinearGradient(0, 0, width, 0);
-    gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1)`);
-    gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    drawAlphaCanvas(alphaCanvasRef.current!, color.current);
   }, [color.current]);
 
   useEffect(() => {
-    return () => {
-      clearAnimation();
-    };
-  }, []);
+    // обновляем цвет в nexus-state
+    actions.setMainColor(hexColorWithAlpha as string);
+
+    // очистка activeColor
+    if (activeColor && color.current !== activeColor) {
+      actions.setActiveColor(color.current);
+    }
+  }, [hexColorWithAlpha]);
+
+  useEffect(() => {
+    if (!hex) return;
+
+    if (activeAlpha < 1) {
+      const canvas = alphaCanvasRef.current;
+      if (!canvas) return;
+
+      const { width } = canvas;
+
+      alpha.current = activeAlpha;
+      alphaThumbX.current = Math.round((1 - activeAlpha) * width);
+    }
+
+    getColor(hex, false);
+  }, [hex, activeAlpha]);
 
   // Render:
   return (
@@ -310,7 +268,7 @@ function App() {
       <div className="canvasBox">
         <ColorSlider
           className="paletteWrap"
-          ref={paletteCanvasRef}
+          ref={colorCanvasRef}
           onMouseDown={handlePaletteClick}
           thumbPosition={thumbPositionPalette}
           canvasSize="224, 100"
@@ -339,9 +297,9 @@ function App() {
         <div className="btn-wrap">
           <Button svgID="picker" onClick={pickColor} />
           <Button
-            className="copy"
+            className={`copy${copiedColorFlag ? " copied" : ""}`}
             svgID="copy"
-            color={colorWithAlpha}
+            color={colorWithAlpha as string}
             onClick={copyColor}
           />
         </div>
@@ -362,7 +320,7 @@ function App() {
             </div>
           </div>
 
-          <div className="color-box">{colorWithAlpha}</div>
+          <div className="color-box">{colorWithAlpha as string}</div>
         </div>
       </div>
 

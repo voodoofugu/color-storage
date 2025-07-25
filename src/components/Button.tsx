@@ -28,7 +28,6 @@ function Button({
   return (
     <button
       className={`btn${className ? ` ${className}` : ""}`}
-      {...(color && { "data-color": `${color}` })}
       style={{ ...(bgColor && color && { background: color }) }}
       onClick={onClick && onClick}
       onMouseDown={onMouseDown && onMouseDown}

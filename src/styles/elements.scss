@@ -26,7 +26,7 @@ select {
 
 .btn {
   width: 40px;
-  height: 41px;
+  height: 40px;
   border-radius: 40px;
   border: none;
   background: linear-gradient(#fff, #f5f5f5);
@@ -54,7 +54,6 @@ select {
     box-shadow: inset 0 1px 0 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.4),
       0 1px 3px rgba(255, 255, 255, 0.3);
     height: 40px;
-    margin-top: 0;
     .btn-bg,
     .svgIcon,
     .text {
@@ -63,7 +62,7 @@ select {
   }
   .btn-bg {
     position: absolute;
-    width: calc(100% - 4px);
+    width: calc(100% - 6px);
     aspect-ratio: 1;
     border-radius: 40px;
     margin: auto;
@@ -182,34 +181,55 @@ select {
         stroke: #a6a6a6;
       }
     }
+    &.add-color {
+      &.failed {
+        background: rgba(255, 0, 0, 0.1);
+        border: 1px #ff0000 dashed;
+        .svgLine {
+          stroke: #ff0000;
+          animation: fadeOut 0.3s ease-in-out 0s 1 forwards;
+        }
+      }
+    }
     &.default {
       border: 1px #d1d1d1 dashed;
       pointer-events: none;
     }
+    &.active {
+      border: 2px solid #ffffff;
+      transform: scale(1.2);
+      pointer-events: none;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
   }
 }
 
-.scroll-thumb {
-  width: 2px;
-  height: 100%;
-  border-radius: 2px;
-  background: #d1d1d1;
-  transition: all 0.1s ease-in-out;
-  &:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
-  }
-  &:hover {
-    background: #bdbdbd;
-  }
-  &:active {
-    width: 3px;
-    margin-left: -0.5px;
-    background: #7c7c7c;
+.ms-bar {
+  translate: 0 -4px;
+  .scroll-thumb {
+    width: 2px;
+    height: 100%;
+    border-radius: 2px;
+    background: #b1b1b1;
+    transition: all 0.1s ease-in-out;
+    &:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100% + 4px);
+      height: calc(100% + 4px);
+    }
+    &:hover {
+      background: #bdbdbd;
+    }
+    &:active {
+      width: 3px;
+      margin-left: -0.5px;
+      background: #7c7c7c;
+      cursor: grabbing;
+    }
   }
 }
