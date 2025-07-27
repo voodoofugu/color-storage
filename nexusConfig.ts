@@ -114,6 +114,15 @@ const { state, actions } = createReactStore({
           self.setStateWithTimeout("failedColorAdding", true, 600);
         }
       },
+
+      setNewColorsOrder: (paletteName: string, newOrder: string[]) => {
+        set((prev) => ({
+          colorStorage: prev.colorStorage.map((palette) => {
+            const [name, _] = Object.entries(palette)[0];
+            return name === paletteName ? { [name]: newOrder } : palette;
+          }),
+        }));
+      },
     };
 
     return self;

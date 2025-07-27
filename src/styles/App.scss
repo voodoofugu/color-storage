@@ -216,14 +216,21 @@
         position: relative;
         will-change: width;
         display: flex;
-        justify-content: center;
         align-items: center;
         .scroll {
-          width: calc(100% - 20px);
+          width: calc(100% - 6px);
           height: 60px;
-
+          z-index: 0;
           .ms-edge {
-            background: linear-gradient(90deg, #f9f9f9, transparent 100%);
+            z-index: -1;
+            background: linear-gradient(90deg, #eaeaea, transparent 100%);
+            &.left {
+              border-radius: 6px 0 0 6px;
+            }
+          }
+          .ms-bar {
+            scale: 0.896 1;
+            left: 14px;
           }
         }
       }

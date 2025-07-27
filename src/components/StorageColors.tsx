@@ -3,6 +3,8 @@ import { MorphScroll } from "morphing-scroll";
 
 import { state, actions } from "../../nexusConfig.ts";
 
+import useDragImage from "../hooks/useDragImage";
+
 import Button from "./Button";
 
 function resizeWidth(
@@ -39,6 +41,7 @@ function resizeWidth(
 }
 
 function StorageColors() {
+  // nexus
   const mainColor = state.useNexus("mainColor");
   const colorStorage = state.useNexus("colorStorage");
   const failedColorAdding = state.useNexus("failedColorAdding");
@@ -46,10 +49,24 @@ function StorageColors() {
   // const allState = state.useNexus();
   // console.log("allState", allState);
 
+  // state
   const [activePalette, setActivePalette] = useState(
     Object.keys(colorStorage[0])[0]
   );
 
+  // refs
+  const resizeWrap = useRef<HTMLDivElement | null>(null);
+  const maxWidth = useRef(0);
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
+
+  // hooks
+  const startDrag = useDragImage({
+    boxShadow:
+      "inset 0 -1px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.16)",
+  });
+
+  // functions
   const addColor = () => {
     actions.setNewPaletteColor(activePalette, mainColor);
   };
@@ -59,9 +76,6 @@ function StorageColors() {
     actions.setNewPalette(paletteName);
     setActivePalette(paletteName);
   };
-
-  const resizeWrap = useRef<HTMLDivElement | null>(null);
-  const maxWidth = useRef(0);
 
   const onMove = useCallback(() => {
     if (!resizeWrap.current) return;
@@ -87,6 +101,41 @@ function StorageColors() {
     );
   }, [colorStorage, activePalette]);
 
+  const handleDrop = useCallback(() => {
+    if (
+      dragItem.current === null ||
+      dragOverItem.current === null ||
+      dragItem.current === dragOverItem.current
+    )
+      return;
+
+    const newColors = [
+      ...colorStorage.find((p) => Object.keys(p)[0] === activePalette)![
+        activePalette
+      ],
+    ];
+
+    newColors.splice(
+      dragOverItem.current,
+      0,
+      newColors.splice(dragItem.current, 1)[0]
+    );
+
+    document
+      .querySelector(`[data-id="${dragOverItem.current}"]`)!
+      .classList.remove("dragEnter");
+    dragItem.current = null;
+    dragOverItem.current = null;
+
+    actions.setNewColorsOrder(activePalette, newColors);
+  }, [colorStorage, activePalette]);
+
+  const handelOnDragStart = useCallback((e: React.DragEvent, index: number) => {
+    dragItem.current = index;
+
+    startDrag(e);
+  }, []);
+
   const colorButtonsArray = useMemo(() => {
     const currentPalette = colorStorage.find(
       (palette) => Object.keys(palette)[0] === activePalette
@@ -108,10 +157,27 @@ function StorageColors() {
   const colorButtons = useMemo(() => {
     return colorButtonsArray.map((color, index) => (
       <Button
-        key={index}
+        key={color}
+        data={`${index}`}
         className={`storage-btn${color === activeColor ? " active" : ""}`}
         color={color}
         bgColor
+        draggable
+        onDragStart={(e) => handelOnDragStart(e, index)}
+        onDragEnter={() => {
+          dragOverItem.current = index;
+          const enterEl = document.querySelector(`[data-id="${index}"]`);
+
+          if (index !== dragItem.current) enterEl!.classList.add("dragEnter");
+        }}
+        onDragEnd={handleDrop}
+        onDragOver={(e) => e.preventDefault()}
+        onDragLeave={() => {
+          dragOverItem.current = null;
+          document
+            .querySelector(`[data-id="${index}"]`)!
+            .classList.remove("dragEnter");
+        }}
         onClick={() => actions.setActiveColor(color)}
       />
     ));
@@ -134,7 +200,7 @@ function StorageColors() {
         <div className="scroll-wrap" ref={resizeWrap}>
           <div className="scroll">
             <MorphScroll
-              // className="scroll"
+              // className="scroll-component"
               size="auto"
               objectsSize={30}
               gap={10}
@@ -143,26 +209,11 @@ function StorageColors() {
                 progressElement: <div className="scroll-thumb" />,
               }}
               wrapperAlign={["start", "center"]}
-              edgeGradient={{ size: 32 }}
+              edgeGradient={{ size: 20 }}
               direction="x"
               scrollBarOnHover
-              wrapperMargin={[4, 0]}
+              wrapperMargin={[14, 0]}
             >
-              {/* <Button
-                className="storage-btn add-color"
-                svgID="plus"
-                onClick={() => {}}
-              />
-              <Button
-                className="storage-btn"
-                color="#fbff00"
-                bgColor
-                onClick={() => countUp()}
-              />
-              <Button className="storage-btn default" />
-              <Button className="storage-btn default" />
-              <Button className="storage-btn default" /> */}
-
               <Button
                 key={0}
                 className={`storage-btn add-color${
