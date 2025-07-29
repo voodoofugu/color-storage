@@ -23,9 +23,10 @@ function resizeWidth(
       if (!maxWidth.current) maxWidth.current = rect.width;
 
       el.style.width = `${Math.min(
-        Math.max(moveEvent.clientX - rect.left, 180),
+        Math.max(moveEvent.clientX - rect.left, 181),
         maxWidth.current
       )}px`;
+      el.style.animation = "unset";
     },
     { signal }
   );
@@ -35,6 +36,7 @@ function resizeWidth(
     () => {
       controller.abort();
       document.body.style.removeProperty("cursor");
+      el.style.removeProperty("animation");
     },
     { signal }
   );
@@ -46,6 +48,8 @@ function StorageColors() {
   const colorStorage = state.useNexus("colorStorage");
   const failedColorAdding = state.useNexus("failedColorAdding");
   const activeColor = state.useNexus("activeColor");
+  const currentPaletteId = state.useNexus("currentPaletteId");
+  console.log("currentPaletteId", currentPaletteId);
   // const allState = state.useNexus();
   // console.log("allState", allState);
 
@@ -91,6 +95,10 @@ function StorageColors() {
         {colorStorage.map((palette, index) => {
           const paletteName = Object.keys(palette)[0];
 
+          // !!! что-то одно индекс или имя палитры?
+          if (Object.keys(palette)[index] === paletteName)
+            state.setNexus({ currentPaletteId: index });
+
           return (
             <option key={index} value={paletteName}>
               {paletteName}
@@ -101,7 +109,23 @@ function StorageColors() {
     );
   }, [colorStorage, activePalette]);
 
+  const handelOnDragStart = useCallback((e: React.DragEvent, index: number) => {
+    dragItem.current = index;
+
+    const enterEl = document.querySelector(`.scroll-wrap`) as HTMLDivElement;
+    enterEl!.style.width = `181px`;
+
+    startDrag(e);
+  }, []);
+
+  const removeWidth = useCallback(() => {
+    const enterEl = document.querySelector(`.scroll-wrap`) as HTMLDivElement;
+    enterEl!.style.removeProperty("width");
+  }, []);
+
   const handleDrop = useCallback(() => {
+    removeWidth();
+
     if (
       dragItem.current === null ||
       dragOverItem.current === null ||
@@ -129,12 +153,6 @@ function StorageColors() {
 
     actions.setNewColorsOrder(activePalette, newColors);
   }, [colorStorage, activePalette]);
-
-  const handelOnDragStart = useCallback((e: React.DragEvent, index: number) => {
-    dragItem.current = index;
-
-    startDrag(e);
-  }, []);
 
   const colorButtonsArray = useMemo(() => {
     const currentPalette = colorStorage.find(
@@ -185,6 +203,32 @@ function StorageColors() {
 
   return (
     <div className="storage-box">
+      <Button
+        className="clear-btn"
+        onDrop={() => {
+          actions.clearColor(
+            colorStorage[currentPaletteId][activePalette][dragItem.current!]
+          );
+          const leaveEl = document.querySelector(`.clear-btn`);
+          leaveEl!.classList.remove("onDragEnter");
+          removeWidth();
+        }}
+        onDragEnter={() => {
+          const enterEl = document.querySelector(`.clear-btn`);
+          enterEl!.classList.add("onDragEnter");
+        }}
+        onDragLeave={() => {
+          const leaveEl = document.querySelector(`.clear-btn`);
+          leaveEl!.classList.remove("onDragEnter");
+        }}
+        onDragOver={(e) => e.preventDefault()}
+        onClick={() => {
+          if (colorStorage[currentPaletteId][activePalette].length > 0)
+            actions.clearAllColors();
+          removeWidth();
+        }}
+      />
+
       <div className="container">
         <div className="menu-wrap">
           <div className="menu">{paletteMenu()}</div>
@@ -203,7 +247,7 @@ function StorageColors() {
               // className="scroll-component"
               size="auto"
               objectsSize={30}
-              gap={10}
+              gap={11}
               progressTrigger={{
                 wheel: true,
                 progressElement: <div className="scroll-thumb" />,
@@ -212,7 +256,7 @@ function StorageColors() {
               edgeGradient={{ size: 20 }}
               direction="x"
               scrollBarOnHover
-              wrapperMargin={[14, 0]}
+              wrapperMargin={[10, 0]}
             >
               <Button
                 key={0}

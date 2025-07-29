@@ -1,5 +1,4 @@
 import { memo } from "react";
-
 import SVGIcon from "./SVGIcon";
 
 type SvgIdT = "picker" | "copy" | "plus" | "drag";
@@ -13,14 +12,7 @@ type ButtonT = {
   bgColor?: boolean;
   draggable?: boolean;
   children?: React.ReactNode;
-  onDragStart?: (e: React.DragEvent) => void;
-  onDragEnter?: (e: React.DragEvent) => void;
-  onDragLeave?: (e: React.DragEvent) => void;
-  onDragEnd?: (e: React.DragEvent) => void;
-  onDragOver?: (e: React.DragEvent) => void;
-  onClick?: (e: React.MouseEvent) => void;
-  onMouseDown?: (e: React.MouseEvent) => void;
-};
+} & React.HTMLAttributes<HTMLButtonElement>; // 👈 Добавили все стандартные события
 
 function Button({
   className,
@@ -31,13 +23,7 @@ function Button({
   bgColor,
   draggable,
   children,
-  onDragStart,
-  onDragEnter,
-  onDragLeave,
-  onDragEnd,
-  onDragOver,
-  onClick,
-  onMouseDown,
+  ...restProps // 👈 Сюда попадают все onDrag*, onClick и пр.
 }: ButtonT) {
   return (
     <button
@@ -45,13 +31,7 @@ function Button({
       className={`btn${className ? ` ${className}` : ""}`}
       draggable={draggable}
       style={{ ...(bgColor && color && { background: color }) }}
-      onDragStart={onDragStart && onDragStart}
-      onDragEnter={onDragEnter && onDragEnter}
-      onDragLeave={onDragLeave && onDragLeave}
-      onDragEnd={onDragEnd && onDragEnd}
-      onDragOver={onDragOver && onDragOver}
-      onClick={onClick && onClick}
-      onMouseDown={onMouseDown && onMouseDown}
+      {...restProps} // 👈 Прокидываем все события и прочие атрибуты
     >
       {color && !bgColor && (
         <div className="btn-bg" style={{ backgroundColor: color }} />

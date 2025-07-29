@@ -13,6 +13,7 @@ type MyStateT = {
     }
   >;
   copiedColorFlag: boolean;
+  currentPaletteId: number;
 };
 
 const { state, actions } = createReactStore({
@@ -30,6 +31,7 @@ const { state, actions } = createReactStore({
     ],
     timeouts: {},
     copiedColorFlag: false,
+    currentPaletteId: 0,
   } as MyStateT,
 
   actions: (set) => {
@@ -122,6 +124,21 @@ const { state, actions } = createReactStore({
             return name === paletteName ? { [name]: newOrder } : palette;
           }),
         }));
+      },
+
+      clearColor: (color: string) => {
+        set((prev) => ({
+          colorStorage: prev.colorStorage.map((palette) => {
+            const [name, colors] = Object.entries(palette)[0];
+            return {
+              [name]: colors.filter((c) => c !== color),
+            };
+          }),
+        }));
+      },
+
+      clearAllColors: () => {
+        set({ colorStorage: [{ "palette-1": [] }] });
       },
     };
 
