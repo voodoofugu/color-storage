@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState, useMemo } from "react";
+import { useRef, useCallback, useState, useMemo, useEffect } from "react";
 import { MorphScroll } from "morphing-scroll";
 
 import { state, actions } from "../../nexusConfig.ts";
@@ -51,7 +51,6 @@ function StorageColors() {
   const currentPaletteId = state.useNexus("currentPaletteId");
   console.log("currentPaletteId", currentPaletteId);
   // const allState = state.useNexus();
-  // console.log("allState", allState);
 
   // state
   const [activePalette, setActivePalette] = useState(
@@ -72,13 +71,12 @@ function StorageColors() {
 
   // functions
   const addColor = () => {
-    actions.setNewPaletteColor(activePalette, mainColor);
+    actions.setNewPaletteColor(mainColor);
   };
 
   const newGroup = () => {
-    const paletteName = `palette-${colorStorage.length + 1}`;
-    actions.setNewPalette(paletteName);
-    setActivePalette(paletteName);
+    actions.setNewPalette();
+    actions.setCurrentPaletteId();
   };
 
   const onMove = useCallback(() => {
@@ -90,14 +88,17 @@ function StorageColors() {
     return (
       <select
         value={activePalette}
-        onChange={(e) => setActivePalette(e.target.value)}
+        onChange={(e) => {
+          const selectedName = e.target.value;
+          const selectedIndex = colorStorage.findIndex(
+            (palette) => Object.keys(palette)[0] === selectedName
+          );
+
+          actions.setCurrentPaletteId(selectedIndex);
+        }}
       >
         {colorStorage.map((palette, index) => {
           const paletteName = Object.keys(palette)[0];
-
-          // !!! что-то одно индекс или имя палитры?
-          if (Object.keys(palette)[index] === paletteName)
-            state.setNexus({ currentPaletteId: index });
 
           return (
             <option key={index} value={paletteName}>
@@ -109,14 +110,17 @@ function StorageColors() {
     );
   }, [colorStorage, activePalette]);
 
-  const handelOnDragStart = useCallback((e: React.DragEvent, index: number) => {
-    dragItem.current = index;
+  const handelOnDragStart = useCallback(
+    (e: React.DragEvent, index: number) => {
+      dragItem.current = index;
 
-    const enterEl = document.querySelector(`.scroll-wrap`) as HTMLDivElement;
-    enterEl!.style.width = `181px`;
+      const enterEl = document.querySelector(`.scroll-wrap`) as HTMLDivElement;
+      enterEl!.style.width = `181px`;
 
-    startDrag(e);
-  }, []);
+      startDrag(e);
+    },
+    [startDrag]
+  );
 
   const removeWidth = useCallback(() => {
     const enterEl = document.querySelector(`.scroll-wrap`) as HTMLDivElement;
@@ -151,9 +155,43 @@ function StorageColors() {
     dragItem.current = null;
     dragOverItem.current = null;
 
-    actions.setNewColorsOrder(activePalette, newColors);
-  }, [colorStorage, activePalette]);
+    actions.setNewColorsOrder(newColors);
+  }, [currentPaletteId, colorStorage, removeWidth]);
 
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+  }, []);
+
+  const clearBtnOnDrop = useCallback(() => {
+    actions.clearColor(
+      colorStorage[currentPaletteId][activePalette][dragItem.current!]
+    );
+    const leaveEl = document.querySelector(`.clear-btn`);
+    leaveEl!.classList.remove("onDragEnter");
+    removeWidth();
+  }, [currentPaletteId, activePalette, colorStorage, removeWidth]);
+
+  const clearBtnOnEnter = useCallback(() => {
+    const enterEl = document.querySelector(`.clear-btn`);
+    enterEl!.classList.add("onDragEnter");
+  }, []);
+
+  const clearBtnOnDragLeave = useCallback(() => {
+    const leaveEl = document.querySelector(`.clear-btn`);
+    leaveEl!.classList.remove("onDragEnter");
+  }, []);
+
+  const clearBtnOnClick = useCallback(() => {
+    actions.deleteCurrentPalette(currentPaletteId!);
+    removeWidth();
+  }, [removeWidth, currentPaletteId]);
+
+  // effects
+  useEffect(() => {
+    setActivePalette(Object.keys(colorStorage[currentPaletteId])[0]);
+  }, [currentPaletteId, colorStorage.length]);
+
+  // variables
   const colorButtonsArray = useMemo(() => {
     const currentPalette = colorStorage.find(
       (palette) => Object.keys(palette)[0] === activePalette
@@ -189,7 +227,7 @@ function StorageColors() {
           if (index !== dragItem.current) enterEl!.classList.add("dragEnter");
         }}
         onDragEnd={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
+        onDragOver={onDragOver}
         onDragLeave={() => {
           dragOverItem.current = null;
           document
@@ -199,45 +237,30 @@ function StorageColors() {
         onClick={() => actions.setActiveColor(color)}
       />
     ));
-  }, [colorButtonsArray, activeColor]);
+  }, [
+    colorButtonsArray,
+    activeColor,
+    handelOnDragStart,
+    handleDrop,
+    onDragOver,
+  ]);
 
   return (
     <div className="storage-box">
       <Button
         className="clear-btn"
-        onDrop={() => {
-          actions.clearColor(
-            colorStorage[currentPaletteId][activePalette][dragItem.current!]
-          );
-          const leaveEl = document.querySelector(`.clear-btn`);
-          leaveEl!.classList.remove("onDragEnter");
-          removeWidth();
-        }}
-        onDragEnter={() => {
-          const enterEl = document.querySelector(`.clear-btn`);
-          enterEl!.classList.add("onDragEnter");
-        }}
-        onDragLeave={() => {
-          const leaveEl = document.querySelector(`.clear-btn`);
-          leaveEl!.classList.remove("onDragEnter");
-        }}
-        onDragOver={(e) => e.preventDefault()}
-        onClick={() => {
-          if (colorStorage[currentPaletteId][activePalette].length > 0)
-            actions.clearAllColors();
-          removeWidth();
-        }}
+        onDrop={clearBtnOnDrop}
+        onDragEnter={clearBtnOnEnter}
+        onDragLeave={clearBtnOnDragLeave}
+        onDragOver={onDragOver}
+        onClick={clearBtnOnClick}
       />
 
       <div className="container">
         <div className="menu-wrap">
           <div className="menu">{paletteMenu()}</div>
 
-          <Button
-            svgID="plus"
-            className="menu-btn"
-            onClick={() => newGroup()}
-          />
+          <Button svgID="plus" className="menu-btn" onClick={newGroup} />
           <Button className="menu-btn text" text="rename" onClick={() => {}} />
         </div>
 

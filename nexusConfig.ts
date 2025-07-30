@@ -85,28 +85,58 @@ const { state, actions } = createReactStore({
         set({ activeColor: color });
       },
 
-      setNewPalette: (paletteName: string) => {
+      setNewPalette: (paletteName?: string) => {
+        set((prev) => {
+          const existingNames = prev.colorStorage.map(
+            (item) => Object.keys(item)[0]
+          );
+
+          const getNextAvailableName = (): string => {
+            let index = prev.colorStorage.length + 1;
+            while (existingNames.includes(`palette-${index}`)) {
+              index++;
+            }
+            return `palette-${index}`;
+          };
+
+          const uniqueName =
+            paletteName && !existingNames.includes(paletteName)
+              ? paletteName
+              : getNextAvailableName();
+
+          return {
+            colorStorage: [...prev.colorStorage, { [uniqueName]: [] }],
+          };
+        });
+      },
+
+      setCurrentPaletteId: (id?: number) => {
         set((prev) => ({
-          colorStorage: [...prev.colorStorage, { [paletteName]: [] }],
+          currentPaletteId:
+            typeof id === "number" ? id : prev.colorStorage.length - 1,
         }));
       },
 
-      setNewPaletteColor: (paletteName: string, color: string) => {
+      setNewPaletteColor: (color: string) => {
         let isDuplicate = false;
 
         set((prev) => {
           isDuplicate = prev.colorStorage.some((palette) => {
             const [name, colors] = Object.entries(palette)[0];
-            return name === paletteName && colors.includes(color);
+            return (
+              name ===
+                Object.keys(prev.colorStorage[prev.currentPaletteId])[0] &&
+              colors.includes(color)
+            );
           });
 
           if (isDuplicate) return prev;
 
           return {
-            colorStorage: prev.colorStorage.map((palette) => {
+            colorStorage: prev.colorStorage.map((palette, index) => {
               const [name, colors] = Object.entries(palette)[0];
-              return name === paletteName
-                ? { [name]: [color, ...colors] }
+              return index === prev.currentPaletteId
+                ? { [name]: [...colors, color] }
                 : palette;
             }),
           };
@@ -117,11 +147,14 @@ const { state, actions } = createReactStore({
         }
       },
 
-      setNewColorsOrder: (paletteName: string, newOrder: string[]) => {
+      setNewColorsOrder: (newOrder: string[]) => {
         set((prev) => ({
           colorStorage: prev.colorStorage.map((palette) => {
             const [name, _] = Object.entries(palette)[0];
-            return name === paletteName ? { [name]: newOrder } : palette;
+            return name ===
+              Object.keys(prev.colorStorage[prev.currentPaletteId])[0]
+              ? { [name]: newOrder }
+              : palette;
           }),
         }));
       },
@@ -137,8 +170,13 @@ const { state, actions } = createReactStore({
         }));
       },
 
-      clearAllColors: () => {
-        set({ colorStorage: [{ "palette-1": [] }] });
+      deleteCurrentPalette: (currentPaletteId: number) => {
+        set((prev) => ({
+          colorStorage: prev.colorStorage.filter(
+            (_, index) => index !== currentPaletteId
+          ),
+          currentPaletteId: 0,
+        }));
       },
     };
 
