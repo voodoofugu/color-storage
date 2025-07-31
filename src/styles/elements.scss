@@ -123,6 +123,7 @@ select {
       position: absolute;
       right: 0;
       color: #4d4d4d;
+      user-select: none;
       &:hover {
         color: #000;
       }
@@ -203,12 +204,12 @@ select {
       pointer-events: none;
     }
     &.active {
-      box-shadow: 0 0 0 1px #b5b5b5, 0 0 0 3px #d0d0d0, 0 0 0 4px #b5b5b5,
+      box-shadow: 0 0 0 1px #b5b5b5, 0 0 0 3px #d4d4d4, 0 0 0 4px #bababa,
         0 1px 3px rgba(0, 0, 0, 0.5);
     }
     &.dragEnter {
       box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12),
-        0 0 0 1px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.4);
+        0 0 0 1px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.4);
       &:before {
         content: "";
         position: absolute;
