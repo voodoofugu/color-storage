@@ -2,16 +2,18 @@ import { hexToRgb } from "./colorFormatter";
 
 function findClosestColorPosition(
   ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
   targetHex: string
 ) {
   const { r: tr, g: tg, b: tb } = hexToRgb(targetHex);
+
+  const { width, height } = ctx.canvas;
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
 
   let bestDist = Infinity;
   let bestXY = { x: 0, y: 0 };
+
+  if (tr === 0 && tg === 0 && tb === 0) return { x: 0, y: height };
 
   const step = 2; // ⬅ ускорение за счёт пропуска пикселей
 

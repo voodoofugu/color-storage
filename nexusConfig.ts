@@ -18,8 +18,8 @@ type MyStateT = {
 
 const { state, actions } = createReactStore({
   state: {
-    mainColor: "#ffffff",
-    activeColor: "#ffffff",
+    mainColor: "#ffffff", // hex only
+    activeColor: "",
     failedColorAdding: false,
     colorStorage: [
       {
@@ -136,7 +136,7 @@ const { state, actions } = createReactStore({
             colorStorage: prev.colorStorage.map((palette, index) => {
               const [name, colors] = Object.entries(palette)[0];
               return index === prev.currentPaletteId
-                ? { [name]: [...colors, color] }
+                ? { [name]: [color, ...colors] }
                 : palette;
             }),
           };

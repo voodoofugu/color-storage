@@ -46,9 +46,11 @@ function App() {
 
   // Variables:
   const { hex, activeAlpha } = useMemo(() => {
+    // если есть alpha
     if (activeColor.length === 9) {
       const hexAlpha = activeColor.slice(7, 9);
-      const activeAlpha = parseInt(hexAlpha, 16) / 255;
+      const activeAlpha =
+        Math.round((parseInt(hexAlpha, 16) / 255) * 100) / 100;
       const hex = activeColor.slice(0, 7);
 
       return { hex, activeAlpha };
@@ -91,15 +93,21 @@ function App() {
 
   const getColor = async (hexColor: string, fromPick = true) => {
     color.current = hexColor;
+
+    const canvas = colorCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
     if (fromPick) {
       alpha.current = 1;
       alphaThumbX.current = 0;
     }
-
     // Обновляем цветовой круг
+
     const { h } = hexToHsl(hexColor);
     const newHueColor = `hsl(${h}, 100%, 50%)`;
-    if (newHueColor !== hueColor.current) {
+
+    if (newHueColor !== hueColor.current && h > 0) {
       hueColor.current = newHueColor;
       isColorCanvasReady.current = false;
 
@@ -107,17 +115,10 @@ function App() {
 
       // Ждём следующего обновления canvas
       await waitForCanvasReady();
+      hueThumbX.current = Math.round((h / 360) * canvas.width);
     }
 
-    const canvas = colorCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (!ctx) return;
-
-    const { width, height } = canvas;
-    const xy = findClosestColorPosition(ctx, width, height, hexColor);
-    paletteThumbXY.current = xy;
-    hueThumbX.current = Math.round((h / 360) * width);
+    paletteThumbXY.current = findClosestColorPosition(ctx!, hexColor);
 
     triggerUpdate();
   };
@@ -178,8 +179,7 @@ function App() {
         canvasRef: hueCanvasRef,
         cursorDuringDrag: "ew-resize",
         onMove: (e: MouseEvent, rect: DOMRect) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { h, s, l } = hexToHsl(color.current);
+          const { h: _, s, l } = hexToHsl(color.current);
           const x = Math.min(
             Math.max(e.clientX - rect.left, 0),
             rect.width - 1
@@ -216,10 +216,8 @@ function App() {
   }, []);
 
   // Effects:
+  // рисуем Canvas
   useEffect(() => {
-    // if (!isColorCanvasReady.current) isColorCanvasReady.current = false;
-    // triggerUpdate();
-
     drawColorCanvas(colorCanvasRef.current!, hueColor.current);
 
     isColorCanvasReady.current = true;
@@ -233,31 +231,29 @@ function App() {
   useEffect(() => {
     drawAlphaCanvas(alphaCanvasRef.current!, color.current);
   }, [color.current]);
+  // ------------
 
   useEffect(() => {
     // обновляем цвет в nexus-state
-    actions.setMainColor(hexColorWithAlpha as string);
-
-    // очистка activeColor
-    if (activeColor && color.current !== activeColor) {
-      actions.setActiveColor(color.current);
-    }
+    actions.setMainColor(hexColorWithAlpha);
   }, [hexColorWithAlpha]);
 
   useEffect(() => {
     if (!hex) return;
 
-    if (activeAlpha < 1) {
+    // обновляем alpha при изменении activeColor
+    if (activeAlpha !== alpha.current) {
       const canvas = alphaCanvasRef.current;
       if (!canvas) return;
 
-      const { width } = canvas;
-
       alpha.current = activeAlpha;
-      alphaThumbX.current = Math.round((1 - activeAlpha) * width);
+      alphaThumbX.current = Math.round((1 - activeAlpha) * canvas.width);
     }
 
+    // обновляем палитру при изменении activeColor
     getColor(hex, false);
+
+    actions.setActiveColor("");
   }, [hex, activeAlpha]);
 
   // Render:

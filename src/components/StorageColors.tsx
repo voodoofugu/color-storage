@@ -47,9 +47,7 @@ function StorageColors() {
   const mainColor = state.useNexus("mainColor");
   const colorStorage = state.useNexus("colorStorage");
   const failedColorAdding = state.useNexus("failedColorAdding");
-  const activeColor = state.useNexus("activeColor");
   const currentPaletteId = state.useNexus("currentPaletteId");
-  console.log("currentPaletteId", currentPaletteId);
   // const allState = state.useNexus();
 
   // state
@@ -215,7 +213,7 @@ function StorageColors() {
       <Button
         key={color}
         data={`${index}`}
-        className={`storage-btn${color === activeColor ? " active" : ""}`}
+        className={`storage-btn${color === mainColor ? " active" : ""}`}
         color={color}
         bgColor
         draggable
@@ -237,13 +235,7 @@ function StorageColors() {
         onClick={() => actions.setActiveColor(color)}
       />
     ));
-  }, [
-    colorButtonsArray,
-    activeColor,
-    handelOnDragStart,
-    handleDrop,
-    onDragOver,
-  ]);
+  }, [colorButtonsArray, mainColor, handelOnDragStart, handleDrop, onDragOver]);
 
   return (
     <div className="storage-box">
