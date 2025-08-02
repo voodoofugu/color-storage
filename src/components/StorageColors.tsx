@@ -7,6 +7,8 @@ import useDragImage from "../hooks/useDragImage";
 
 import Button from "./Button";
 
+import sanitizeInputName from "../helpers/sanitizeInputName";
+
 function resizeWidth(
   el: HTMLElement,
   maxWidth: React.MutableRefObject<number>
@@ -26,7 +28,7 @@ function resizeWidth(
         Math.max(moveEvent.clientX - rect.left, 181),
         maxWidth.current
       )}px`;
-      el.style.animation = "unset";
+      el.style.transition = "unset";
     },
     { signal }
   );
@@ -36,7 +38,15 @@ function resizeWidth(
     () => {
       controller.abort();
       document.body.style.removeProperty("cursor");
-      el.style.removeProperty("animation");
+      el.style.removeProperty("transition");
+
+      // выравниваем ширину
+      const elWidth = el.getBoundingClientRect().width;
+      if (elWidth <= 202 && elWidth !== 181) {
+        el.style.width = "181px";
+      } else if (elWidth >= 203 && elWidth !== maxWidth.current) {
+        el.style.width = `${maxWidth.current}px`;
+      }
     },
     { signal }
   );
@@ -50,16 +60,23 @@ function StorageColors() {
   const currentPaletteId = state.useNexus("currentPaletteId");
   // const allState = state.useNexus();
 
-  // state
-  const [activePalette, setActivePalette] = useState(
-    Object.keys(colorStorage[0])[0]
-  );
+  // state:
+  const [_, forceUpdate] = useState<number>(0); // для принудительного обновления
+  const triggerUpdate = () => {
+    forceUpdate((x) => (typeof x === "number" && x < 1000 ? x + 1 : 0));
+  };
 
   // refs
   const resizeWrap = useRef<HTMLDivElement | null>(null);
   const maxWidth = useRef(0);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
+
+  // update refs
+  const activePalette = useRef(
+    colorStorage.length ? Object.keys(colorStorage[0])[0] : ""
+  );
+  const newPaletteName = useRef("");
 
   // hooks
   const startDrag = useDragImage({
@@ -81,32 +98,6 @@ function StorageColors() {
     if (!resizeWrap.current) return;
     resizeWidth(resizeWrap.current!, maxWidth);
   }, []);
-
-  const paletteMenu = useCallback(() => {
-    return (
-      <select
-        value={activePalette}
-        onChange={(e) => {
-          const selectedName = e.target.value;
-          const selectedIndex = colorStorage.findIndex(
-            (palette) => Object.keys(palette)[0] === selectedName
-          );
-
-          actions.setCurrentPaletteId(selectedIndex);
-        }}
-      >
-        {colorStorage.map((palette, index) => {
-          const paletteName = Object.keys(palette)[0];
-
-          return (
-            <option key={index} value={paletteName}>
-              {paletteName}
-            </option>
-          );
-        })}
-      </select>
-    );
-  }, [colorStorage, activePalette]);
 
   const handelOnDragStart = useCallback(
     (e: React.DragEvent, index: number) => {
@@ -136,8 +127,8 @@ function StorageColors() {
       return;
 
     const newColors = [
-      ...colorStorage.find((p) => Object.keys(p)[0] === activePalette)![
-        activePalette
+      ...colorStorage.find((p) => Object.keys(p)[0] === activePalette.current)![
+        activePalette.current
       ],
     ];
 
@@ -162,12 +153,12 @@ function StorageColors() {
 
   const clearBtnOnDrop = useCallback(() => {
     actions.clearColor(
-      colorStorage[currentPaletteId][activePalette][dragItem.current!]
+      colorStorage[currentPaletteId][activePalette.current][dragItem.current!]
     );
     const leaveEl = document.querySelector(`.clear-btn`);
     leaveEl!.classList.remove("onDragEnter");
     removeWidth();
-  }, [currentPaletteId, activePalette, colorStorage, removeWidth]);
+  }, [currentPaletteId, activePalette.current, colorStorage, removeWidth]);
 
   const clearBtnOnEnter = useCallback(() => {
     const enterEl = document.querySelector(`.clear-btn`);
@@ -184,19 +175,95 @@ function StorageColors() {
     removeWidth();
   }, [removeWidth, currentPaletteId]);
 
+  const renameHandler = useCallback(() => {
+    newPaletteName.current = activePalette.current;
+    triggerUpdate();
+
+    const enterEl = document.querySelector(
+      `.palette-input`
+    ) as HTMLInputElement;
+    if (!enterEl) return;
+
+    enterEl!.focus();
+  }, [newPaletteName.current, activePalette.current]);
+
   // effects
   useEffect(() => {
-    setActivePalette(Object.keys(colorStorage[currentPaletteId])[0]);
-  }, [currentPaletteId, colorStorage.length]);
+    activePalette.current = colorStorage.length
+      ? Object.keys(colorStorage[currentPaletteId])[0]
+      : "";
+
+    triggerUpdate();
+  }, [currentPaletteId, JSON.stringify(colorStorage)]);
 
   // variables
+  const paletteMenu = useMemo(() => {
+    return (
+      <>
+        <select
+          className="palette-select"
+          value={activePalette.current}
+          onChange={(e) => {
+            const selectedName = e.target.value;
+            const selectedIndex = colorStorage.findIndex(
+              (palette) => Object.keys(palette)[0] === selectedName
+            );
+
+            actions.setCurrentPaletteId(selectedIndex);
+          }}
+        >
+          {colorStorage.map((palette, index) => {
+            const paletteName = Object.keys(palette)[0];
+
+            return (
+              <option key={index} value={paletteName}>
+                {paletteName}
+              </option>
+            );
+          })}
+        </select>
+
+        <input
+          className="palette-input"
+          type="text"
+          value={newPaletteName.current}
+          onChange={(e) => {
+            newPaletteName.current = sanitizeInputName(e.target.value);
+            triggerUpdate();
+          }}
+          onFocus={() => {
+            newPaletteName.current = activePalette.current;
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              const activeElement = document.activeElement as HTMLElement;
+              activeElement!.blur();
+            }
+          }}
+          onBlur={() => {
+            if (
+              newPaletteName.current &&
+              newPaletteName.current !== activePalette.current
+            ) {
+              actions.paletteRename(newPaletteName.current);
+            }
+          }}
+        />
+      </>
+    );
+  }, [
+    JSON.stringify(colorStorage),
+    activePalette.current,
+    newPaletteName.current,
+  ]);
+
   const colorButtonsArray = useMemo(() => {
     const currentPalette = colorStorage.find(
-      (palette) => Object.keys(palette)[0] === activePalette
+      (palette) => Object.keys(palette)[0] === activePalette.current
     );
 
     return currentPalette ? Object.values(currentPalette)[0] : [];
-  }, [colorStorage, activePalette]);
+  }, [colorStorage, activePalette.current]);
 
   const colorDefaultButtons = useMemo(() => {
     if (colorButtonsArray.length < 4) {
@@ -237,7 +304,7 @@ function StorageColors() {
     ));
   }, [colorButtonsArray, mainColor, handelOnDragStart, handleDrop, onDragOver]);
 
-  return (
+  return colorStorage.length > 0 ? (
     <div className="storage-box">
       <Button
         className="clear-btn"
@@ -246,20 +313,24 @@ function StorageColors() {
         onDragLeave={clearBtnOnDragLeave}
         onDragOver={onDragOver}
         onClick={clearBtnOnClick}
+        svgID="trash"
       />
 
       <div className="container">
         <div className="menu-wrap">
-          <div className="menu">{paletteMenu()}</div>
+          <div className="menu">{paletteMenu}</div>
 
           <Button svgID="plus" className="menu-btn" onClick={newGroup} />
-          <Button className="menu-btn text" text="rename" onClick={() => {}} />
+          <Button
+            className="menu-btn text"
+            text="rename"
+            onClick={renameHandler}
+          />
         </div>
 
         <div className="scroll-wrap" ref={resizeWrap}>
           <div className="scroll">
             <MorphScroll
-              // className="scroll-component"
               size="auto"
               objectsSize={30}
               gap={11}
@@ -287,6 +358,19 @@ function StorageColors() {
           </div>
 
           <Button className="drag" svgID="drag" onMouseDown={onMove} />
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="storage-box empty">
+      <div className="container">
+        <div className="menu-wrap">
+          <Button
+            svgID="plus"
+            className="menu-btn"
+            text="add palette"
+            onClick={newGroup}
+          />
         </div>
       </div>
     </div>

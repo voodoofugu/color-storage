@@ -1,4 +1,10 @@
-import { PickerIcon, CopyIcon, PlusIcon, DragIcon } from "../assets/svgIcons";
+import {
+  PickerIcon,
+  CopyIcon,
+  PlusIcon,
+  DragIcon,
+  TrashIcon,
+} from "../assets/svgIcons";
 import type { SvgIdT } from "./Button";
 
 type SVGIconT = {
@@ -7,7 +13,7 @@ type SVGIconT = {
 
 const SVGIcon = ({ svgID }: SVGIconT) => {
   return (
-    <div className={`svgIcon ${svgID}`}>
+    <div className="svgIcon">
       <svg id={`${svgID}`} viewBox="0 0 88 88">
         {svgID === "picker" ? (
           <PickerIcon />
@@ -15,8 +21,10 @@ const SVGIcon = ({ svgID }: SVGIconT) => {
           <CopyIcon />
         ) : svgID === "plus" ? (
           <PlusIcon />
-        ) : (
+        ) : svgID === "drag" ? (
           <DragIcon />
+        ) : (
+          svgID === "trash" && <TrashIcon />
         )}
       </svg>
     </div>

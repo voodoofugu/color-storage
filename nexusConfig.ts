@@ -23,10 +23,7 @@ const { state, actions } = createReactStore({
     failedColorAdding: false,
     colorStorage: [
       {
-        "palette-1": ["#fbff00"],
-      },
-      {
-        "palette-2": [],
+        "Palette-1": [],
       },
     ],
     timeouts: {},
@@ -93,10 +90,10 @@ const { state, actions } = createReactStore({
 
           const getNextAvailableName = (): string => {
             let index = prev.colorStorage.length + 1;
-            while (existingNames.includes(`palette-${index}`)) {
+            while (existingNames.includes(`Palette-${index}`)) {
               index++;
             }
-            return `palette-${index}`;
+            return `Palette-${index}`;
           };
 
           const uniqueName =
@@ -147,6 +144,27 @@ const { state, actions } = createReactStore({
         }
       },
 
+      paletteRename: (newName: string) => {
+        set((prev) => ({
+          colorStorage: prev.colorStorage.map((palette) => {
+            const [name, colors] = Object.entries(palette)[0];
+            return name ===
+              Object.keys(prev.colorStorage[prev.currentPaletteId])[0]
+              ? { [newName]: colors }
+              : palette;
+          }),
+        }));
+      },
+
+      deleteCurrentPalette: (currentPaletteId: number) => {
+        set((prev) => ({
+          colorStorage: prev.colorStorage.filter(
+            (_, index) => index !== currentPaletteId
+          ),
+          currentPaletteId: 0,
+        }));
+      },
+
       setNewColorsOrder: (newOrder: string[]) => {
         set((prev) => ({
           colorStorage: prev.colorStorage.map((palette) => {
@@ -167,15 +185,6 @@ const { state, actions } = createReactStore({
               [name]: colors.filter((c) => c !== color),
             };
           }),
-        }));
-      },
-
-      deleteCurrentPalette: (currentPaletteId: number) => {
-        set((prev) => ({
-          colorStorage: prev.colorStorage.filter(
-            (_, index) => index !== currentPaletteId
-          ),
-          currentPaletteId: 0,
         }));
       },
     };
