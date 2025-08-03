@@ -41,11 +41,12 @@ function resizeWidth(
       el.style.removeProperty("transition");
 
       // выравниваем ширину
+      // кажется лучше использовать 220 вместо maxWidth.current
       const elWidth = el.getBoundingClientRect().width;
       if (elWidth <= 202 && elWidth !== 181) {
         el.style.width = "181px";
-      } else if (elWidth >= 203 && elWidth !== maxWidth.current) {
-        el.style.width = `${maxWidth.current}px`;
+      } else if (elWidth >= 203 && elWidth !== 220) {
+        el.style.width = "220px";
       }
     },
     { signal }
@@ -257,15 +258,14 @@ function StorageColors() {
     newPaletteName.current,
   ]);
 
-  const colorButtonsArray = useMemo(() => {
-    const currentPalette = colorStorage.find(
-      (palette) => Object.keys(palette)[0] === activePalette.current
-    );
+  // const colorButtonsArray = useMemo(() => {
+  //   const currentPalette =
+  //     colorStorage[currentPaletteId][activePalette.current];
 
-    return currentPalette ? Object.values(currentPalette)[0] : [];
-  }, [colorStorage, activePalette.current]);
+  //   return currentPalette ? currentPalette : [];
+  // }, [JSON.stringify(colorStorage), activePalette.current, currentPaletteId]);
 
-  const colorDefaultButtons = useMemo(() => {
+  const colorDefaultButtons = useCallback((colorButtonsArray: string[]) => {
     if (colorButtonsArray.length < 4) {
       const defaultButtonsCount = 4 - colorButtonsArray.length;
 
@@ -273,36 +273,84 @@ function StorageColors() {
         <Button key={`default-${index}`} className="storage-btn default" />
       ));
     }
-  }, [colorButtonsArray]);
+  }, []);
 
-  const colorButtons = useMemo(() => {
-    return colorButtonsArray.map((color, index) => (
-      <Button
-        key={color}
-        data={`${index}`}
-        className={`storage-btn${color === mainColor ? " active" : ""}`}
-        color={color}
-        bgColor
-        draggable
-        onDragStart={(e) => handelOnDragStart(e, index)}
-        onDragEnter={() => {
-          dragOverItem.current = index;
-          const enterEl = document.querySelector(`[data-id="${index}"]`);
+  const colorButtons = useCallback(
+    (colorButtonsArray: string[]) => {
+      return colorButtonsArray.map((color, index) => (
+        <Button
+          key={color}
+          data={`${index}`}
+          className={`storage-btn${color === mainColor ? " active" : ""}`}
+          color={color}
+          bgColor
+          draggable
+          onDragStart={(e) => handelOnDragStart(e, index)}
+          onDragEnter={() => {
+            dragOverItem.current = index;
+            const enterEl = document.querySelector(`[data-id="${index}"]`);
 
-          if (index !== dragItem.current) enterEl!.classList.add("dragEnter");
-        }}
-        onDragEnd={handleDrop}
-        onDragOver={onDragOver}
-        onDragLeave={() => {
-          dragOverItem.current = null;
-          document
-            .querySelector(`[data-id="${index}"]`)!
-            .classList.remove("dragEnter");
-        }}
-        onClick={() => actions.setActiveColor(color)}
-      />
-    ));
-  }, [colorButtonsArray, mainColor, handelOnDragStart, handleDrop, onDragOver]);
+            if (index !== dragItem.current) enterEl!.classList.add("dragEnter");
+          }}
+          onDragEnd={handleDrop}
+          onDragOver={onDragOver}
+          onDragLeave={() => {
+            dragOverItem.current = null;
+            document
+              .querySelector(`[data-id="${index}"]`)!
+              .classList.remove("dragEnter");
+          }}
+          onClick={() => actions.setActiveColor(color)}
+        />
+      ));
+    },
+    [mainColor, handelOnDragStart, handleDrop, onDragOver]
+  );
+
+  const scrollWithButtons = useMemo(() => {
+    if (colorStorage.length > 0) {
+      return colorStorage.map((palette, index) => {
+        const [name, colors] = Object.entries(palette)[0];
+        return (
+          <MorphScroll
+            className="color-scroll"
+            key={name}
+            size="auto"
+            objectsSize={30}
+            gap={11}
+            progressTrigger={{
+              wheel: true,
+              progressElement: <div className="scroll-thumb" />,
+            }}
+            wrapperAlign={["start", "center"]}
+            edgeGradient={{ size: 20 }}
+            direction="x"
+            scrollBarOnHover
+            wrapperMargin={[10, 0]}
+          >
+            <Button
+              key="add"
+              className={`storage-btn add-color${
+                failedColorAdding ? " failed" : ""
+              }`}
+              svgID="plus"
+              onClick={addColor}
+            />
+            {colorButtons(colors)}
+            {colorDefaultButtons(colors)}
+          </MorphScroll>
+        );
+      });
+    }
+
+    return null;
+  }, [
+    JSON.stringify(colorStorage),
+    failedColorAdding,
+    addColor,
+    colorButtons,
+    colorDefaultButtons,
+  ]);
 
   return colorStorage.length > 0 ? (
     <div className="storage-box">
@@ -331,29 +379,16 @@ function StorageColors() {
         <div className="scroll-wrap" ref={resizeWrap}>
           <div className="scroll">
             <MorphScroll
-              size="auto"
-              objectsSize={30}
-              gap={11}
+              className="palette-scroll"
               progressTrigger={{
                 wheel: true,
                 progressElement: <div className="scroll-thumb" />,
               }}
-              wrapperAlign={["start", "center"]}
-              edgeGradient={{ size: 20 }}
-              direction="x"
-              scrollBarOnHover
-              wrapperMargin={[10, 0]}
+              size="auto"
+              objectsSize="size"
+              gap={10}
             >
-              <Button
-                key={0}
-                className={`storage-btn add-color${
-                  failedColorAdding ? " failed" : ""
-                }`}
-                svgID="plus"
-                onClick={addColor}
-              />
-              {colorButtons}
-              {colorDefaultButtons}
+              {scrollWithButtons}
             </MorphScroll>
           </div>
 

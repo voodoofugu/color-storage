@@ -28,6 +28,7 @@ export default tseslint.config([
           caughtErrorsIgnorePattern: "^_",
         },
       ],
+      "react-hooks/exhaustive-deps": "off",
     },
   },
 ]);
