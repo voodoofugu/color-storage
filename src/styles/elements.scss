@@ -226,13 +226,12 @@
   &.clear-btn {
     position: absolute;
     right: 0;
-    bottom: 0;
-    height: 60px;
+    bottom: 2px;
+    height: 59px;
     width: 34px;
     border-radius: 6px;
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12),
       0 0 0 1px rgba(0, 0, 0, 0.16);
-    margin: 1px 0;
     &:hover,
     &.onDragEnter {
       box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12),
