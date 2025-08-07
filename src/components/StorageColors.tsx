@@ -15,18 +15,17 @@ function resizeWidth(
 ) {
   const controller = new AbortController();
   const { signal } = controller;
+  const rect = el.getBoundingClientRect();
+  if (!maxWidth.current) maxWidth.current = rect.width;
 
   document.addEventListener(
     "mousemove",
     (moveEvent) => {
       document.body.style.cursor = "ew-resize";
 
-      const rect = el.getBoundingClientRect();
-      if (!maxWidth.current) maxWidth.current = rect.width;
-
       el.style.width = `${Math.min(
         Math.max(moveEvent.clientX - rect.left, 181),
-        maxWidth.current
+        maxWidth.current + 2
       )}px`;
       el.style.transition = "unset";
     },
@@ -45,8 +44,8 @@ function resizeWidth(
       const elWidth = el.getBoundingClientRect().width;
       if (elWidth <= 202 && elWidth !== 181) {
         el.style.width = "181px";
-      } else if (elWidth >= 203 && elWidth !== 220) {
-        el.style.width = "220px";
+      } else if (elWidth >= 203 && elWidth !== maxWidth.current) {
+        el.style.width = `${maxWidth.current}px`;
       }
     },
     { signal }
@@ -387,6 +386,7 @@ function StorageColors() {
               size="auto"
               objectsSize="size"
               gap={10}
+              render={{ type: "virtual" }}
             >
               {scrollWithButtons}
             </MorphScroll>

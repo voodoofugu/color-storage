@@ -232,6 +232,7 @@
     border-radius: 6px;
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12),
       0 0 0 1px rgba(0, 0, 0, 0.16);
+    margin: 1px 0;
     &:hover,
     &.onDragEnter {
       box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12),
