@@ -1,12 +1,5 @@
 import { useState, useEffect, useLayoutEffect } from "react";
 
-/**
- * Хук для управления состоянием с использованием localStorage или sessionStorage.
- * @param {string} storageKey - Ключ, используемый для хранения в localStorage или sessionStorage.
- * @param {string} storageType - Тип хранилища: "local" или "session".
- * @returns {[string, (value: string) => void]} - Массив, содержащий текущее значение и функцию для его обновления.
- */
-
 type DataT =
   | Record<string, unknown>
   | unknown[]
@@ -15,7 +8,7 @@ type DataT =
   | boolean
   | null;
 
-export default function useStorage(
+function useStorage(
   storItem: {
     name: string;
     value?: DataT;
@@ -25,7 +18,7 @@ export default function useStorage(
   }[],
   callback?: (item: {
     name: string;
-    value: unknown;
+    value: DataT;
     type: "local" | "session";
   }) => void
 ) {
@@ -111,4 +104,5 @@ export default function useStorage(
   return currentValues;
 }
 
+export default useStorage;
 export type StorageItemT = Parameters<typeof useStorage>[0];

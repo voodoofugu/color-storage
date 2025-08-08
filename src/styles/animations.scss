@@ -35,3 +35,14 @@
     opacity: 1;
   }
 }
+
+@keyframes fadeInColorScroll {
+  0% {
+    translate: 8px 8px;
+    opacity: 0;
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}

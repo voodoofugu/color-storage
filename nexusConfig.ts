@@ -21,11 +21,7 @@ const { state, actions } = createReactStore({
     mainColor: "#ffffff", // hex only
     activeColor: "",
     failedColorAdding: false,
-    colorStorage: [
-      {
-        "Palette-1": [],
-      },
-    ],
+    colorStorage: [],
     timeouts: {},
     copiedColorFlag: false,
     currentPaletteId: 0,

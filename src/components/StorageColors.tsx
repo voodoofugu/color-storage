@@ -4,53 +4,13 @@ import { MorphScroll } from "morphing-scroll";
 import { state, actions } from "../../nexusConfig.ts";
 
 import useDragImage from "../hooks/useDragImage";
+import useStorage from "../hooks/useStorage";
+import type { StorageItemT } from "../hooks/useStorage";
 
 import Button from "./Button";
 
 import sanitizeInputName from "../helpers/sanitizeInputName";
-
-function resizeWidth(
-  el: HTMLElement,
-  maxWidth: React.MutableRefObject<number>
-) {
-  const controller = new AbortController();
-  const { signal } = controller;
-  const rect = el.getBoundingClientRect();
-  if (!maxWidth.current) maxWidth.current = rect.width;
-
-  document.addEventListener(
-    "mousemove",
-    (moveEvent) => {
-      document.body.style.cursor = "ew-resize";
-
-      el.style.width = `${Math.min(
-        Math.max(moveEvent.clientX - rect.left, 181),
-        maxWidth.current + 2
-      )}px`;
-      el.style.transition = "unset";
-    },
-    { signal }
-  );
-
-  document.addEventListener(
-    "mouseup",
-    () => {
-      controller.abort();
-      document.body.style.removeProperty("cursor");
-      el.style.removeProperty("transition");
-
-      // выравниваем ширину
-      // кажется лучше использовать 220 вместо maxWidth.current
-      const elWidth = el.getBoundingClientRect().width;
-      if (elWidth <= 202 && elWidth !== 181) {
-        el.style.width = "181px";
-      } else if (elWidth >= 203 && elWidth !== maxWidth.current) {
-        el.style.width = `${maxWidth.current}px`;
-      }
-    },
-    { signal }
-  );
-}
+import resizeWidth from "../helpers/resizeWidth";
 
 function StorageColors() {
   // nexus
@@ -59,6 +19,9 @@ function StorageColors() {
   const failedColorAdding = state.useNexus("failedColorAdding");
   const currentPaletteId = state.useNexus("currentPaletteId");
   // const allState = state.useNexus();
+
+  // stable nexus
+  const stableColorStorage = JSON.stringify(colorStorage);
 
   // state:
   const [_, forceUpdate] = useState<number>(0); // для принудительного обновления
@@ -83,6 +46,23 @@ function StorageColors() {
     boxShadow:
       "inset 0 -1px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.16)",
   });
+
+  const storItem = useMemo(
+    () => [
+      {
+        name: "colorStorage",
+        value: colorStorage,
+        type: "local",
+        remove: !colorStorage.length,
+        onLoad: (data: Record<string, string[]>[]) => {
+          if (!data.length) return;
+          state.setNexus({ colorStorage: data });
+        },
+      },
+    ],
+    [stableColorStorage]
+  );
+  useStorage(storItem as StorageItemT);
 
   // functions
   const addColor = () => {
@@ -145,7 +125,7 @@ function StorageColors() {
     dragOverItem.current = null;
 
     actions.setNewColorsOrder(newColors);
-  }, [currentPaletteId, colorStorage, removeWidth]);
+  }, [currentPaletteId, stableColorStorage, removeWidth]);
 
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -158,7 +138,12 @@ function StorageColors() {
     const leaveEl = document.querySelector(`.clear-btn`);
     leaveEl!.classList.remove("onDragEnter");
     removeWidth();
-  }, [currentPaletteId, activePalette.current, colorStorage, removeWidth]);
+  }, [
+    currentPaletteId,
+    activePalette.current,
+    colorStorage.join(),
+    removeWidth,
+  ]);
 
   const clearBtnOnEnter = useCallback(() => {
     const enterEl = document.querySelector(`.clear-btn`);
@@ -194,7 +179,7 @@ function StorageColors() {
       : "";
 
     triggerUpdate();
-  }, [currentPaletteId, JSON.stringify(colorStorage)]);
+  }, [currentPaletteId, stableColorStorage]);
 
   // variables
   const paletteMenu = useMemo(() => {
@@ -251,18 +236,7 @@ function StorageColors() {
         />
       </>
     );
-  }, [
-    JSON.stringify(colorStorage),
-    activePalette.current,
-    newPaletteName.current,
-  ]);
-
-  // const colorButtonsArray = useMemo(() => {
-  //   const currentPalette =
-  //     colorStorage[currentPaletteId][activePalette.current];
-
-  //   return currentPalette ? currentPalette : [];
-  // }, [JSON.stringify(colorStorage), activePalette.current, currentPaletteId]);
+  }, [stableColorStorage, activePalette.current, newPaletteName.current]);
 
   const colorDefaultButtons = useCallback((colorButtonsArray: string[]) => {
     if (colorButtonsArray.length < 4) {
@@ -308,7 +282,7 @@ function StorageColors() {
 
   const scrollWithButtons = useMemo(() => {
     if (colorStorage.length > 0) {
-      return colorStorage.map((palette, index) => {
+      return colorStorage.map((palette, _) => {
         const [name, colors] = Object.entries(palette)[0];
         return (
           <MorphScroll
@@ -344,7 +318,7 @@ function StorageColors() {
 
     return null;
   }, [
-    JSON.stringify(colorStorage),
+    stableColorStorage,
     failedColorAdding,
     addColor,
     colorButtons,
@@ -380,13 +354,13 @@ function StorageColors() {
             <MorphScroll
               className="palette-scroll"
               progressTrigger={{
-                wheel: true,
-                progressElement: <div className="scroll-thumb" />,
+                wheel: false,
               }}
               size="auto"
               objectsSize="size"
-              gap={10}
+              gap={4}
               render={{ type: "virtual" }}
+              scrollPosition={{ value: 66 * currentPaletteId }}
             >
               {scrollWithButtons}
             </MorphScroll>

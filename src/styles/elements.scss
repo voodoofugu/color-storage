@@ -147,7 +147,15 @@
     background: #d1d1d1;
     box-shadow: unset;
     margin: unset;
-    box-shadow: -1px 0 0 #f9f9f9;
+    &:before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: 1px;
+      width: 1px;
+      height: calc(100% - 2px);
+      background: #f9f9f9;
+    }
     &:hover {
       background: #afafaf;
     }
@@ -225,7 +233,7 @@
 
   &.clear-btn {
     position: absolute;
-    right: 0;
+    right: 1px;
     bottom: 2px;
     height: 59px;
     width: 34px;
