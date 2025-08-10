@@ -141,7 +141,7 @@ function StorageColors() {
   }, [
     currentPaletteId,
     activePalette.current,
-    colorStorage.join(),
+    stableColorStorage,
     removeWidth,
   ]);
 

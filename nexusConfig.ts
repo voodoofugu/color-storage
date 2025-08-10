@@ -157,7 +157,8 @@ const { state, actions } = createReactStore({
           colorStorage: prev.colorStorage.filter(
             (_, index) => index !== currentPaletteId
           ),
-          currentPaletteId: 0,
+          currentPaletteId:
+            prev.currentPaletteId === 0 ? 0 : prev.currentPaletteId - 1,
         }));
       },
 

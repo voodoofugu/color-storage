@@ -4,7 +4,7 @@ import {
   PlusIcon,
   DragIcon,
   TrashIcon,
-} from "../assets/svgIcons";
+} from "../svg/svgIcons";
 import type { SvgIdT } from "./Button";
 
 type SVGIconT = {

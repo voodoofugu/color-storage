@@ -256,6 +256,19 @@ function App() {
     actions.setActiveColor("");
   }, [hex, activeAlpha]);
 
+  useEffect(() => {
+    const port = chrome.runtime.connect({ name: "popup" });
+    port.postMessage({ type: "popup_opened" });
+
+    port.onDisconnect.addListener(() => {
+      chrome.runtime.sendMessage({ type: "popup_closed" });
+    });
+
+    return () => {
+      port.disconnect();
+    };
+  }, []);
+
   // Render:
   return (
     <div className="content">

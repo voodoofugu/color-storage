@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Color Storage",
+  "author": "Georg Schilin",
+  "version": "1.0.0",
+  "description": "Extension for saving colors and palettes",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "index.html"
+  },
+  "icons": {
+    "16": "icons/light-inactive-16.png",
+    "48": "icons/light-inactive-48.png",
+    "128": "icons/light-inactive-128.png"
+  },
+  "permissions": ["offscreen", "storage", "tabs"]
+}

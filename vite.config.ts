@@ -7,4 +7,19 @@ export default defineConfig({
   server: {
     // open: true, // автоматически откроет браузер
   },
+  build: {
+    outDir: "dist",
+    rollupOptions: {
+      input: {
+        popup: "index.html",
+        background: "src/helpers/background.ts",
+        offscreen: "src/helpers/offscreen.ts",
+      },
+      output: {
+        entryFileNames: "[name].js",
+        chunkFileNames: "[name].js",
+        assetFileNames: "[name][extname]",
+      },
+    },
+  },
 });
