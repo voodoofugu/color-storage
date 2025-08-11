@@ -23,7 +23,6 @@ chrome.runtime.onConnect.addListener((port) => {
 
     port.onDisconnect.addListener(() => {
       isActive = false;
-      theme = "light";
       updateIcon();
     });
   }

@@ -14,10 +14,13 @@ import {
   drawHueCanvas,
   drawAlphaCanvas,
 } from "../helpers/allCanvases";
+import isExtensionEnv from "../helpers/isExtensionEnv";
 
 import ColorSlider from "./ColorSlider";
 import Button from "./Button";
 import StorageColors from "./StorageColors";
+
+import useColorTheme from "../hooks/useColorTheme";
 
 function App() {
   // State:
@@ -256,7 +259,11 @@ function App() {
     actions.setActiveColor("");
   }, [hex, activeAlpha]);
 
+  // эффекты для расширения
   useEffect(() => {
+    // проверяем что мы окружении для расширения
+    if (!isExtensionEnv()) return;
+
     const port = chrome.runtime.connect({ name: "popup" });
     port.postMessage({ type: "popup_opened" });
 
@@ -268,6 +275,14 @@ function App() {
       port.disconnect();
     };
   }, []);
+
+  const theme = useColorTheme();
+  useEffect(() => {
+    // проверяем что мы окружении для расширения
+    if (!isExtensionEnv()) return;
+
+    chrome.runtime.sendMessage({ type: "theme-changed", theme: theme });
+  }, [theme]);
 
   // Render:
   return (
