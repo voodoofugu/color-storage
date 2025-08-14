@@ -30,19 +30,14 @@ function Button({
   return (
     <button
       data-id={data}
-      className={`btn${className ? ` ${className}` : ""}`}
+      className={`btn${className ? ` ${className}` : ""}${
+        bgColor && color && isHexWithAlpha ? " alpha" : ""
+      }`}
       draggable={draggable}
       style={{
         ...(bgColor &&
           color && {
-            background: isHexWithAlpha
-              ? `
-              conic-gradient(from 45deg at 60% 60%, transparent 180deg, ${color} 0deg),
-              conic-gradient(from 45deg at 60% 60%, transparent 180deg, #ffffff 0deg),
-              repeating-conic-gradient(#d1d1d1 0 25%, #0000 0 50%) 50% / 6px 6px,
-              #ffffff
-              `
-              : color,
+            background: color,
           }),
       }}
       {...restProps} // 👈 Прокидываем все события и прочие атрибуты

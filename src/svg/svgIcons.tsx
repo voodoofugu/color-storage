@@ -29,8 +29,8 @@ const CopyIcon = () => {
 const PlusIcon = () => {
   return (
     <g className="svgLine">
-      <line x1="44" y1="66" x2="44" y2="22" />
-      <line x1="66" y1="44" x2="22" y2="44" />
+      <path d="M44 66V22" />
+      <path d="M66 44H22" />
     </g>
   );
 };

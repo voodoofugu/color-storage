@@ -7,13 +7,15 @@ function resizeWidth(
   const rect = el.getBoundingClientRect();
   if (!maxWidth.current) maxWidth.current = rect.width;
 
+  const minWidth = 181;
+
   document.addEventListener(
     "mousemove",
     (moveEvent) => {
       document.body.style.cursor = "ew-resize";
 
       el.style.width = `${Math.min(
-        Math.max(moveEvent.clientX - rect.left, 181),
+        Math.max(moveEvent.clientX - rect.left, minWidth),
         maxWidth.current + 2
       )}px`;
       el.style.transition = "unset";
@@ -30,9 +32,9 @@ function resizeWidth(
 
       // выравниваем ширину
       const elWidth = el.getBoundingClientRect().width;
-      if (elWidth <= maxWidth.current && elWidth !== 181) {
-        el.style.width = "181px";
-      } else if (elWidth >= maxWidth.current && elWidth !== maxWidth.current) {
+      if (elWidth <= maxWidth.current && elWidth !== minWidth) {
+        el.style.width = `${minWidth}px`;
+      } else if (elWidth > maxWidth.current) {
         el.style.width = `${maxWidth.current}px`;
       }
     },

@@ -21,6 +21,7 @@ function drawColorCanvas(colorCanvasRef: HTMLCanvasElement, hueColor: string) {
   const l = parseInt(lStr, 10);
   const { r, g, b } = hslToRgb(h, s, l);
 
+  ctx.clearRect(0, 0, width, height);
   // 1. Горизонтальный градиент: от белого к цвету
   const whiteHueGradient = ctx.createLinearGradient(0, 0, width, 0);
 
@@ -80,24 +81,25 @@ function drawAlphaCanvas(alphaCanvasRef: HTMLCanvasElement, color: string) {
 
   const { width, height } = canvas;
 
-  // Шаг клеток
-  const step = 3;
+  // // Шаг клеток
+  // const step = 3;
 
-  // 1. Рисуем шахматный фон (checkerboard)
-  for (let y = 0; y < height; y += step) {
-    for (let x = 0; x < width; x += step) {
-      const isDark = (x / step + y / step) % 2 === 0;
-      ctx.fillStyle = isDark ? "#ccc" : "#fff";
-      ctx.fillRect(x, y, step, step);
-    }
-  }
+  // // Рисуем шахматный фон (checkerboard)
+  // for (let y = 0; y < height; y += step) {
+  //   for (let x = 0; x < width; x += step) {
+  //     const isDark = (x / step + y / step) % 2 === 0;
+  //     ctx.fillStyle = isDark ? "#ccc" : "#fff";
+  //     ctx.fillRect(x, y, step, step);
+  //   }
+  // }
 
-  // 2. Накладываем градиент color → transparent
+  // Накладываем градиент color → transparent
   const { r, g, b } = hexToRgb(color);
   const gradient = ctx.createLinearGradient(0, 0, width, 0);
   gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1)`);
   gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
 
+  ctx.clearRect(0, 0, width, height); // очищаем холст на случай предыдущих отрисовок
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 }

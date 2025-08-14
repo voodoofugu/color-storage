@@ -20,8 +20,6 @@ import ColorSlider from "./ColorSlider";
 import Button from "./Button";
 import StorageColors from "./StorageColors";
 
-import useColorTheme from "../hooks/useColorTheme";
-
 function App() {
   // State:
   const [_, forceUpdate] = useState<number>(0); // для принудительного обновления
@@ -266,23 +264,7 @@ function App() {
 
     const port = chrome.runtime.connect({ name: "popup" });
     port.postMessage({ type: "popup_opened" });
-
-    port.onDisconnect.addListener(() => {
-      chrome.runtime.sendMessage({ type: "popup_closed" });
-    });
-
-    return () => {
-      port.disconnect();
-    };
   }, []);
-
-  const theme = useColorTheme();
-  useEffect(() => {
-    // проверяем что мы окружении для расширения
-    if (!isExtensionEnv()) return;
-
-    chrome.runtime.sendMessage({ type: "theme-changed", theme: theme });
-  }, [theme]);
 
   // Render:
   return (

@@ -13,7 +13,8 @@ export default defineConfig({
       input: {
         popup: "index.html",
         background: "src/helpers/background.ts",
-        offscreen: "src/helpers/offscreen.ts",
+        // offscreen: "offscreen.html",
+        // "theme-watcher": "src/helpers/theme-watcher.ts",
       },
       output: {
         entryFileNames: "[name].js",
