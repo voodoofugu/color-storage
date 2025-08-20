@@ -298,8 +298,9 @@ function StorageColors() {
             wrapperAlign={["start", "center"]}
             edgeGradient={{ size: 20 }}
             direction="x"
-            scrollBarOnHover
             wrapperMargin={[10, 0]}
+            scrollBarOnHover
+            scrollBarEdge={8}
           >
             <Button
               key="add"
