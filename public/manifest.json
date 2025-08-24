@@ -11,9 +11,16 @@
     "default_popup": "index.html"
   },
   "icons": {
-    "16": "icons/inactive-16.png",
-    "48": "icons/inactive-48.png",
-    "128": "icons/inactive-128.png"
+    "16": "icons/light-inactive-16.png",
+    "48": "icons/light-inactive-48.png",
+    "128": "icons/light-inactive-128.png"
   },
-  "permissions": ["storage", "tabs"]
+  "permissions": ["storage", "tabs", "clipboardWrite"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["theme-watcher.js"],
+      "run_at": "document_start"
+    }
+  ]
 }

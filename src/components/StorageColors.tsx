@@ -282,12 +282,12 @@ function StorageColors() {
 
   const scrollWithButtons = useMemo(() => {
     if (colorStorage.length > 0) {
-      return colorStorage.map((palette, _) => {
-        const [name, colors] = Object.entries(palette)[0];
+      return colorStorage.map((palette, index) => {
+        const [_, colors] = Object.entries(palette)[0];
         return (
           <MorphScroll
             className="color-scroll"
-            key={name}
+            key={index}
             size="auto"
             objectsSize={30}
             gap={11}
@@ -296,7 +296,7 @@ function StorageColors() {
               progressElement: <div className="scroll-thumb" />,
             }}
             wrapperAlign={["start", "center"]}
-            edgeGradient={{ size: 20 }}
+            edgeGradient={{ size: 10 }}
             direction="x"
             wrapperMargin={[10, 0]}
             scrollBarOnHover

@@ -45,6 +45,11 @@ function App() {
   const activeColor = state.useNexus("activeColor");
   const copiedColorFlag = state.useNexus("copiedColorFlag");
 
+  // error
+  const errorText = (text: string) => {
+    console.error(`Color Storage:\n${text}`);
+  };
+
   // Variables:
   const { hex, activeAlpha } = useMemo(() => {
     // если есть alpha
@@ -124,19 +129,29 @@ function App() {
     triggerUpdate();
   };
 
-  const pickColor = async () => {
+  const pickColor = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const btn = e.currentTarget;
+    btn.classList.add("active");
+
     try {
       // @ts-expect-error нет типа EyeDropper в TypeScript
       const eyeDropper = new EyeDropper();
       const result = await eyeDropper.open();
 
       if (result && result.sRGBHex) {
-        await navigator.clipboard.writeText(result.sRGBHex);
+        try {
+          await navigator.clipboard.writeText(result.sRGBHex);
+        } catch {
+          errorText("Error copying color to clipboard");
+        }
+
         await getColor(result.sRGBHex);
       }
     } catch (e) {
-      console.error("Error picking color", e);
+      errorText(`Error picking color: ${e}`);
     }
+
+    btn.classList.remove("active");
   };
 
   const copyColor = useCallback(() => {
@@ -147,7 +162,7 @@ function App() {
         actions.setStateWithTimeout("copiedColorFlag", true, 300);
       })
       .catch((e) => {
-        console.error("Clipboard write failed", e);
+        errorText(`Clipboard write failed: ${e}`);
       });
   }, [colorWithAlpha]);
 
@@ -264,6 +279,13 @@ function App() {
 
     const port = chrome.runtime.connect({ name: "popup" });
     port.postMessage({ type: "popup_opened" });
+
+    // Синхронизация темы
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    chrome.runtime.sendMessage({
+      type: "theme",
+      theme: isDark ? "dark" : "light",
+    });
   }, []);
 
   // Render:

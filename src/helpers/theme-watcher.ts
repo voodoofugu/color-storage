@@ -1,16 +1,15 @@
-// script для background
 function sendTheme() {
-  const theme = matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-  chrome.runtime.sendMessage({ type: "theme-changed", theme });
+  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  chrome.runtime.sendMessage({
+    type: "theme",
+    theme: isDark ? "dark" : "light",
+  });
 }
 
-// Первичная отправка
+// отправляем сразу при загрузке страницы
 sendTheme();
 
-// Слушаем смену темы
-matchMedia("(prefers-color-scheme: dark)").addEventListener(
-  "change",
-  sendTheme
-);
+// слушаем изменения
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", sendTheme);

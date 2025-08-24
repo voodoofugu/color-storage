@@ -14,7 +14,7 @@ export default defineConfig({
         popup: "index.html",
         background: "src/helpers/background.ts",
         // offscreen: "offscreen.html",
-        // "theme-watcher": "src/helpers/theme-watcher.ts",
+        "theme-watcher": "src/helpers/theme-watcher.ts",
       },
       output: {
         entryFileNames: "[name].js",
@@ -24,3 +24,4 @@ export default defineConfig({
     },
   },
 });
+

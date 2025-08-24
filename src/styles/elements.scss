@@ -43,6 +43,7 @@
       transform: scale(1);
     }
   }
+  &.active,
   &:active {
     background: #f5f5f5;
     box-shadow: inset 0 1px 0 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.4);
@@ -53,6 +54,12 @@
       translate: 0 0.5px;
     }
   }
+  &.active {
+    .svgLine {
+      stroke: #00a1ff;
+    }
+  }
+
   .btn-bg {
     position: absolute;
     width: calc(100% - 6px);
@@ -160,6 +167,7 @@
     width: 30px;
     height: 30px;
     cursor: grab;
+    z-index: unset;
     &:active {
       cursor: grabbing;
     }
@@ -303,8 +311,8 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: calc(100% + 4px);
-      height: calc(100% + 4px);
+      width: calc(100% + 8px);
+      height: calc(100% + 8px);
     }
     &:hover {
       background: #bdbdbd;
@@ -329,12 +337,13 @@
   }
 
   .btn {
-    background: linear-gradient(#4e4e4e, #3f3f3f);
+    background: linear-gradient(#727272, #4d4d4d);
     &:hover {
-      background: #4e4e4e;
+      background: linear-gradient(#7d7d7d, #555555);
     }
+    &.active,
     &:active {
-      background: #4e4e4e;
+      background: linear-gradient(#4e4e4e);
     }
     .btn-bg {
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
@@ -359,12 +368,14 @@
       }
     }
     &.drag {
-      background: #2e2e2e;
+      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.3);
+      background: #575757;
       &:before {
-        background: #4e4e4e;
+        content: unset;
       }
       &:hover {
-        background: #2e2e2e;
+        background: #6b6b6b;
       }
     }
 
@@ -392,19 +403,20 @@
         }
       }
       &.active {
-        box-shadow: 0 0 0 1px #2c2c2c, 0 0 0 3px #323232, 0 0 0 4px #2c2c2c,
+        box-shadow: 0 0 0 3px #323232, 0 0 0 4px #cbcbcb,
           0 1px 3px rgba(0, 0, 0, 0.5);
       }
       &.dragEnter {
         box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12),
           0 0 0 1px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.4);
         &:before {
-          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+          box-shadow: inset 0 0 0 1px #cbcbcb;
+          background: #323232;
         }
       }
       &.alpha {
         &:after {
-          background: repeating-conic-gradient(#323232 0 25%, #4e4e4e 0 50%) 50% /
+          background: repeating-conic-gradient(#000000 0 25%, #737373 0 50%) 50% /
             6px 6px;
         }
       }
@@ -413,11 +425,10 @@
   .empty {
     .btn {
       &.menu-btn {
-        background: rgba(0, 0, 0, 0.2);
-        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(#727272, #4d4d4d);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
         &:hover {
-          background: rgba(0, 0, 0, 0.3);
-          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+          background: linear-gradient(#7d7d7d, #555555);
           .svgIcon svg .svgLine {
             stroke: #ffffff;
           }
@@ -428,12 +439,13 @@
 
   .ms-bar {
     .scroll-thumb {
-      background: #363636;
+      background: #6a6a6a;
+      // box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
       &:hover {
-        background: #2e2e2e;
+        background: #7f7f7f;
       }
       &:active {
-        background: #202020;
+        background: #909090;
       }
     }
   }

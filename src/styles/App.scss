@@ -267,6 +267,7 @@
           width: calc(100% - 6px);
           height: 100%;
           z-index: 0;
+          border-radius: 6px 0 0 6px;
           .ms-edge {
             z-index: -1;
             background: linear-gradient(
@@ -310,10 +311,10 @@
       }
       .fillWrap {
         background: repeating-conic-gradient(
-            #2e2e2e 0deg,
-            #2e2e2e 25%,
-            rgba(0, 0, 0, 0) 0deg,
-            rgba(0, 0, 0, 0) 50%
+            rgba(255, 255, 255, 0.3) 0deg,
+            rgba(255, 255, 255, 0.3) 25%,
+            #000000 0deg,
+            #000000 50%
           )
           50% center / 6px 6px;
         .thumb {
@@ -325,7 +326,15 @@
     .btn-box {
       .color-wrap {
         .select-box {
+          .color-format {
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 1px #575757;
+            &:hover {
+              background: rgba(255, 255, 255, 0.12);
+            }
+          }
           .alpha {
+            box-shadow: 0 0 0 1px #575757;
             color: #a1a1a1;
             &.active {
               color: #3b3b3b;
@@ -336,17 +345,24 @@
     }
 
     .storage-box {
+      &:before {
+        border-color: #575757;
+        filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.16));
+      }
       .container {
         .menu-wrap {
           .menu {
-            background: linear-gradient(#474747 0, #3a3a3a 100%);
+            background: linear-gradient(#474747 0, #575757 100%);
             color: #ffffff;
-            box-shadow: 0 -1px 0 #2e2e2e;
+            box-shadow: 0 -1px 0 #575757, 0 -2px 0 #2f2f2f;
             &:before {
-              box-shadow: -1px -1px 0 #2e2e2e;
+              box-shadow: -1px -1px 0 #575757, -2px -2px 0 #2f2f2f;
             }
             &:after {
-              box-shadow: 1px -1px 0 #2e2e2e;
+              box-shadow: 1px -1px 0 #575757, 2px -2px 0 #2f2f2f;
+            }
+            &:hover {
+              filter: brightness(1.1);
             }
             .palette-select {
               text-shadow: 0 0.5px 0.5px #000000;
@@ -357,6 +373,7 @@
         .scroll-wrap {
           background: #464646;
           .scroll {
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);
             .ms-edge {
               background: linear-gradient(
                 90deg,
@@ -366,8 +383,8 @@
             }
 
             .color-scroll {
-              box-shadow: inset 1px 0 0 #2e2e2e, inset 0 1px 0 #2e2e2e,
-                inset 0 -1px 0 #2e2e2e;
+              box-shadow: inset 1px 0 0 #575757, inset 0 1px 0 #575757,
+                inset 0 -1px 0 #575757;
             }
           }
         }

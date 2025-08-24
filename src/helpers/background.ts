@@ -15,15 +15,15 @@
 
 // Логика иконки
 let isActive = false;
-// let theme = "light";
+let theme = "light";
 
 function updateIcon() {
   const state = isActive ? "active" : "inactive";
   chrome.action.setIcon({
     path: {
-      "16": `icons/${state}-16.png`,
-      "48": `icons/${state}-48.png`,
-      "128": `icons/${state}-128.png`,
+      "16": `icons/${theme}-${state}-16.png`,
+      "48": `icons/${theme}-${state}-48.png`,
+      "128": `icons/${theme}-${state}-128.png`,
     },
   });
 }
@@ -39,18 +39,18 @@ chrome.runtime.onConnect.addListener((port) => {
     });
 
     port.onDisconnect.addListener(() => {
-      port.disconnect();
-
       isActive = false;
       updateIcon();
+
+      // port.disconnect();
     });
   }
 });
 
 // При изменении темы от theme-watcher.js
-// chrome.runtime.onMessage.addListener((msg) => {
-//   if (msg.type === "theme-changed") {
-//     theme = msg.theme;
-//     updateIcon();
-//   }
-// });
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.type === "theme") {
+    theme = msg.theme;
+    updateIcon();
+  }
+});
