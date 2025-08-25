@@ -353,6 +353,30 @@ function App() {
       </div>
 
       <StorageColors />
+
+      <Button
+        svgID="plus"
+        className="menu-btn"
+        onClick={async () => {
+          try {
+            const res = await fetch(
+              "/api/checkout", // ваш деплой Vercel
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: "test@example.com" }), // позже замените на введённый пользователем email
+              }
+            );
+
+            if (!res.ok) throw new Error("Ошибка сервера");
+
+            const { url } = await res.json();
+            window.location.href = url; // редирект на Stripe Checkout
+          } catch (err) {
+            console.error("Ошибка при оплате:", err);
+          }
+        }}
+      />
     </div>
   );
 }

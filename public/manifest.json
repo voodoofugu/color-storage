@@ -15,7 +15,12 @@
     "48": "icons/light-inactive-48.png",
     "128": "icons/light-inactive-128.png"
   },
-  "permissions": ["storage", "tabs", "clipboardWrite"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "clipboardWrite",
+    "https://color-storage-backend.vercel.app/*"
+  ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

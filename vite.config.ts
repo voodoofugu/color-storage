@@ -6,6 +6,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     // open: true, // автоматически откроет браузер
+    proxy: {
+      "/api": {
+        target: "https://color-storage-backend.vercel.app",
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
+      },
+    },
   },
   build: {
     outDir: "dist",
@@ -24,4 +32,3 @@ export default defineConfig({
     },
   },
 });
-
