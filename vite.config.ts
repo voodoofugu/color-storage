@@ -8,7 +8,7 @@ export default defineConfig({
     // open: true, // автоматически откроет браузер
     proxy: {
       "/api": {
-        target: "https://color-storage-backend.vercel.app",
+        target: "https://color-storage.vercel.app",
         changeOrigin: true,
         secure: true,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
