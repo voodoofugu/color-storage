@@ -377,6 +377,7 @@ function App() {
           }
         }}
       />
+      {/* To purchase or restore the pro version, specify your email address */}
     </div>
   );
 }

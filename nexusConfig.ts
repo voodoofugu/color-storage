@@ -1,6 +1,7 @@
 import { createReactStore } from "nexus-state";
 
 type MyStateT = {
+  isPro: boolean;
   mainColor: string;
   activeColor: string;
   failedColorAdding: boolean;
@@ -18,6 +19,7 @@ type MyStateT = {
 
 const { state, actions } = createReactStore({
   state: {
+    isPro: false,
     mainColor: "#ffffff", // hex only
     activeColor: "",
     failedColorAdding: false,

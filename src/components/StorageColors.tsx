@@ -14,6 +14,7 @@ import resizeWidth from "../helpers/resizeWidth";
 
 function StorageColors() {
   // nexus
+  const isPro = state.useNexus("isPro");
   const mainColor = state.useNexus("mainColor");
   const colorStorage = state.useNexus("colorStorage");
   const failedColorAdding = state.useNexus("failedColorAdding");
@@ -326,7 +327,28 @@ function StorageColors() {
     colorDefaultButtons,
   ]);
 
-  return colorStorage.length > 0 ? (
+  return !isPro ? (
+    <div className="storage-box empty">
+      <div className="container">
+        <div className="menu-wrap">
+          <Button className="menu-btn" text="get pro" onClick={() => {}} />
+        </div>
+      </div>
+    </div>
+  ) : colorStorage.length === 0 ? (
+    <div className="storage-box empty">
+      <div className="container">
+        <div className="menu-wrap">
+          <Button
+            svgID="plus"
+            className="menu-btn"
+            text="add palette"
+            onClick={newGroup}
+          />
+        </div>
+      </div>
+    </div>
+  ) : (
     <div className="storage-box">
       <Button
         className="clear-btn"
@@ -368,19 +390,6 @@ function StorageColors() {
           </div>
 
           <Button className="drag" svgID="drag" onMouseDown={onMove} />
-        </div>
-      </div>
-    </div>
-  ) : (
-    <div className="storage-box empty">
-      <div className="container">
-        <div className="menu-wrap">
-          <Button
-            svgID="plus"
-            className="menu-btn"
-            text="add palette"
-            onClick={newGroup}
-          />
         </div>
       </div>
     </div>
