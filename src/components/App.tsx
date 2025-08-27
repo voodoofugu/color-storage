@@ -371,7 +371,7 @@ function App() {
             if (!res.ok) throw new Error("Ошибка сервера");
 
             const { url } = await res.json();
-            window.location.href = url; // редирект на Stripe Checkout
+            window.open(url, "_blank"); // открываем в новом окне
           } catch (err) {
             console.error("Ошибка при оплате:", err);
           }
