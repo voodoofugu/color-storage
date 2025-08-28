@@ -1,8 +1,9 @@
-import type { MouseEventHandler } from "react";
-
 import { state, actions } from "../../nexusConfig.ts";
 
 import Button from "./Button";
+import PurchaseWindow from "./PurchaseWindow";
+
+type PopupContentType = "SettingsWindow" | "PurchaseWindow";
 
 function SettingsWindow() {
   return (
@@ -13,26 +14,36 @@ function SettingsWindow() {
   );
 }
 
-function PurchaseWindow() {
-  return (
-    <div className="purchase-content">
-      <h2>Purchase</h2>
-      <p>Complete your purchase here.</p>
-    </div>
-  );
-}
-
 function PopupWindow() {
   const popupContent = state.useNexus("popupContent");
-  console.log("popupContent", popupContent);
+  let popupContentLocal;
+
+  switch (popupContent) {
+    case "SettingsWindow":
+      popupContentLocal = <SettingsWindow />;
+      break;
+    case "PurchaseWindow":
+      popupContentLocal = <PurchaseWindow />;
+      break;
+
+    default:
+      popupContentLocal = null;
+      break;
+  }
 
   return popupContent ? (
     <div className="popup-window">
-      {popupContent}
+      <div className="popup-bg"></div>
+
+      {popupContentLocal}
       <Button svgID="plus" className="close-btn" onClick={actions.popupClose} />
     </div>
-  ) : null;
+  ) : (
+    <div className="popup-window" />
+  );
 }
 
 export { SettingsWindow, PurchaseWindow };
 export default PopupWindow;
+
+export type { PopupContentType };

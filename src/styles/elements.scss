@@ -93,7 +93,7 @@
   }
 
   &.copied .svgIcon svg {
-    animation: fadeOut 0.3s ease-in-out 0s 1 forwards;
+    animation: bouncing 0.3s ease-in-out 0s 1 forwards;
   }
 
   &.menu-btn {
@@ -194,7 +194,7 @@
         cursor: not-allowed;
         .svgLine {
           stroke: #ff0000;
-          animation: fadeOut 0.3s ease-in-out 0s 1 forwards;
+          animation: bouncing 0.3s ease-in-out 0s 1 forwards;
         }
       }
       .svgLine {
@@ -323,22 +323,6 @@
       background: #7c7c7c;
       cursor: grabbing;
     }
-  }
-}
-
-.popup-window {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(18px);
-  opacity: 0;
-  animation: fadeInOpacity 0.2s ease-in-out 0s 1 forwards;
-  &.closing {
-    animation: fadeOutOpacity 0.2s ease-in-out 0s 1 forwards;
   }
 }
 

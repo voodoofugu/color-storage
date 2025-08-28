@@ -5,6 +5,7 @@ import { state, actions } from "../../nexusConfig.ts";
 import "../styles/App.scss";
 import "../styles/animations.scss";
 import "../styles/elements.scss";
+import "../styles/popup.scss";
 
 import { hexToHsl, hslToHex, formatColor } from "../helpers/colorFormatter";
 import findClosestColorPosition from "../helpers/findClosestColorPosition";
@@ -354,31 +355,6 @@ function App() {
       </div>
 
       <StorageColors />
-
-      {/* <Button
-        svgID="plus"
-        className="menu-btn"
-        onClick={async () => {
-          try {
-            const res = await fetch(
-              "/api/checkout", // ваш деплой Vercel
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: "test@example.com" }), // позже замените на введённый пользователем email
-              }
-            );
-
-            if (!res.ok) throw new Error("Ошибка сервера");
-
-            const { url } = await res.json();
-            window.open(url, "_blank"); // открываем в новом окне
-          } catch (err) {
-            console.error("Ошибка при оплате:", err);
-          }
-        }}
-      /> */}
-      {/* To purchase or restore the pro version, specify your email address */}
       <PopupWindow />
     </div>
   );

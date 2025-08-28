@@ -8,7 +8,6 @@ import useStorage from "../hooks/useStorage";
 import type { StorageItemT } from "../hooks/useStorage";
 
 import Button from "./Button";
-import PurchaseWindow from "./PopupWindow";
 
 import sanitizeInputName from "../helpers/sanitizeInputName";
 import resizeWidth from "../helpers/resizeWidth";
@@ -217,7 +216,7 @@ function StorageColors() {
   );
 
   const onGetPro = useCallback(() => {
-    state.setNexus({ popupContent: <PurchaseWindow /> });
+    actions.popupOpen("PurchaseWindow");
   }, []);
 
   // variables

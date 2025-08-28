@@ -1,6 +1,8 @@
 import { createReactStore } from "nexus-state";
 import { setManagedTask } from "./src/helpers/taskManager";
 
+import type { PopupContentType } from "./src/components/PopupWindow";
+
 type MyStateT = {
   isPro: boolean;
   mainColor: string;
@@ -16,7 +18,7 @@ type MyStateT = {
   >;
   copiedColorFlag: boolean;
   currentPaletteId: number;
-  popupContent: React.ReactNode;
+  popupContent?: PopupContentType | null;
 };
 
 const { state, actions } = createReactStore({
@@ -190,17 +192,44 @@ const { state, actions } = createReactStore({
         }));
       },
 
-      popupClose: (event: React.MouseEvent<HTMLButtonElement>) => {
-        const popupCloseBtn = (event.target as HTMLElement).closest(
-          ".popup-window"
-        );
-        if (popupCloseBtn) {
-          popupCloseBtn.classList.add("closing");
+      popupOpen: (content: PopupContentType) => {
+        const currentPopup = state.getNexus("popupContent");
+        if (currentPopup) {
+          self.popupClose();
+
+          setManagedTask(
+            () => {
+              self.popupOpen(content);
+            },
+            200,
+            "popupReopen"
+          );
+          return;
+        }
+
+        set({ popupContent: content });
+
+        const popupEl = document.querySelector(
+          `.popup-window`
+        ) as HTMLDivElement;
+        popupEl!.classList.add("opening");
+
+        setTimeout(() => {
+          popupEl!.classList.remove("opening");
+        }, 200);
+      },
+
+      popupClose: () => {
+        const popup = document.querySelector(`.popup-window`)!;
+
+        if (popup) {
+          popup.classList.add("closing");
         }
 
         setManagedTask(
           () => {
             set({ popupContent: null });
+            popup!.classList.remove("closing");
           },
           200,
           "popupClose"
