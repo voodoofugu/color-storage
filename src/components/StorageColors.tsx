@@ -8,6 +8,7 @@ import useStorage from "../hooks/useStorage";
 import type { StorageItemT } from "../hooks/useStorage";
 
 import Button from "./Button";
+import PurchaseWindow from "./PopupWindow";
 
 import sanitizeInputName from "../helpers/sanitizeInputName";
 import resizeWidth from "../helpers/resizeWidth";
@@ -173,14 +174,51 @@ function StorageColors() {
     enterEl!.focus();
   }, [newPaletteName.current, activePalette.current]);
 
-  // effects
-  useEffect(() => {
-    activePalette.current = colorStorage.length
-      ? Object.keys(colorStorage[currentPaletteId])[0]
-      : "";
+  const colorDefaultButtons = useCallback((colorButtonsArray: string[]) => {
+    if (colorButtonsArray.length < 4) {
+      const defaultButtonsCount = 4 - colorButtonsArray.length;
 
-    triggerUpdate();
-  }, [currentPaletteId, stableColorStorage]);
+      return Array.from({ length: defaultButtonsCount }, (_, index) => (
+        <Button key={`default-${index}`} className="storage-btn default" />
+      ));
+    }
+  }, []);
+
+  const colorButtons = useCallback(
+    (colorButtonsArray: string[]) => {
+      return colorButtonsArray.map((color, index) => (
+        <Button
+          key={color}
+          data={`${index}`}
+          className={`storage-btn${color === mainColor ? " active" : ""}`}
+          color={color}
+          bgColor
+          draggable
+          onDragStart={(e) => handelOnDragStart(e, index)}
+          onDragEnter={() => {
+            dragOverItem.current = index;
+            const enterEl = document.querySelector(`[data-id="${index}"]`);
+
+            if (index !== dragItem.current) enterEl!.classList.add("dragEnter");
+          }}
+          onDragEnd={handleDrop}
+          onDragOver={onDragOver}
+          onDragLeave={() => {
+            dragOverItem.current = null;
+            document
+              .querySelector(`[data-id="${index}"]`)!
+              .classList.remove("dragEnter");
+          }}
+          onClick={() => actions.setActiveColor(color)}
+        />
+      ));
+    },
+    [mainColor, handelOnDragStart, handleDrop, onDragOver]
+  );
+
+  const onGetPro = useCallback(() => {
+    state.setNexus({ popupContent: <PurchaseWindow /> });
+  }, []);
 
   // variables
   const paletteMenu = useMemo(() => {
@@ -239,48 +277,6 @@ function StorageColors() {
     );
   }, [stableColorStorage, activePalette.current, newPaletteName.current]);
 
-  const colorDefaultButtons = useCallback((colorButtonsArray: string[]) => {
-    if (colorButtonsArray.length < 4) {
-      const defaultButtonsCount = 4 - colorButtonsArray.length;
-
-      return Array.from({ length: defaultButtonsCount }, (_, index) => (
-        <Button key={`default-${index}`} className="storage-btn default" />
-      ));
-    }
-  }, []);
-
-  const colorButtons = useCallback(
-    (colorButtonsArray: string[]) => {
-      return colorButtonsArray.map((color, index) => (
-        <Button
-          key={color}
-          data={`${index}`}
-          className={`storage-btn${color === mainColor ? " active" : ""}`}
-          color={color}
-          bgColor
-          draggable
-          onDragStart={(e) => handelOnDragStart(e, index)}
-          onDragEnter={() => {
-            dragOverItem.current = index;
-            const enterEl = document.querySelector(`[data-id="${index}"]`);
-
-            if (index !== dragItem.current) enterEl!.classList.add("dragEnter");
-          }}
-          onDragEnd={handleDrop}
-          onDragOver={onDragOver}
-          onDragLeave={() => {
-            dragOverItem.current = null;
-            document
-              .querySelector(`[data-id="${index}"]`)!
-              .classList.remove("dragEnter");
-          }}
-          onClick={() => actions.setActiveColor(color)}
-        />
-      ));
-    },
-    [mainColor, handelOnDragStart, handleDrop, onDragOver]
-  );
-
   const scrollWithButtons = useMemo(() => {
     if (colorStorage.length > 0) {
       return colorStorage.map((palette, index) => {
@@ -327,11 +323,20 @@ function StorageColors() {
     colorDefaultButtons,
   ]);
 
+  // effects
+  useEffect(() => {
+    activePalette.current = colorStorage.length
+      ? Object.keys(colorStorage[currentPaletteId])[0]
+      : "";
+
+    triggerUpdate();
+  }, [currentPaletteId, stableColorStorage]);
+
   return !isPro ? (
     <div className="storage-box empty">
       <div className="container">
         <div className="menu-wrap">
-          <Button className="menu-btn" text="get pro" onClick={() => {}} />
+          <Button className="menu-btn" text="get pro" onClick={onGetPro} />
         </div>
       </div>
     </div>

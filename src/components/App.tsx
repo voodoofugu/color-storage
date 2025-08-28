@@ -19,6 +19,7 @@ import isExtensionEnv from "../helpers/isExtensionEnv";
 import ColorSlider from "./ColorSlider";
 import Button from "./Button";
 import StorageColors from "./StorageColors";
+import PopupWindow from "./PopupWindow";
 
 function App() {
   // State:
@@ -354,7 +355,7 @@ function App() {
 
       <StorageColors />
 
-      <Button
+      {/* <Button
         svgID="plus"
         className="menu-btn"
         onClick={async () => {
@@ -376,8 +377,9 @@ function App() {
             console.error("Ошибка при оплате:", err);
           }
         }}
-      />
+      /> */}
       {/* To purchase or restore the pro version, specify your email address */}
+      <PopupWindow />
     </div>
   );
 }

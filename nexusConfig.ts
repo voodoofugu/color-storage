@@ -1,4 +1,5 @@
 import { createReactStore } from "nexus-state";
+import { setManagedTask } from "./src/helpers/taskManager";
 
 type MyStateT = {
   isPro: boolean;
@@ -15,6 +16,7 @@ type MyStateT = {
   >;
   copiedColorFlag: boolean;
   currentPaletteId: number;
+  popupContent: React.ReactNode;
 };
 
 const { state, actions } = createReactStore({
@@ -27,6 +29,7 @@ const { state, actions } = createReactStore({
     timeouts: {},
     copiedColorFlag: false,
     currentPaletteId: 0,
+    popupContent: null,
   } as MyStateT,
 
   actions: (set) => {
@@ -185,6 +188,23 @@ const { state, actions } = createReactStore({
             };
           }),
         }));
+      },
+
+      popupClose: (event: React.MouseEvent<HTMLButtonElement>) => {
+        const popupCloseBtn = (event.target as HTMLElement).closest(
+          ".popup-window"
+        );
+        if (popupCloseBtn) {
+          popupCloseBtn.classList.add("closing");
+        }
+
+        setManagedTask(
+          () => {
+            set({ popupContent: null });
+          },
+          200,
+          "popupClose"
+        );
       },
     };
 
