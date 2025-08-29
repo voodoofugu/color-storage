@@ -22,6 +22,8 @@ import Button from "./Button";
 import StorageColors from "./StorageColors";
 import PopupWindow from "./PopupWindow";
 
+import useStorage, { type StorageItemT } from "../hooks/useStorage";
+
 function App() {
   // State:
   const [_, forceUpdate] = useState<number>(0); // для принудительного обновления
@@ -46,11 +48,25 @@ function App() {
   // nexus-state
   const activeColor = state.useNexus("activeColor");
   const copiedColorFlag = state.useNexus("copiedColorFlag");
+  const isPro = state.useNexus("isPro");
 
   // error
   const errorText = (text: string) => {
     console.error(`Color Storage:\n${text}`);
   };
+
+  // hooks:
+  const storItem = useMemo(
+    () => [
+      {
+        name: "pro",
+        value: isPro,
+        type: "local",
+      },
+    ],
+    []
+  );
+  useStorage(storItem as StorageItemT);
 
   // Variables:
   const { hex, activeAlpha } = useMemo(() => {

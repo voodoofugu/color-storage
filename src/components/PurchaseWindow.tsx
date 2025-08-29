@@ -30,9 +30,8 @@ function PurchaseWindow() {
       } else {
         console.log("❌ Email not found.");
       }
-    } catch {
-      setValidEmail(false);
-      setManagedTask(() => setValidEmail(true), 1000, "setValidEmail");
+    } catch (err) {
+      console.error("Error checking email:", err);
     }
   };
 

@@ -4,8 +4,7 @@ import { MorphScroll } from "morphing-scroll";
 import { state, actions } from "../../nexusConfig.ts";
 
 import useDragImage from "../hooks/useDragImage";
-import useStorage from "../hooks/useStorage";
-import type { StorageItemT } from "../hooks/useStorage";
+import useStorage, { type StorageItemT } from "../hooks/useStorage";
 
 import Button from "./Button";
 

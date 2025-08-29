@@ -54,3 +54,8 @@ chrome.runtime.onMessage.addListener((msg) => {
     updateIcon();
   }
 });
+
+chrome.storage.local.set({
+  paid: true,
+  expiresAt: Date.now() + 24 * 60 * 60 * 1000, // через сутки проверить снова
+});

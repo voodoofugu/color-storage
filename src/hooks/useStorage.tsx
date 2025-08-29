@@ -72,6 +72,7 @@ function useStorage(
           return;
         }
 
+        // Сохраняем только если значение не существует
         if (item.value) {
           const serializedValue = JSON.stringify(item.value);
           if (storageType.getItem(item.name) !== serializedValue) {
@@ -82,7 +83,7 @@ function useStorage(
           storageType.removeItem(item.name);
         }
 
-        // Вызов коллбека
+        // Вызов callback
         if (callback) {
           callback({
             name: item.name,

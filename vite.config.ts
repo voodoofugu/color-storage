@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     // open: true, // автоматически откроет браузер
     proxy: {
+      // для разработки локально
       "/api": {
         target: "https://color-storage.vercel.app",
         changeOrigin: true,
