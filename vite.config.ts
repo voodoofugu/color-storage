@@ -21,9 +21,10 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: "index.html",
-        background: "src/helpers/background.ts",
+        background: "src/extension/background.ts",
         // offscreen: "offscreen.html",
-        "theme-watcher": "src/helpers/theme-watcher.ts",
+        messageListener: "src/extension/messageListener.ts",
+        themeWatcher: "src/extension/themeWatcher.ts",
       },
       output: {
         entryFileNames: "[name].js",

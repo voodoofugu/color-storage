@@ -16,11 +16,14 @@
     "128": "icons/light-inactive-128.png"
   },
   "host_permissions": ["https://color-storage.vercel.app/*"],
+  "externally_connectable": {
+    "matches": ["*://*.color-storage.vercel.app/*"]
+  },
   "permissions": ["storage", "tabs", "clipboardWrite"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["theme-watcher.js"],
+      "js": ["themeWatcher.js", "messageListener.js"],
       "run_at": "document_start"
     }
   ]

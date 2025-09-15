@@ -1,7 +1,7 @@
 import { createReactStore } from "nexus-state";
 import { setManagedTask } from "./src/helpers/taskManager";
 
-import type { PopupContentType } from "./src/components/PopupWindow";
+import type { PopupContentT } from "./src/components/PopupWindow";
 
 type MyStateT = {
   isPro: boolean;
@@ -18,7 +18,7 @@ type MyStateT = {
   >;
   copiedColorFlag: boolean;
   currentPaletteId: number;
-  popupContent?: PopupContentType | null;
+  popupContent?: PopupContentT | null;
 };
 
 const { state, actions } = createReactStore({
@@ -192,7 +192,7 @@ const { state, actions } = createReactStore({
         }));
       },
 
-      popupOpen: (content: PopupContentType) => {
+      popupOpen: (content: PopupContentT) => {
         const currentPopup = state.getNexus("popupContent");
         if (currentPopup) {
           self.popupClose();

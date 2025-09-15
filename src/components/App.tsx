@@ -15,14 +15,12 @@ import {
   drawHueCanvas,
   drawAlphaCanvas,
 } from "../helpers/allCanvases";
-import isExtensionEnv from "../helpers/isExtensionEnv";
+import isExtensionEnv from "../extension/isExtensionEnv.ts";
 
 import ColorSlider from "./ColorSlider";
 import Button from "./Button";
 import StorageColors from "./StorageColors";
 import PopupWindow from "./PopupWindow";
-
-import useStorage, { type StorageItemT } from "../hooks/useStorage";
 
 function App() {
   // State:
@@ -48,25 +46,11 @@ function App() {
   // nexus-state
   const activeColor = state.useNexus("activeColor");
   const copiedColorFlag = state.useNexus("copiedColorFlag");
-  const isPro = state.useNexus("isPro");
 
   // error
   const errorText = (text: string) => {
     console.error(`Color Storage:\n${text}`);
   };
-
-  // hooks:
-  const storItem = useMemo(
-    () => [
-      {
-        name: "pro",
-        value: isPro,
-        type: "local",
-      },
-    ],
-    []
-  );
-  useStorage(storItem as StorageItemT);
 
   // Variables:
   const { hex, activeAlpha } = useMemo(() => {
@@ -292,7 +276,7 @@ function App() {
 
   // эффекты для расширения
   useEffect(() => {
-    // проверяем что мы окружении для расширения
+    // проверяем что мы в окружении для расширения
     if (!isExtensionEnv()) return;
 
     const port = chrome.runtime.connect({ name: "popup" });
@@ -303,6 +287,23 @@ function App() {
     chrome.runtime.sendMessage({
       type: "theme",
       theme: isDark ? "dark" : "light",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isExtensionEnv()) return;
+
+    chrome.storage.local.get(["payment"], (result) => {
+      if (result.payment === "success") {
+        state.setNexus({ isPro: true });
+        actions.popupOpen("payment-success");
+      } else if (result.payment === "cancel") {
+        actions.popupOpen("payment-cancelled");
+      } else if (result.payment === "pending") {
+        actions.popupOpen("payment-notFinished");
+      }
+
+      chrome.storage.local.remove(["payment"]);
     });
   }, []);
 

@@ -1,9 +1,25 @@
+import { useEffect } from "react";
+
 import { state, actions } from "../../nexusConfig.ts";
 
 import Button from "./Button";
-import PurchaseWindow from "./PurchaseWindow";
+import PurchaseWindow from "./popup/PurchaseWindow";
+import NotificationsWindow from "./popup/NotificationsWindow";
+import RestoreWindow from "./popup/RestoreWindow";
 
-type PopupContentType = "SettingsWindow" | "PurchaseWindow";
+import { setManagedTask } from "../helpers/taskManager";
+
+type PopupContentT =
+  | "settingsWindow"
+  | "purchaseWindow"
+  | "restoreWindow"
+  | "payment-notFinished"
+  | "payment-success"
+  | "payment-found"
+  | "payment-notFound"
+  | "payment-cancelled"
+  | "payment-notExists"
+  | "error";
 
 function SettingsWindow() {
   return (
@@ -19,17 +35,32 @@ function PopupWindow() {
   let popupContentLocal;
 
   switch (popupContent) {
-    case "SettingsWindow":
+    case "settingsWindow":
       popupContentLocal = <SettingsWindow />;
       break;
-    case "PurchaseWindow":
+    case "purchaseWindow":
       popupContentLocal = <PurchaseWindow />;
+      break;
+    case "restoreWindow":
+      popupContentLocal = <RestoreWindow />;
       break;
 
     default:
-      popupContentLocal = null;
-      break;
+      popupContentLocal = popupContent ? (
+        <NotificationsWindow notifType={`${popupContent}`} />
+      ) : null;
   }
+
+  useEffect(() => {
+    if (
+      popupContent &&
+      !["settingsWindow", "purchaseWindow", "restoreWindow"].includes(
+        popupContent
+      )
+    ) {
+      setManagedTask(() => actions.popupClose(), 6000, "autoClosePopup");
+    }
+  }, [popupContent]);
 
   return popupContent ? (
     <div className="popup-window">
@@ -46,4 +77,4 @@ function PopupWindow() {
 export { SettingsWindow, PurchaseWindow };
 export default PopupWindow;
 
-export type { PopupContentType };
+export type { PopupContentT };

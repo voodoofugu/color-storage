@@ -18,7 +18,6 @@ function StorageColors() {
   const colorStorage = state.useNexus("colorStorage");
   const failedColorAdding = state.useNexus("failedColorAdding");
   const currentPaletteId = state.useNexus("currentPaletteId");
-  // const allState = state.useNexus();
 
   // stable nexus
   const stableColorStorage = JSON.stringify(colorStorage);
@@ -59,8 +58,16 @@ function StorageColors() {
           state.setNexus({ colorStorage: data });
         },
       },
+      {
+        name: "pro",
+        value: isPro,
+        type: "local",
+        onLoad: (data: boolean) => {
+          if (data) state.setNexus({ isPro: data });
+        },
+      },
     ],
-    [stableColorStorage]
+    [stableColorStorage, isPro]
   );
   useStorage(storItem as StorageItemT);
 
@@ -215,10 +222,10 @@ function StorageColors() {
   );
 
   const onGetPro = useCallback(() => {
-    actions.popupOpen("PurchaseWindow");
+    actions.popupOpen("purchaseWindow");
   }, []);
 
-  // variables
+  // content
   const paletteMenu = useMemo(() => {
     return (
       <>
@@ -330,6 +337,7 @@ function StorageColors() {
     triggerUpdate();
   }, [currentPaletteId, stableColorStorage]);
 
+  // render
   return !isPro ? (
     <div className="storage-box empty">
       <div className="container">

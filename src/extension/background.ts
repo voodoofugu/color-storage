@@ -47,15 +47,27 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 });
 
-// При изменении темы от theme-watcher.js
-chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.type === "theme") {
-    theme = msg.theme;
+// слушаем сообщения от других частей расширения
+chrome.runtime.onMessage.addListener((message) => {
+  // При изменении темы от themeWatcher.js
+  if (message.type === "theme") {
+    theme = message.theme;
     updateIcon();
   }
-});
 
-chrome.storage.local.set({
-  paid: true,
-  expiresAt: Date.now() + 24 * 60 * 60 * 1000, // через сутки проверить снова
+  // Обработка платежей
+  if (message.payment === "pending") {
+    chrome.storage.local.set({
+      payment: message.payment,
+      id: message.id,
+    });
+  }
+
+  if (message.payment === "success") {
+    chrome.storage.local.set({ payment: message.payment, id: message.id }); // на всякий случай обновим id
+  }
+
+  if (message.payment === "cancel") {
+    chrome.storage.local.set({ payment: message.payment });
+  }
 });

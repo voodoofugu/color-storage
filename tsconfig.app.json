@@ -25,5 +25,5 @@
 
     "types": ["chrome"]
   },
-  "include": ["src", "src/assets"]
+  "include": ["src", "src/assets", "src/types/global.d.ts"]
 }
