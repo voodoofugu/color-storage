@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Button from "../Button.tsx";
 
-import { state, actions } from "../../../nexusConfig.ts";
+import { actions } from "../../../nexusConfig.ts";
 
 import { setManagedTask } from "../../helpers/taskManager.ts";
 import getDeviceId from "../../helpers/getDeviceId.ts";
@@ -25,7 +25,6 @@ function PurchaseWindow() {
     actions.popupOpen("restoreWindow");
   };
 
-  console.log("getDeviceId()", getDeviceId());
   const purchaseHandel = async () => {
     if (!isValidEmail) {
       setValidEmail(false);

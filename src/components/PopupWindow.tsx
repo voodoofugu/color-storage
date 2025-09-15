@@ -6,6 +6,7 @@ import Button from "./Button";
 import PurchaseWindow from "./popup/PurchaseWindow";
 import NotificationsWindow from "./popup/NotificationsWindow";
 import RestoreWindow from "./popup/RestoreWindow";
+import RestoreLimitWindow from "./popup/RestoreLimitWindow";
 
 import { setManagedTask } from "../helpers/taskManager";
 
@@ -13,6 +14,8 @@ type PopupContentT =
   | "settingsWindow"
   | "purchaseWindow"
   | "restoreWindow"
+  | "restore-limitWindow"
+  // notifications without "...Window"
   | "payment-notFinished"
   | "payment-success"
   | "payment-found"
@@ -44,6 +47,9 @@ function PopupWindow() {
     case "restoreWindow":
       popupContentLocal = <RestoreWindow />;
       break;
+    case "restore-limitWindow":
+      popupContentLocal = <RestoreLimitWindow />;
+      break;
 
     default:
       popupContentLocal = popupContent ? (
@@ -52,12 +58,8 @@ function PopupWindow() {
   }
 
   useEffect(() => {
-    if (
-      popupContent &&
-      !["settingsWindow", "purchaseWindow", "restoreWindow"].includes(
-        popupContent
-      )
-    ) {
+    // regEx проверка заканчивается ли popupContent на "...Window"
+    if (popupContent && !/Window$/i.test(popupContent)) {
       setManagedTask(() => actions.popupClose(), 6000, "autoClosePopup");
     }
   }, [popupContent]);

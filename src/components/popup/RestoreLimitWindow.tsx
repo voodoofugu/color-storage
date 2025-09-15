@@ -2,12 +2,12 @@ import { useRef, useState } from "react";
 
 import Button from "../Button";
 
-import { state, actions } from "../../../nexusConfig";
+import { actions } from "../../../nexusConfig";
 
 import { setManagedTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
 
-function RestoreWindow() {
+function RestoreLimitWindow() {
   // states
   const [id, setId] = useState("");
   const [validId, setValidId] = useState(true);
@@ -31,32 +31,26 @@ function RestoreWindow() {
       return;
     }
 
-    const res = await fetch(`${backendUrl}/api/check-status`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, deviceId: getDeviceId() }),
-    });
-
-    const data = await res.json();
-
-    switch (data.status) {
-      case "notFound":
+    chrome.storage.local.get(["id"], async (result) => {
+      if (!result.id) {
         actions.popupOpen("payment-notFound");
-        break;
-      case "limit":
-        actions.popupOpen("restore-limitWindow");
-        break;
-      case "paid":
-        state.setNexus({ isPro: true });
-        actions.popupOpen("payment-found");
-        break;
-      case "cancelled":
-        actions.popupOpen("payment-cancelled");
-        break;
+        return;
+      }
 
-      default:
-        actions.popupOpen("error");
-    }
+      const res = await fetch(`${backendUrl}/api/check-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: result.id, deviceId: getDeviceId() }), // deviceId!!!
+      });
+
+      const data = await res.json();
+
+      if (data.status === "notFound") {
+        actions.popupOpen("payment-notFound");
+      } else if (data.status === "limit") {
+        // лимит по устройствам превышен
+      }
+    });
   };
 
   const inputOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -90,4 +84,4 @@ function RestoreWindow() {
   );
 }
 
-export default RestoreWindow;
+export default RestoreLimitWindow;

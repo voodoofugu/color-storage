@@ -61,7 +61,6 @@ function getDeviceId(): string {
     info.language,
   ].join("|");
 
-  console.log("info", info);
   return simpleHash(rawString);
 }
 
