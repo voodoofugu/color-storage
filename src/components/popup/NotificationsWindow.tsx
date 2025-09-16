@@ -1,15 +1,40 @@
+import type { NotifT } from "../PopupWindow";
+
+import { actions } from "../../../nexusConfig";
+
 type NotificationsWindowT = {
-  notifType:
-    | "payment-notFinished"
-    | "payment-success"
-    | "payment-found"
-    | "payment-notFound"
-    | "payment-cancelled"
-    | "payment-notExists"
-    | "error";
+  notifType: NotifT | null;
+  props?: { [key: string]: unknown };
 };
 
-function NotificationsWindow({ notifType }: NotificationsWindowT) {
+function PaymentFound({ deviceIds }: { deviceIds: number }) {
+  return (
+    <>
+      Payment Found! 🎉
+      <div className="popup-text small">
+        <b>{deviceIds}/3</b> of the devices are used.
+      </div>
+    </>
+  );
+}
+
+function RestoreLimit() {
+  const openSettings = () => actions.popupOpen("settingsWindow");
+  return (
+    <>
+      Max devices connected 3/3. 👀
+      <div className="popup-text small">
+        If you want to reset them, open the{" "}
+        <div className="link" onClick={openSettings}>
+          Settings
+        </div>
+        .
+      </div>
+    </>
+  );
+}
+
+function NotificationsWindow({ notifType, props }: NotificationsWindowT) {
   {
     let message;
 
@@ -21,26 +46,32 @@ function NotificationsWindow({ notifType }: NotificationsWindowT) {
         message = "Payment Successful! 🎉";
         break;
       case "payment-found":
-        message = "Payment Found! 🎉";
+        message = <PaymentFound deviceIds={props?.deviceIds as number} />;
         break;
       case "payment-notFound":
         message = "Your Payment was not found! 👀";
         break;
       case "payment-cancelled":
-        message = "Payment Cancelled! 😞💧";
+        message = "Payment Cancelled! 😞";
         break;
       case "payment-notExists":
-        message = "Payment not found! 😞💧";
+        message = "Payment not found! 😞";
+        break;
+      case "restore-limit":
+        message = <RestoreLimit />;
         break;
       case "error":
-        message = "An error occurred. Please try again. 😞💧";
+        message = "An error occurred. Please try again. 😞";
         break;
-
-      default:
-        message = "Unknown notification type.";
     }
 
-    return <div className="text-content">{message}</div>;
+    return (
+      message && (
+        <div className="popup-content notif">
+          <div className="notif-text">{message}</div>
+        </div>
+      )
+    );
   }
 }
 

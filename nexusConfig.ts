@@ -18,7 +18,10 @@ type MyStateT = {
   >;
   copiedColorFlag: boolean;
   currentPaletteId: number;
-  popupContent?: PopupContentT | null;
+  popupContent:
+    | PopupContentT
+    | null
+    | { content: PopupContentT | null; props?: { [key: string]: unknown } };
 };
 
 const { state, actions } = createReactStore({
@@ -192,14 +195,17 @@ const { state, actions } = createReactStore({
         }));
       },
 
-      popupOpen: (content: PopupContentT) => {
+      popupOpen: (
+        content: PopupContentT | null,
+        props?: { [key: string]: unknown }
+      ) => {
         const currentPopup = state.getNexus("popupContent");
         if (currentPopup) {
           self.popupClose();
 
           setManagedTask(
             () => {
-              self.popupOpen(content);
+              self.popupOpen(content, props);
             },
             200,
             "popupReopen"
@@ -207,7 +213,7 @@ const { state, actions } = createReactStore({
           return;
         }
 
-        set({ popupContent: content });
+        set({ popupContent: props ? { content, props } : content });
 
         const popupEl = document.querySelector(
           `.popup-window`

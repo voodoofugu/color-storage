@@ -221,9 +221,7 @@ function StorageColors() {
     [mainColor, handelOnDragStart, handleDrop, onDragOver]
   );
 
-  const onGetPro = useCallback(() => {
-    actions.popupOpen("purchaseWindow");
-  }, []);
+  const onGetPro = useCallback(() => actions.popupOpen("purchaseWindow"), []);
 
   // content
   const paletteMenu = useMemo(() => {

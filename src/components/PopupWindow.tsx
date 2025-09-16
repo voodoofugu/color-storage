@@ -6,38 +6,42 @@ import Button from "./Button";
 import PurchaseWindow from "./popup/PurchaseWindow";
 import NotificationsWindow from "./popup/NotificationsWindow";
 import RestoreWindow from "./popup/RestoreWindow";
-import RestoreLimitWindow from "./popup/RestoreLimitWindow";
+import SettingsWindow from "./popup/SettingsWindow";
 
-import { setManagedTask } from "../helpers/taskManager";
+import { setManagedTask, clearManagedTask } from "../helpers/taskManager";
 
-type PopupContentT =
-  | "settingsWindow"
-  | "purchaseWindow"
-  | "restoreWindow"
-  | "restore-limitWindow"
-  // notifications without "...Window"
+type NotifT =
   | "payment-notFinished"
   | "payment-success"
   | "payment-found"
   | "payment-notFound"
   | "payment-cancelled"
   | "payment-notExists"
+  | "restore-limit"
   | "error";
 
-function SettingsWindow() {
-  return (
-    <div className="settings-content">
-      <h2>Settings</h2>
-      <p>Adjust your preferences here.</p>
-    </div>
-  );
-}
+type PopupContentT =
+  | "settingsWindow"
+  | "purchaseWindow"
+  | "restoreWindow"
+  // notifications without "...Window"
+  | NotifT;
 
 function PopupWindow() {
   const popupContent = state.useNexus("popupContent");
+
+  const popupType =
+    popupContent && typeof popupContent === "object"
+      ? popupContent.content
+      : popupContent;
+  const popupProps =
+    popupContent && typeof popupContent === "object"
+      ? popupContent.props
+      : undefined;
+
   let popupContentLocal;
 
-  switch (popupContent) {
+  switch (popupType) {
     case "settingsWindow":
       popupContentLocal = <SettingsWindow />;
       break;
@@ -47,22 +51,22 @@ function PopupWindow() {
     case "restoreWindow":
       popupContentLocal = <RestoreWindow />;
       break;
-    case "restore-limitWindow":
-      popupContentLocal = <RestoreLimitWindow />;
-      break;
 
     default:
       popupContentLocal = popupContent ? (
-        <NotificationsWindow notifType={`${popupContent}`} />
+        <NotificationsWindow notifType={popupType} props={popupProps} />
       ) : null;
   }
 
   useEffect(() => {
     // regEx проверка заканчивается ли popupContent на "...Window"
-    if (popupContent && !/Window$/i.test(popupContent)) {
+    if (popupType && !/Window$/i.test(popupType ? popupType : ""))
       setManagedTask(() => actions.popupClose(), 6000, "autoClosePopup");
-    }
-  }, [popupContent]);
+
+    return () => {
+      clearManagedTask("autoClosePopup");
+    };
+  }, [popupType]);
 
   return popupContent ? (
     <div className="popup-window">
@@ -79,4 +83,4 @@ function PopupWindow() {
 export { SettingsWindow, PurchaseWindow };
 export default PopupWindow;
 
-export type { PopupContentT };
+export type { PopupContentT, NotifT };

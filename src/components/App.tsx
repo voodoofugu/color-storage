@@ -233,6 +233,8 @@ function App() {
     });
   }, []);
 
+  const openSettings = () => actions.popupOpen("settingsWindow");
+
   // Effects:
   // рисуем Canvas
   useEffect(() => {
@@ -311,6 +313,11 @@ function App() {
   return (
     <div className="content">
       <div className="title">Color Storage</div>
+      <Button
+        className="settings flat"
+        svgID="settings"
+        onClick={openSettings}
+      />
 
       <div className="canvasBox">
         <ColorSlider

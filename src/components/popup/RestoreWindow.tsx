@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 import Button from "../Button";
 
@@ -44,11 +44,13 @@ function RestoreWindow() {
         actions.popupOpen("payment-notFound");
         break;
       case "limit":
-        actions.popupOpen("restore-limitWindow");
+        actions.popupOpen("restore-limit");
         break;
       case "paid":
         state.setNexus({ isPro: true });
-        actions.popupOpen("payment-found");
+        actions.popupOpen("payment-found", {
+          deviceIds: data.deviceIds.length,
+        });
         break;
       case "cancelled":
         actions.popupOpen("payment-cancelled");
@@ -64,6 +66,11 @@ function RestoreWindow() {
       checkStatus();
     }
   };
+
+  // effects
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   return (
     <div className="popup-content">
@@ -83,6 +90,9 @@ function RestoreWindow() {
           onChange={inputOnChange}
           onKeyDown={inputOnKeyDown}
         />
+        <div className="popup-text small">
+          You can connect only <b>3</b> devices.
+        </div>
       </div>
 
       <Button className="popup-btn" text="Check" onClick={checkStatus} />

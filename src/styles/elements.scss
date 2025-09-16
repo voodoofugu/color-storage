@@ -277,6 +277,30 @@
       }
     }
   }
+
+  &.settings {
+    position: absolute;
+    top: 6px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    svg {
+      transform: scale(1.1);
+    }
+    &:hover {
+      svg .svgLine {
+        stroke: #213547;
+      }
+    }
+  }
+
+  &.flat {
+    background: unset;
+    box-shadow: unset;
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+    }
+  }
 }
 .empty {
   .btn {
@@ -323,6 +347,16 @@
       background: #7c7c7c;
       cursor: grabbing;
     }
+  }
+}
+
+.link {
+  color: #007aff;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  &:hover {
+    text-decoration: underline;
   }
 }
 
