@@ -95,7 +95,11 @@ function RestoreWindow() {
         </div>
       </div>
 
-      <Button className="popup-btn" text="Check" onClick={checkStatus} />
+      <Button
+        className={`popup-btn${!isValidId ? " disabled" : ""}`}
+        text="Check"
+        onClick={checkStatus}
+      />
     </div>
   );
 }

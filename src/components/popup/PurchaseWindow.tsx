@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import Button from "../Button.tsx";
 
-import { actions } from "../../../nexusConfig.ts";
+import Button from "../Button";
 
-import { setManagedTask } from "../../helpers/taskManager.ts";
-import getDeviceId from "../../helpers/getDeviceId.ts";
+import { actions } from "../../../nexusConfig";
+
+import { setManagedTask } from "../../helpers/taskManager";
+import getDeviceId from "../../helpers/getDeviceId";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -93,7 +94,7 @@ function PurchaseWindow() {
       </div>
 
       <Button
-        className="popup-btn"
+        className={`popup-btn${!isValidEmail ? " disabled" : ""}`}
         text="Get Pro - $4.99"
         onClick={purchaseHandel}
       />

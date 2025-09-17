@@ -58,4 +58,22 @@ const SettingsIcon = () => {
   );
 };
 
-export { PickerIcon, CopyIcon, PlusIcon, DragIcon, TrashIcon, SettingsIcon };
+const PaletteViewing = () => {
+  return (
+    <g className="svgLine">
+      <circle cx="44" cy="51" r="15" />
+      <path d="M50 37C50 28.7157 43.2843 22 35 22C26.7157 22 20 28.7157 20 37C20 43.151 23.7023 48.4372 29 50.7519" />
+      <path d="M43.9985 25C46.5058 23.1163 49.6225 22 53 22C61.2843 22 68 28.7157 68 37C68 43.151 64.2977 48.4372 59 50.7519" />
+    </g>
+  );
+};
+
+export {
+  PickerIcon,
+  CopyIcon,
+  PlusIcon,
+  DragIcon,
+  TrashIcon,
+  SettingsIcon,
+  PaletteViewing,
+};

@@ -71,7 +71,6 @@ function PopupWindow() {
   return popupContent ? (
     <div className="popup-window">
       <div className="popup-bg"></div>
-
       {popupContentLocal}
       <Button svgID="plus" className="close-btn" onClick={actions.popupClose} />
     </div>

@@ -18,6 +18,7 @@ function StorageColors() {
   const colorStorage = state.useNexus("colorStorage");
   const failedColorAdding = state.useNexus("failedColorAdding");
   const currentPaletteId = state.useNexus("currentPaletteId");
+  const paletteHidden = state.useNexus("paletteHidden");
 
   // stable nexus
   const stableColorStorage = JSON.stringify(colorStorage);
@@ -66,8 +67,16 @@ function StorageColors() {
           if (data) state.setNexus({ isPro: data });
         },
       },
+      {
+        name: "paletteHidden",
+        value: paletteHidden,
+        type: "local",
+        onLoad: (data: boolean) => {
+          if (data) state.setNexus({ paletteHidden: data });
+        },
+      },
     ],
-    [stableColorStorage, isPro]
+    [stableColorStorage, isPro, paletteHidden]
   );
   useStorage(storItem as StorageItemT);
 
@@ -336,7 +345,7 @@ function StorageColors() {
   }, [currentPaletteId, stableColorStorage]);
 
   // render
-  return !isPro ? (
+  return paletteHidden ? null : !isPro ? (
     <div className="storage-box empty">
       <div className="container">
         <div className="menu-wrap">

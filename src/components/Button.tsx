@@ -1,7 +1,14 @@
 import { memo } from "react";
 import SVGIcon from "./SVGIcon";
 
-type SvgIdT = "picker" | "copy" | "plus" | "drag" | "trash" | "settings";
+type SvgIdT =
+  | "picker"
+  | "copy"
+  | "plus"
+  | "drag"
+  | "trash"
+  | "settings"
+  | "palette";
 
 type ButtonT = {
   className?: string;

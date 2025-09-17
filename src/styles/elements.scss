@@ -54,11 +54,6 @@
       translate: 0 0.5px;
     }
   }
-  &.active {
-    .svgLine {
-      stroke: #00a1ff;
-    }
-  }
 
   .btn-bg {
     position: absolute;
@@ -279,13 +274,59 @@
   }
 
   &.settings {
-    position: absolute;
-    top: 6px;
     right: 12px;
-    width: 32px;
-    height: 32px;
+  }
+
+  &.palette {
+    left: 12px;
+    &:after {
+      content: "";
+      position: absolute;
+      top: 24%;
+      left: 76%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      width: 1.5px;
+      height: calc(100% - 30px);
+      aspect-ratio: 1 / 1;
+      background: #4d4d4d;
+      border-radius: 2px;
+      z-index: 1;
+      box-shadow: 1.6px 0 0 #f6f6f6;
+      transition: all 0.1s ease-in-out;
+    }
+    &.active {
+      &:after {
+        top: 50%;
+        left: 50%;
+        height: calc(100% - 6px);
+      }
+      .svgIcon {
+        translate: unset;
+      }
+    }
+    &:hover {
+      &:after {
+        background: #213547;
+        box-shadow: 1.6px 0 0 #e8e8e8;
+      }
+    }
+  }
+
+  &.picker {
+    &.active {
+      .svgLine {
+        stroke: #00a1ff;
+      }
+    }
+  }
+
+  &.header-btn {
+    position: absolute;
+    top: 8px;
+    width: 30px;
+    height: 30px;
     svg {
-      transform: scale(1.1);
+      transform: scale(1.2);
     }
     &:hover {
       svg .svgLine {
@@ -298,10 +339,15 @@
     background: unset;
     box-shadow: unset;
     &:hover {
-      background: rgba(0, 0, 0, 0.06);
+      background: #e8e8e8;
     }
   }
+
+  &.disabled {
+    filter: grayscale(0.8);
+  }
 }
+
 .empty {
   .btn {
     &.menu-btn {

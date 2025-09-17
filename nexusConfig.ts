@@ -22,6 +22,7 @@ type MyStateT = {
     | PopupContentT
     | null
     | { content: PopupContentT | null; props?: { [key: string]: unknown } };
+  paletteHidden: boolean;
 };
 
 const { state, actions } = createReactStore({
@@ -35,6 +36,7 @@ const { state, actions } = createReactStore({
     copiedColorFlag: false,
     currentPaletteId: 0,
     popupContent: null,
+    paletteHidden: false,
   } as MyStateT,
 
   actions: (set) => {

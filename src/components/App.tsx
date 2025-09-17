@@ -15,7 +15,7 @@ import {
   drawHueCanvas,
   drawAlphaCanvas,
 } from "../helpers/allCanvases";
-import isExtensionEnv from "../extension/isExtensionEnv.ts";
+import isExtensionEnv from "../extension/isExtensionEnv";
 
 import ColorSlider from "./ColorSlider";
 import Button from "./Button";
@@ -46,6 +46,8 @@ function App() {
   // nexus-state
   const activeColor = state.useNexus("activeColor");
   const copiedColorFlag = state.useNexus("copiedColorFlag");
+  const paletteHidden = state.useNexus("paletteHidden");
+  const colorStorage = state.useNexus("colorStorage");
 
   // error
   const errorText = (text: string) => {
@@ -235,6 +237,10 @@ function App() {
 
   const openSettings = () => actions.popupOpen("settingsWindow");
 
+  const paletteViewingHandler = () => {
+    state.setNexus((prev) => ({ paletteHidden: !prev.paletteHidden }));
+  };
+
   // Effects:
   // рисуем Canvas
   useEffect(() => {
@@ -311,10 +317,19 @@ function App() {
 
   // Render:
   return (
-    <div className="content">
+    <div
+      className={`content${paletteHidden ? " palette-hidden" : ""}${
+        colorStorage.length ? " witch-palettes" : ""
+      }`}
+    >
+      <Button
+        className={`palette flat header-btn${paletteHidden ? " active" : ""}`}
+        svgID="palette"
+        onClick={paletteViewingHandler}
+      />
       <div className="title">Color Storage</div>
       <Button
-        className="settings flat"
+        className="settings flat header-btn"
         svgID="settings"
         onClick={openSettings}
       />
@@ -349,7 +364,7 @@ function App() {
 
       <div className="btn-box">
         <div className="btn-wrap">
-          <Button svgID="picker" onClick={pickColor} />
+          <Button className="picker" svgID="picker" onClick={pickColor} />
           <Button
             className={`copy${copiedColorFlag ? " copied" : ""}`}
             svgID="copy"
