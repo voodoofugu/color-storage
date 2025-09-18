@@ -22,7 +22,6 @@ export default defineConfig({
       input: {
         popup: "index.html",
         background: "src/extension/background.ts",
-        // offscreen: "offscreen.html",
         messageListener: "src/extension/messageListener.ts",
         themeWatcher: "src/extension/themeWatcher.ts",
       },

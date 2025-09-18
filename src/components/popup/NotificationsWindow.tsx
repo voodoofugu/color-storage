@@ -40,7 +40,7 @@ function NotificationsWindow({ notifType, props }: NotificationsWindowT) {
 
     switch (notifType) {
       case "payment-notFinished":
-        message = "Payment is not finished! 😞💧";
+        message = "Payment is not finished! 😞";
         break;
       case "payment-success":
         message = "Payment Successful! 🎉";

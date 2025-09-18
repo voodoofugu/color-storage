@@ -1,18 +1,3 @@
-// Проверка и создание offscreen документа
-// async function ensureOffscreenDocument() {
-//   if (await chrome.offscreen.hasDocument()) return;
-
-//   await chrome.offscreen.createDocument({
-//     url: chrome.runtime.getURL("offscreen.html"),
-//     reasons: ["DOM_PARSER"], // любое валидное значение
-//     justification: "Отслеживание темы браузера",
-//   });
-// }
-
-// // Вызовы при установке и старте
-// chrome.runtime.onInstalled.addListener(ensureOffscreenDocument);
-// chrome.runtime.onStartup.addListener(ensureOffscreenDocument);
-
 // Логика иконки
 let isActive = false;
 let theme = "light";
@@ -47,7 +32,7 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 });
 
-// слушаем сообщения от других частей расширения
+// слушаем сообщения
 chrome.runtime.onMessage.addListener((message) => {
   // При изменении темы от themeWatcher.js
   if (message.type === "theme") {
@@ -55,16 +40,21 @@ chrome.runtime.onMessage.addListener((message) => {
     updateIcon();
   }
 
+  // сервер
   // Обработка платежей
   if (message.payment === "pending") {
     chrome.storage.local.set({
       payment: message.payment,
-      id: message.id,
     });
   }
 
   if (message.payment === "success") {
-    chrome.storage.local.set({ payment: message.payment, id: message.id }); // на всякий случай обновим id
+    // для большей безопасности полученные данные оплаты надо снова проверить на их наличие в BD!!!
+    chrome.storage.local.set({
+      payment: message.payment,
+    });
+
+    // message.id
   }
 
   if (message.payment === "cancel") {

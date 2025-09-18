@@ -22,7 +22,21 @@ function SettingsWindow() {
   return (
     <div className="popup-content">
       <div className="popup-title">Settings</div>
-      <div className="popup-text">Adjust your preferences here.</div>
+
+      <div className="popup-contentBox">
+        <div className="contentWrap">
+          <div className="popup-title small">User info:</div>
+          <div className="popup-text">Email:</div>
+          <div className="popup-text">Status:</div>
+          <div className="popup-text">Devices connected:</div>
+        </div>
+        <div className="contentWrap">
+          <div className="popup-title small">Theme:</div>
+        </div>
+        <div className="contentWrap">
+          <div className="popup-title small">Hot keys:</div>
+        </div>
+      </div>
     </div>
   );
 }
