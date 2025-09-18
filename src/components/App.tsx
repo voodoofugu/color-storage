@@ -117,7 +117,7 @@ function App() {
     const { h } = hexToHsl(hexColor);
     const newHueColor = `hsl(${h}, 100%, 50%)`;
 
-    if (newHueColor !== hueColor.current && h > 0) {
+    if (newHueColor !== hueColor.current) {
       hueColor.current = newHueColor;
       isColorCanvasReady.current = false;
 

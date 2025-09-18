@@ -4,6 +4,7 @@ function findClosestColorPosition(
   ctx: CanvasRenderingContext2D,
   targetHex: string
 ) {
+  // console.log("targetHex", targetHex);
   const { r: tr, g: tg, b: tb } = hexToRgb(targetHex);
 
   const { width, height } = ctx.canvas;
@@ -35,6 +36,7 @@ function findClosestColorPosition(
     }
   }
 
+  // console.log("bestXY", bestXY);
   return bestXY;
 }
 

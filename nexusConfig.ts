@@ -27,7 +27,7 @@ type MyStateT = {
 
 const { state, actions } = createReactStore({
   state: {
-    isPro: false,
+    isPro: true,
     mainColor: "#ffffff", // hex only
     activeColor: "",
     failedColorAdding: false,

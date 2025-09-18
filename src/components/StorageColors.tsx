@@ -299,7 +299,7 @@ function StorageColors() {
             key={index}
             size="auto"
             objectsSize={30}
-            gap={11}
+            gap={12}
             progressTrigger={{
               wheel: true,
               progressElement: <div className="scroll-thumb" />,

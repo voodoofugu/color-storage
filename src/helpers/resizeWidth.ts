@@ -1,13 +1,10 @@
-function resizeWidth(
-  el: HTMLElement,
-  maxWidth: React.MutableRefObject<number>
-) {
+function resizeWidth(el: HTMLElement, maxWidth: React.RefObject<number>) {
   const controller = new AbortController();
   const { signal } = controller;
   const rect = el.getBoundingClientRect();
   if (!maxWidth.current) maxWidth.current = rect.width;
 
-  const minWidth = 181;
+  const minWidth = 184;
 
   document.addEventListener(
     "mousemove",
