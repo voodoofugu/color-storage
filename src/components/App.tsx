@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
 import { state, actions } from "../../nexusConfig.ts";
 
+import useStorage, { type StorageItemT } from "../hooks/useStorage";
+
 import "../styles/App.scss";
 import "../styles/animations.scss";
 import "../styles/elements.scss";
@@ -29,6 +31,12 @@ function App() {
     forceUpdate((x) => (typeof x === "number" && x < 1000 ? x + 1 : 0));
   };
 
+  // nexus-state
+  const activeColor = state.useNexus("activeColor");
+  const copiedColorFlag = state.useNexus("copiedColorFlag");
+  const paletteHidden = state.useNexus("paletteHidden");
+  const colorStorage = state.useNexus("colorStorage");
+
   // Refs:
   const colorCanvasRef = useRef<HTMLCanvasElement>(null);
   const hueCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,11 +51,21 @@ function App() {
   const alpha = useRef(1);
   const isColorCanvasReady = useRef(false);
 
-  // nexus-state
-  const activeColor = state.useNexus("activeColor");
-  const copiedColorFlag = state.useNexus("copiedColorFlag");
-  const paletteHidden = state.useNexus("paletteHidden");
-  const colorStorage = state.useNexus("colorStorage");
+  // hooks
+  const storItem = useMemo(
+    () => [
+      {
+        name: "paletteHidden",
+        value: paletteHidden,
+        type: "local",
+        onLoad: (data: boolean) => {
+          if (data) state.setNexus({ paletteHidden: data });
+        },
+      },
+    ],
+    [paletteHidden]
+  );
+  useStorage(storItem as StorageItemT);
 
   // error
   const errorText = (text: string) => {
@@ -301,17 +319,26 @@ function App() {
   useEffect(() => {
     if (!isExtensionEnv()) return;
 
-    chrome.storage.local.get(["payment"], (result) => {
-      if (result.payment === "success") {
-        state.setNexus({ isPro: true });
-        actions.popupOpen("payment-success");
-      } else if (result.payment === "cancel") {
-        actions.popupOpen("payment-cancelled");
-      } else if (result.payment === "pending") {
-        actions.popupOpen("payment-notFinished");
-      }
+    chrome.storage.local.get(["payment", "userData"], (result) => {
+      if (!result.payment) return;
 
-      chrome.storage.local.remove(["payment"]);
+      if (result.payment === "success") {
+        console.log("result", result);
+        if (result.userData.status === "paid") {
+          state.setNexus({ isPro: true });
+          actions.popupOpen("payment-success");
+
+          chrome.storage.local.remove(["payment"]);
+        }
+      } else {
+        if (result.payment === "cancel") {
+          actions.popupOpen("payment-cancelled");
+        } else if (result.payment === "pending") {
+          actions.popupOpen("payment-notFinished");
+        }
+
+        chrome.storage.local.remove(["payment"]);
+      }
     });
   }, []);
 

@@ -4,7 +4,6 @@ import { MorphScroll } from "morphing-scroll";
 import { state, actions } from "../../nexusConfig.ts";
 
 import useDragImage from "../hooks/useDragImage";
-import useStorage, { type StorageItemT } from "../hooks/useStorage";
 
 import Button from "./Button";
 
@@ -46,39 +45,6 @@ function StorageColors() {
     boxShadow:
       "inset 0 -1px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.16)",
   });
-
-  const storItem = useMemo(
-    () => [
-      {
-        name: "colorStorage",
-        value: colorStorage,
-        type: "local",
-        remove: !colorStorage.length,
-        onLoad: (data: Record<string, string[]>[]) => {
-          if (!data.length) return;
-          state.setNexus({ colorStorage: data });
-        },
-      },
-      {
-        name: "pro",
-        value: isPro,
-        type: "local",
-        onLoad: (data: boolean) => {
-          if (data) state.setNexus({ isPro: data });
-        },
-      },
-      {
-        name: "paletteHidden",
-        value: paletteHidden,
-        type: "local",
-        onLoad: (data: boolean) => {
-          if (data) state.setNexus({ paletteHidden: data });
-        },
-      },
-    ],
-    [stableColorStorage, isPro, paletteHidden]
-  );
-  useStorage(storItem as StorageItemT);
 
   // functions
   const addColor = () => {

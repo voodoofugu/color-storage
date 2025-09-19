@@ -54,7 +54,29 @@ chrome.runtime.onMessage.addListener((message) => {
       payment: message.payment,
     });
 
-    // message.id
+    // message.id получаем все данные оплаты
+    const purchaseHandel = async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/get-user-data`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: message.id }),
+        }
+      );
+
+      if (!res.ok) {
+        console.error("Error during purchase:", res.statusText);
+        return;
+      }
+
+      const userData = await res.json();
+      chrome.storage.local.set({
+        userData,
+      });
+    };
+
+    purchaseHandel();
   }
 
   if (message.payment === "cancel") {
