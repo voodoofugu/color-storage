@@ -38,6 +38,9 @@ chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "theme") {
     theme = message.theme;
     updateIcon();
+    chrome.storage.local.set({
+      theme,
+    });
   }
 
   // сервер

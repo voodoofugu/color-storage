@@ -24,11 +24,12 @@ type MyStateT = {
     | { content: PopupContentT | null; props?: { [key: string]: unknown } };
   paletteHidden: boolean;
   isStorageLoaded: boolean;
+  userData: Record<string, string> | null;
 };
 
 const { state, actions } = createReactStore({
   state: {
-    isPro: false,
+    isPro: true,
     mainColor: "#ffffff", // hex only
     activeColor: "",
     failedColorAdding: false,
@@ -39,6 +40,7 @@ const { state, actions } = createReactStore({
     popupContent: null,
     paletteHidden: false,
     isStorageLoaded: false,
+    userData: null,
   } as MyStateT,
 
   actions: (set) => {

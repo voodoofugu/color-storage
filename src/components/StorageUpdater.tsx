@@ -1,6 +1,7 @@
-import React, { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 
-import useStorage, { type StorageItemT } from "../hooks/useStorage";
+import useStorage from "../hooks/useStorage";
+import type { StorageItemT } from "../hooks/useStorage";
 
 import { state } from "../../nexusConfig";
 
@@ -13,14 +14,14 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
   const isStorageLoaded = state.useNexus("isStorageLoaded");
 
   // hooks
-  const storItem = useMemo(
+  const storItem = useMemo<StorageItemT>(
     () => [
       {
         name: "paletteHidden",
         value: paletteHidden,
         type: "local",
-        onLoad: (data: boolean) => {
-          if (data) state.setNexus({ paletteHidden: data });
+        onLoad: (data) => {
+          if (data) state.setNexus({ paletteHidden: data as boolean });
         },
       },
       {
@@ -28,28 +29,39 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         value: colorStorage,
         type: "local",
         remove: !colorStorage.length,
-        onLoad: (data: Record<string, string[]>[]) => {
-          if (!data.length) return;
-          state.setNexus({ colorStorage: data });
+        onLoad: (data) => {
+          if (typeof data === "object" && !data?.length) return;
+          state.setNexus({ colorStorage: data as Record<string, string[]>[] });
         },
       },
       {
         name: "pro",
         value: isPro,
         type: "local",
-        onLoad: (data: boolean) => {
-          if (data) state.setNexus({ isPro: data });
+        onLoad: (data) => {
+          if (data) state.setNexus({ isPro: data as boolean });
+        },
+      },
+      {
+        name: "userData",
+        type: "chrome-local",
+        readOnly: true,
+        onLoad: (data) => {
+          if (!data) return;
+          state.setNexus({ userData: data as Record<string, string> });
         },
       },
     ],
     [paletteHidden, stableColorStorage, isPro]
   );
 
-  // в callback обновляем флаг isStorageLoaded
-  useStorage(storItem as StorageItemT, (storItem) => {
-    if (!isStorageLoaded && storItem.name !== "paletteHidden") return;
+  const handleStorageUpdate = useCallback(() => {
+    if (isStorageLoaded) return;
     state.setNexus({ isStorageLoaded: true });
-  });
+  }, []);
+
+  // в callback обновляем флаг isStorageLoaded
+  useStorage(storItem, handleStorageUpdate);
 
   return isStorageLoaded ? children : null;
 }

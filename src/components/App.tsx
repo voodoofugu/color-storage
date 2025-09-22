@@ -323,7 +323,6 @@ function App() {
       if (!result.payment) return;
 
       if (result.payment === "success") {
-        console.log("result", result);
         if (result.userData.status === "paid") {
           state.setNexus({ isPro: true });
           actions.popupOpen("payment-success");
@@ -404,6 +403,7 @@ function App() {
           <div className="select-box">
             <select
               className="color-format"
+              id="color-format"
               value={colorFormat.current}
               onChange={onChangeColor}
             >

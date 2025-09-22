@@ -1,41 +1,133 @@
-// import { useRef } from "react";
+import { useState } from "react";
+import { MorphScroll } from "morphing-scroll";
 
-// import Button from "../Button";
+import Button from "../Button";
 
-// import { state, actions } from "../../../nexusConfig";
+import { state } from "../../../nexusConfig";
 
 // import { setManagedTask } from "../../helpers/taskManager";
 // import getDeviceId from "../../helpers/getDeviceId";
 
+type ThemeT = "light" | "dark" | "system";
+
 function SettingsWindow() {
   // states
+  const [theme, setTheme] = useState<ThemeT>("system");
 
   // refs
 
+  // nexus-state
+  const isPro = state.useNexus("isPro");
+  // const userData = state.useNexus("userData");
+  const userData = {
+    amount: "$5.00",
+    completed: "1/21/1970 8:25:18",
+    created: "9/19/2025 21:56:07",
+    deviceId: "6b43f1e5",
+    email: "schilingeorg@gmail.com",
+    id: "cs_test_a1aeFewGTiKsref3mAQanPf3GLD548DKJapDBT8kXY1OkccfM6mCPnzVEG",
+    status: "paid",
+  };
+
   // vars
   //   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const devices = userData.deviceId.split("/").length;
 
   // funcs
+  const onChangeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTheme(e.target.value as ThemeT);
+
+    if (e.target.value === "system") {
+      document.documentElement.removeAttribute("data-theme");
+      return;
+    }
+
+    document.documentElement.setAttribute("data-theme", e.target.value);
+  };
 
   // effects
 
-  return (
+  return isPro && userData ? (
     <div className="popup-content">
       <div className="popup-title">Settings</div>
 
       <div className="popup-contentBox">
-        <div className="contentWrap">
-          <div className="popup-title small">User info:</div>
-          <div className="popup-text">Email:</div>
-          <div className="popup-text">Status:</div>
-          <div className="popup-text">Devices connected:</div>
-        </div>
-        <div className="contentWrap">
-          <div className="popup-title small">Theme:</div>
-        </div>
-        <div className="contentWrap">
-          <div className="popup-title small">Hot keys:</div>
-        </div>
+        <MorphScroll
+          // className="popup-contentBox"
+          size="auto"
+          objectsSize={[222, "none"]}
+          progressTrigger={{
+            wheel: true,
+            progressElement: <div className="scroll-thumb" />,
+          }}
+          gap={10}
+          scrollBarOnHover
+          wrapperAlign={["center", "start"]}
+          // edgeGradient={{ size: 10 }}
+          wrapperMargin={[0, 2]}
+        >
+          <div className="contentWrap">
+            <div className="popup-title small">User:</div>
+            <div className="contentBox">
+              <div className="text-box">
+                <div className="popup-text bold">
+                  Email:
+                  <Button className={`restore-btn`} text="change" />
+                </div>
+                <div className="popup-text">{userData.email}</div>
+              </div>
+              <div className="text-box">
+                <div className="popup-text bold">
+                  Devices:
+                  <Button
+                    className={`restore-btn${devices < 2 ? " disabled" : ""}`}
+                    text="reset"
+                  />
+                </div>
+                <div className="popup-text">connected {devices}/3</div>
+              </div>
+              <div className="text-box">
+                <div className="popup-text bold">Subscription:</div>
+                <div className="popup-text">{userData.status}</div>
+              </div>
+            </div>
+          </div>
+          <div className="contentWrap">
+            <div className="popup-title small">Appearance:</div>
+            <div className="contentBox">
+              <div className="popup-text bold">Theme:</div>
+              <select
+                className="theme-color"
+                id="theme"
+                value={theme}
+                onChange={onChangeTheme}
+              >
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="system">System</option>
+              </select>
+            </div>
+          </div>
+          <div className="contentWrap">
+            <div className="popup-title small">Hot keys:</div>
+            <div className="contentBox">
+              <div className="text-box">
+                <div className="popup-text bold">
+                  Pick color:
+                  <Button className={`restore-btn`} text="change" />
+                </div>
+                <div className="popup-text">Shift + C</div>
+              </div>
+            </div>
+          </div>
+        </MorphScroll>
+      </div>
+    </div>
+  ) : (
+    <div className="popup-content">
+      <div className="popup-title">Settings</div>
+      <div className="popup-text">
+        You need to subscribe to unlock this feature
       </div>
     </div>
   );
