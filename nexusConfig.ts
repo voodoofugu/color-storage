@@ -25,6 +25,7 @@ type MyStateT = {
   paletteHidden: boolean;
   isStorageLoaded: boolean;
   userData: Record<string, string> | null;
+  theme: "light" | "dark" | "system";
 };
 
 const { state, actions } = createReactStore({
@@ -41,6 +42,7 @@ const { state, actions } = createReactStore({
     paletteHidden: false,
     isStorageLoaded: false,
     userData: null,
+    theme: "light",
   } as MyStateT,
 
   actions: (set) => {

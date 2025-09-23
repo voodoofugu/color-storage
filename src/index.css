@@ -27,9 +27,7 @@ select {
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #ffffff;
-    background-color: #383838;
-  }
+html[data-theme="dark"] {
+  color: #ffffff;
+  background-color: #383838;
 }

@@ -12,6 +12,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
   const stableColorStorage = JSON.stringify(colorStorage);
   const paletteHidden = state.useNexus("paletteHidden");
   const isStorageLoaded = state.useNexus("isStorageLoaded");
+  const theme = state.useNexus("theme");
 
   // hooks
   const storItem = useMemo<StorageItemT>(
@@ -43,6 +44,21 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         },
       },
       {
+        name: "theme",
+        value: theme,
+        type: "chrome-local",
+        onLoad: (data) => {
+          if (data == "system") {
+            document.documentElement.removeAttribute("data-theme");
+            document.documentElement.removeAttribute("style");
+            return;
+          }
+
+          document.documentElement.setAttribute("data-theme", data as string);
+          document.documentElement.style.colorScheme = data as string;
+        },
+      },
+      {
         name: "userData",
         type: "chrome-local",
         readOnly: true,
@@ -52,7 +68,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         },
       },
     ],
-    [paletteHidden, stableColorStorage, isPro]
+    [paletteHidden, stableColorStorage, isPro, theme]
   );
 
   const handleStorageUpdate = useCallback(() => {

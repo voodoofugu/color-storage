@@ -1,18 +1,13 @@
-import { useState } from "react";
 import { MorphScroll } from "morphing-scroll";
 
 import Button from "../Button";
 
 import { state } from "../../../nexusConfig";
 
-// import { setManagedTask } from "../../helpers/taskManager";
-// import getDeviceId from "../../helpers/getDeviceId";
-
-type ThemeT = "light" | "dark" | "system";
+type ThemeT = "light" | "dark" | "system" | null;
 
 function SettingsWindow() {
   // states
-  const [theme, setTheme] = useState<ThemeT>("system");
 
   // refs
 
@@ -28,6 +23,7 @@ function SettingsWindow() {
     id: "cs_test_a1aeFewGTiKsref3mAQanPf3GLD548DKJapDBT8kXY1OkccfM6mCPnzVEG",
     status: "paid",
   };
+  const theme = state.useNexus("theme");
 
   // vars
   //   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -35,14 +31,10 @@ function SettingsWindow() {
 
   // funcs
   const onChangeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setTheme(e.target.value as ThemeT);
+    const value = e.target.value as ThemeT;
+    if (!value) return;
 
-    if (e.target.value === "system") {
-      document.documentElement.removeAttribute("data-theme");
-      return;
-    }
-
-    document.documentElement.setAttribute("data-theme", e.target.value);
+    state.setNexus({ theme: value });
   };
 
   // effects
