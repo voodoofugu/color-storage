@@ -4,7 +4,9 @@ import Button from "../Button";
 
 import { state } from "../../../nexusConfig";
 
-type ThemeT = "light" | "dark" | "system" | null;
+// import isExtensionEnv from "../../extension/isExtensionEnv";
+
+type ThemeT = "light" | "dark" | "system";
 
 function SettingsWindow() {
   // states
@@ -23,7 +25,8 @@ function SettingsWindow() {
     id: "cs_test_a1aeFewGTiKsref3mAQanPf3GLD548DKJapDBT8kXY1OkccfM6mCPnzVEG",
     status: "paid",
   };
-  const theme = state.useNexus("theme");
+  // const theme = state.useNexus("theme");
+  const themeSettings = state.useNexus("themeSettings");
 
   // vars
   //   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -32,9 +35,19 @@ function SettingsWindow() {
   // funcs
   const onChangeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as ThemeT;
-    if (!value) return;
 
-    state.setNexus({ theme: value });
+    state.setNexus({ themeSettings: value });
+
+    // if (!value) {
+    //   document.documentElement.removeAttribute("data-theme");
+    //   document.documentElement.removeAttribute("style");
+    // } else {
+    //   document.documentElement.setAttribute("data-theme", value as string);
+    //   document.documentElement.style.colorScheme = value as string;
+    // }
+
+    // if (!isExtensionEnv()) return;
+    // chrome.storage.local.set({ theme: value });
   };
 
   // effects
@@ -91,7 +104,7 @@ function SettingsWindow() {
               <select
                 className="theme-color"
                 id="theme"
-                value={theme}
+                value={themeSettings}
                 onChange={onChangeTheme}
               >
                 <option value="light">Light</option>

@@ -302,21 +302,6 @@ function App() {
 
   // эффекты для расширения
   useEffect(() => {
-    // проверяем что мы в окружении для расширения
-    if (!isExtensionEnv()) return;
-
-    const port = chrome.runtime.connect({ name: "popup" });
-    port.postMessage({ type: "popup_opened" });
-
-    // Синхронизация темы
-    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    chrome.runtime.sendMessage({
-      type: "theme",
-      theme: isDark ? "dark" : "light",
-    });
-  }, []);
-
-  useEffect(() => {
     if (!isExtensionEnv()) return;
 
     chrome.storage.local.get(["payment", "userData"], (result) => {

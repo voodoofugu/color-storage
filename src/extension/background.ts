@@ -34,13 +34,10 @@ chrome.runtime.onConnect.addListener((port) => {
 
 // слушаем сообщения
 chrome.runtime.onMessage.addListener((message) => {
-  // При изменении темы от themeWatcher.js
+  // При изменении темы от themeWatcher или App
   if (message.type === "theme") {
     theme = message.theme;
     updateIcon();
-    chrome.storage.local.set({
-      theme,
-    });
   }
 
   // сервер
