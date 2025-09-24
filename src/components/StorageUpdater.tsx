@@ -47,23 +47,17 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
           if (data) state.setNexus({ isPro: data as boolean });
         },
       },
-      // {
-      //   name: "theme",
-      //   value: theme,
-      //   type: "chrome-local",
-      //   onLoad: (data) => {
-      //     console.log("data", data);
-      //     if (!data) {
-      //       document.documentElement.removeAttribute("data-theme");
-      //       document.documentElement.removeAttribute("style");
-
-      //       return;
-      //     }
-
-      //     document.documentElement.setAttribute("data-theme", data as string);
-      //     document.documentElement.style.colorScheme = data as string;
-      //   },
-      // },
+      {
+        name: "themeSettings",
+        value: themeSettings,
+        type: "chrome-local",
+        onLoad: (data) => {
+          if (data)
+            state.setNexus({
+              themeSettings: data as "system" | "light" | "dark",
+            });
+        },
+      },
       {
         name: "userData",
         type: "chrome-local",
@@ -74,7 +68,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         },
       },
     ],
-    [paletteHidden, stableColorStorage, isPro]
+    [paletteHidden, stableColorStorage, isPro, themeSettings]
   );
 
   const handleStorageUpdate = useCallback(() => {
@@ -93,14 +87,22 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
       theme: isDark ? "dark" : "light",
     });
 
-    if (isDark) {
-      document.documentElement.setAttribute("data-theme", "dark");
-      document.documentElement.style.colorScheme = "dark";
-    } else {
+    if (themeSettings === "system") {
+      if (isDark) {
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.style.colorScheme = "dark";
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        document.documentElement.removeAttribute("style");
+      }
+    } else if (themeSettings === "light") {
       document.documentElement.removeAttribute("data-theme");
       document.documentElement.removeAttribute("style");
+    } else if (themeSettings === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      document.documentElement.style.colorScheme = "dark";
     }
-  }, []);
+  }, [themeSettings]);
 
   // в callback обновляем флаг isStorageLoaded
   useStorage(storItem, handleStorageUpdate);

@@ -37,20 +37,7 @@ function SettingsWindow() {
     const value = e.target.value as ThemeT;
 
     state.setNexus({ themeSettings: value });
-
-    // if (!value) {
-    //   document.documentElement.removeAttribute("data-theme");
-    //   document.documentElement.removeAttribute("style");
-    // } else {
-    //   document.documentElement.setAttribute("data-theme", value as string);
-    //   document.documentElement.style.colorScheme = value as string;
-    // }
-
-    // if (!isExtensionEnv()) return;
-    // chrome.storage.local.set({ theme: value });
   };
-
-  // effects
 
   return isPro && userData ? (
     <div className="popup-content">
@@ -58,7 +45,7 @@ function SettingsWindow() {
 
       <div className="popup-contentBox">
         <MorphScroll
-          // className="popup-contentBox"
+          className="settings-scroll"
           size="auto"
           objectsSize={[222, "none"]}
           progressTrigger={{
@@ -68,8 +55,9 @@ function SettingsWindow() {
           gap={10}
           scrollBarOnHover
           wrapperAlign={["center", "start"]}
-          // edgeGradient={{ size: 10 }}
-          wrapperMargin={[0, 2]}
+          edgeGradient={{ color: "rgba(0,0,0,0.1)", size: 20 }}
+          wrapperMargin={[0, 0, 22, 0]}
+          scrollBarEdge={10}
         >
           <div className="contentWrap">
             <div className="popup-title small">User:</div>

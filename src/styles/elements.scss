@@ -367,8 +367,12 @@
   }
 }
 
+.palette-scroll {
+  .ms-bar {
+    translate: 0 -4px;
+  }
+}
 .ms-bar {
-  translate: 0 -4px;
   .scroll-thumb {
     width: 2px;
     height: 100%;
