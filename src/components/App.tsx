@@ -21,6 +21,7 @@ import isExtensionEnv from "../extension/isExtensionEnv";
 
 import ColorSlider from "./ColorSlider";
 import Button from "./Button";
+import Header from "./Header";
 import StorageColors from "./StorageColors";
 import PopupWindow from "./PopupWindow";
 
@@ -253,12 +254,6 @@ function App() {
     });
   }, []);
 
-  const openSettings = () => actions.popupOpen("settingsWindow");
-
-  const paletteViewingHandler = () => {
-    state.setNexus((prev) => ({ paletteHidden: !prev.paletteHidden }));
-  };
-
   // Effects:
   // рисуем Canvas
   useEffect(() => {
@@ -333,17 +328,7 @@ function App() {
         colorStorage.length ? " witch-palettes" : ""
       }`}
     >
-      <Button
-        className={`palette flat header-btn${paletteHidden ? " active" : ""}`}
-        svgID="palette"
-        onClick={paletteViewingHandler}
-      />
-      <div className="title">Color Storage</div>
-      <Button
-        className="settings flat header-btn"
-        svgID="settings"
-        onClick={openSettings}
-      />
+      <Header />
 
       <div className="canvasBox">
         <ColorSlider

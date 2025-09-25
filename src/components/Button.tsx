@@ -8,7 +8,8 @@ type SvgIdT =
   | "drag"
   | "trash"
   | "settings"
-  | "palette";
+  | "palette"
+  | "sign";
 
 type ButtonT = {
   className?: string;

@@ -5,7 +5,8 @@ import {
   DragIcon,
   TrashIcon,
   SettingsIcon,
-  PaletteViewing,
+  PaletteIcon,
+  SignIcon,
 } from "../svg/svgIcons";
 import type { SvgIdT } from "./Button";
 
@@ -30,7 +31,9 @@ const SVGIcon = ({ svgID }: SVGIconT) => {
         ) : svgID === "settings" ? (
           <SettingsIcon />
         ) : svgID === "palette" ? (
-          <PaletteViewing />
+          <PaletteIcon />
+        ) : svgID === "sign" ? (
+          <SignIcon />
         ) : null}
       </svg>
     </div>

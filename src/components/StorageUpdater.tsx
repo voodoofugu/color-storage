@@ -82,6 +82,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
     port.postMessage({ type: "popup_opened" });
 
     const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    // сообщение в background для смены иконки
     chrome.runtime.sendMessage({
       type: "theme",
       theme: isDark ? "dark" : "light",
@@ -97,7 +98,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
       }
     } else if (themeSettings === "light") {
       document.documentElement.removeAttribute("data-theme");
-      document.documentElement.removeAttribute("style");
+      document.documentElement.style.colorScheme = "light";
     } else if (themeSettings === "dark") {
       document.documentElement.setAttribute("data-theme", "dark");
       document.documentElement.style.colorScheme = "dark";

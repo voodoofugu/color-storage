@@ -58,12 +58,24 @@ const SettingsIcon = () => {
   );
 };
 
-const PaletteViewing = () => {
+const PaletteIcon = () => {
   return (
     <g className="svgLine">
       <circle cx="44" cy="51" r="15" />
       <path d="M50 37C50 28.7157 43.2843 22 35 22C26.7157 22 20 28.7157 20 37C20 43.151 23.7023 48.4372 29 50.7519" />
       <path d="M43.9985 25C46.5058 23.1163 49.6225 22 53 22C61.2843 22 68 28.7157 68 37C68 43.151 64.2977 48.4372 59 50.7519" />
+    </g>
+  );
+};
+
+const SignIcon = () => {
+  return (
+    <g className="svgLine">
+      <path d="M30 30V28C30 24.6863 32.6863 22 36 22H54C57.3137 22 60 24.6863 60 28V60C60 63.3137 57.3137 66 54 66H36C32.6863 66 30 63.3137 30 60V58" />
+      <g className="arrow">
+        <path d="M39 37L46 44L39 51" />
+        <line x1="44" y1="44" x2="26" y2="44" />
+      </g>
     </g>
   );
 };
@@ -75,5 +87,6 @@ export {
   DragIcon,
   TrashIcon,
   SettingsIcon,
-  PaletteViewing,
+  PaletteIcon,
+  SignIcon,
 };

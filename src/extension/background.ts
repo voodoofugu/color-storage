@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener((message) => {
     });
 
     // message.id получаем все данные оплаты
-    const purchaseHandel = async () => {
+    const getUserData = async () => {
       const res = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/get-user-data`,
         {
@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener((message) => {
       });
     };
 
-    purchaseHandel();
+    getUserData();
   }
 
   if (message.payment === "cancel") {
