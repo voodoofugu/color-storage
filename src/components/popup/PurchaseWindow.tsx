@@ -33,7 +33,7 @@ function PurchaseWindow() {
       return;
     }
 
-    const res = await fetch(`${backendUrl}/api/checkout`, {
+    const res = await fetch(`${backendUrl}/api/start-payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, deviceId: getDeviceId() }),
@@ -44,11 +44,11 @@ function PurchaseWindow() {
       return;
     }
 
-    const { url, id } = await res.json();
+    const { url } = await res.json();
     // вместо stripe — идём на промежуточную страницу
-    const startPaymentUrl = `${backendUrl}/start-payment?stripeUrl=${encodeURIComponent(
+    const startPaymentUrl = `${backendUrl}/Checkout?stripeUrl=${encodeURIComponent(
       url
-    )}&id=${encodeURIComponent(id)}`;
+    )}&email=${encodeURIComponent(email)}`;
 
     window.open(startPaymentUrl, "_blank");
   };
