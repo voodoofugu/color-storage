@@ -273,7 +273,7 @@
     }
   }
 
-  &.settings {
+  &.sign {
     right: 12px;
   }
 
@@ -345,6 +345,16 @@
 
   &.disabled {
     filter: grayscale(0.8) opacity(0.8);
+  }
+
+  &.exit-btn {
+    width: 100%;
+    .text {
+      font-size: 14px;
+    }
+    .svgIcon .arrow {
+      transform: scaleX(-1) translateX(-62px);
+    }
   }
 }
 

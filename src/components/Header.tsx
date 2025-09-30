@@ -33,13 +33,13 @@ function Header() {
 
       {isPro && userData ? (
         <Button
-          className="settings flat header-btn"
+          className="sign flat header-btn"
           svgID="account"
           onClick={openSettings}
         />
       ) : (
         <Button
-          className="settings flat header-btn"
+          className="sign flat header-btn"
           svgID="sign"
           onClick={toRestore}
         />
