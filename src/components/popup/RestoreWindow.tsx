@@ -31,6 +31,7 @@ function RestoreWindow() {
       return;
     }
 
+    // убрать это окно
     const res = await fetch(`${backendUrl}/api/email-checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

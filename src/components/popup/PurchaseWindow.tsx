@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 
-import Button from "../Button";
+import { state, actions } from "../../../nexusConfig";
 
-import { actions } from "../../../nexusConfig";
+import Button from "../Button";
 
 import { setManagedTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
+
+import isExtensionEnv from "../../extension/isExtensionEnv";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -22,8 +24,67 @@ function PurchaseWindow() {
 
   // funcs
   // предусмотреть ошибки при отсутствии интернета!!!
-  const toRestore = () => {
-    actions.popupOpen("restoreWindow");
+  const restoreHandler = async () => {
+    // actions.popupOpen("restoreWindow");
+    if (!isValidEmail) {
+      setValidEmail(false);
+      setManagedTask(() => setValidEmail(true), 1000, "setValidEmail");
+      return;
+    }
+
+    const res = await fetch(`${backendUrl}/api/email-checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, deviceId: getDeviceId() }),
+    });
+
+    const { status, deviceIds, id } = await res.json();
+
+    const getUserData = async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/get-user-data`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        }
+      );
+
+      if (!res.ok) {
+        console.error("Error during purchase:", res.statusText);
+        return;
+      }
+
+      const userData = await res.json();
+
+      if (!isExtensionEnv()) return;
+      chrome.storage.local.set({
+        userData,
+      });
+    };
+
+    switch (status) {
+      case "notFound":
+        actions.popupOpen("payment-notFound");
+        break;
+      case "limit":
+        actions.popupOpen("restore-limit");
+        break;
+      case "paid":
+        state.setNexus({ isPro: true });
+        actions.popupOpen("payment-found", {
+          deviceIds: deviceIds.length,
+        });
+
+        getUserData();
+        break;
+      case "cancelled":
+        actions.popupOpen("payment-cancelled");
+        break;
+
+      default:
+        actions.popupOpen("error");
+    }
   };
 
   const purchaseHandel = async () => {
@@ -89,7 +150,11 @@ function PurchaseWindow() {
         />
         <div className="popup-text small">
           I already have a pro version:{" "}
-          <Button className="restore-btn" text="restore" onClick={toRestore} />
+          <Button
+            className="restore-btn"
+            text="restore"
+            onClick={restoreHandler}
+          />
         </div>
       </div>
 

@@ -32,6 +32,27 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 });
 
+const getUserData = async (id: string) => {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/get-user-data`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }
+  );
+
+  if (!res.ok) {
+    console.error("Error during purchase:", res.statusText);
+    return;
+  }
+
+  const userData = await res.json();
+  chrome.storage.local.set({
+    userData,
+  });
+};
+
 // слушаем сообщения
 chrome.runtime.onMessage.addListener((message) => {
   // При изменении темы от themeWatcher или App
@@ -55,28 +76,7 @@ chrome.runtime.onMessage.addListener((message) => {
     });
 
     // message.id получаем все данные оплаты
-    const getUserData = async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/get-user-data`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: message.id }),
-        }
-      );
-
-      if (!res.ok) {
-        console.error("Error during purchase:", res.statusText);
-        return;
-      }
-
-      const userData = await res.json();
-      chrome.storage.local.set({
-        userData,
-      });
-    };
-
-    getUserData();
+    getUserData(message.id);
   }
 
   if (message.payment === "cancel") {
