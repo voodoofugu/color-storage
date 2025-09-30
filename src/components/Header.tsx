@@ -15,34 +15,11 @@ function Header() {
     state.setNexus((prev) => ({ paletteHidden: !prev.paletteHidden }));
   };
 
-  const openSettings = () => actions.popupOpen("settingsWindow");
+  const openSettings = () => actions.popupOpen("accountWindow");
 
   const toRestore = () => {
-    actions.popupOpen("restoreWindow");
+    actions.popupOpen("signInWindow");
   };
-
-  //   const getUserData = async (id: string) => {
-  //     if (!isExtensionEnv()) return;
-
-  //     const res = await fetch(
-  //       `${import.meta.env.VITE_BACKEND_URL}/api/get-user-data`,
-  //       {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ id: id }),
-  //       }
-  //     );
-
-  //     if (!res.ok) {
-  //       console.error("Error during purchase:", res.statusText);
-  //       return;
-  //     }
-
-  //     const userData = await res.json();
-  //     chrome.storage.local.set({
-  //       userData,
-  //     });
-  //   };
 
   return (
     <>
@@ -57,7 +34,7 @@ function Header() {
       {isPro && userData ? (
         <Button
           className="settings flat header-btn"
-          svgID="settings"
+          svgID="account"
           onClick={openSettings}
         />
       ) : (

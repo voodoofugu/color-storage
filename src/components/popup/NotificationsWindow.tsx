@@ -19,14 +19,14 @@ function PaymentFound({ deviceIds }: { deviceIds: number }) {
 }
 
 function RestoreLimit() {
-  const openSettings = () => actions.popupOpen("settingsWindow");
+  const openSettings = () => actions.popupOpen("accountWindow");
   return (
     <>
       Max devices connected 3/3. 👀
       <div className="popup-text small">
         If you want to reset them, open the{" "}
         <div className="link" onClick={openSettings}>
-          Settings
+          Account
         </div>
         .
       </div>

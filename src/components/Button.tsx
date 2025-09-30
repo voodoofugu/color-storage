@@ -9,7 +9,8 @@ type SvgIdT =
   | "trash"
   | "settings"
   | "palette"
-  | "sign";
+  | "sign"
+  | "account";
 
 type ButtonT = {
   className?: string;

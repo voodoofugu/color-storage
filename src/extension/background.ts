@@ -64,22 +64,22 @@ chrome.runtime.onMessage.addListener((message) => {
   // сервер
   // Обработка платежей
   if (message.payment === "pending") {
-    chrome.storage.local.set({
-      payment: message.payment,
-    });
+    //
   }
 
   if (message.payment === "success") {
-    // для большей безопасности полученные данные оплаты надо снова проверить на их наличие в BD!!!
-    chrome.storage.local.set({
-      payment: message.payment,
-    });
-
+    //
     // message.id получаем все данные оплаты
     getUserData(message.id);
   }
 
-  if (message.payment === "cancel") {
-    chrome.storage.local.set({ payment: message.payment });
+  if (message.payment === "found") {
+    //
   }
+
+  if (message.payment === "cancel") {
+    //
+  }
+
+  chrome.storage.local.set({ payment: message.payment });
 });

@@ -1,58 +1,61 @@
-import { useRef, useState, useEffect } from "react";
-
-import Button from "../Button";
+import { useState, useEffect, useRef } from "react";
 
 import { state, actions } from "../../../nexusConfig";
+
+import Button from "../Button";
 
 import { setManagedTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
 
-function RestoreWindow() {
+import getUserData from "../../helpers/getUserData";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+function SignInWindow() {
   // states
-  const [id, setId] = useState("");
-  const [validId, setValidId] = useState(true);
+  const [email, setEmail] = useState("");
+  const [validEmail, setValidEmail] = useState(true);
 
   // refs
   const inputRef = useRef<HTMLInputElement>(null);
 
   // vars
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const isValidId = /^cs_(test|live)_[A-Za-z0-9]+$/.test(id);
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // funcs
-  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setManagedTask(() => setId(e.target.value), 200, "setValidId");
-  };
-
-  const checkStatus = async () => {
-    if (!isValidId) {
-      setValidId(false);
-      setManagedTask(() => setValidId(true), 1000, "setValidId");
+  const restoreHandler = async () => {
+    if (!isValidEmail) {
+      setValidEmail(false);
+      setManagedTask(() => setValidEmail(true), 1000, "setValidEmail");
       return;
     }
 
-    // убрать это окно
     const res = await fetch(`${backendUrl}/api/email-checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, deviceId: getDeviceId() }),
+      body: JSON.stringify({ email, deviceId: getDeviceId() }),
     });
 
-    const data = await res.json();
+    const { status, deviceIds, id } = await res.json();
 
-    switch (data.status) {
+    switch (status) {
       case "notFound":
         actions.popupOpen("payment-notFound");
         break;
+
       case "limit":
         actions.popupOpen("restore-limit");
         break;
+
       case "paid":
         state.setNexus({ isPro: true });
         actions.popupOpen("payment-found", {
-          deviceIds: data.deviceIds.length,
+          deviceIds: deviceIds.length,
         });
+
+        getUserData(id);
         break;
+
       case "cancelled":
         actions.popupOpen("payment-cancelled");
         break;
@@ -62,9 +65,13 @@ function RestoreWindow() {
     }
   };
 
+  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setManagedTask(() => setEmail(e.target.value), 200, "setValidEmail");
+  };
+
   const inputOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      checkStatus();
+      restoreHandler();
     }
   };
 
@@ -73,36 +80,34 @@ function RestoreWindow() {
     inputRef.current?.focus();
   }, []);
 
+  // render
   return (
     <div className="popup-content">
-      <div className="popup-title">Restore</div>
+      <div className="popup-title">Account</div>
       <div className="popup-text">
-        To restore your pro version, please enter your ID from <b>email</b>:
+        Enter your email address to get the full version of the extension:
       </div>
 
-      <div className={`input-wrap${!validId ? " invalid" : ""}`}>
+      <div className={`input-wrap${!validEmail ? " invalid" : ""}`}>
         <input
           ref={inputRef}
           className="popup-input"
-          type="ID"
-          name="ID"
+          type="email"
+          name="email"
           required
-          placeholder="ID"
+          placeholder="Email"
           onChange={inputOnChange}
           onKeyDown={inputOnKeyDown}
         />
-        <div className="popup-text small">
-          You can connect only <b>3</b> devices.
-        </div>
       </div>
 
       <Button
-        className={`popup-btn${!isValidId ? " disabled" : ""}`}
-        text="Check"
-        onClick={checkStatus}
+        className={`popup-btn${!isValidEmail ? " disabled" : ""}`}
+        text="Sign in"
+        onClick={restoreHandler}
       />
     </div>
   );
 }
 
-export default RestoreWindow;
+export default SignInWindow;

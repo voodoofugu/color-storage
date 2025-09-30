@@ -80,6 +80,15 @@ const SignIcon = () => {
   );
 };
 
+const AccountIcon = () => {
+  return (
+    <g className="svgLine">
+      <path d="M27 63.1667C27 55.3426 33.3426 49 41.1667 49H46.8333C54.6574 49 61 55.3426 61 63.1667C61 64.7315 59.7315 66 58.1667 66H29.8333C28.2685 66 27 64.7315 27 63.1667Z" />
+      <circle cx="44" cy="32" r="10" />
+    </g>
+  );
+};
+
 export {
   PickerIcon,
   CopyIcon,
@@ -89,4 +98,5 @@ export {
   SettingsIcon,
   PaletteIcon,
   SignIcon,
+  AccountIcon,
 };

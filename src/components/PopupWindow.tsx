@@ -5,8 +5,8 @@ import { state, actions } from "../../nexusConfig.ts";
 import Button from "./Button";
 import PurchaseWindow from "./popup/PurchaseWindow";
 import NotificationsWindow from "./popup/NotificationsWindow";
-import RestoreWindow from "./popup/RestoreWindow";
-import SettingsWindow from "./popup/SettingsWindow";
+import SignInWindow from "./popup/SignInWindow";
+import AccountWindow from "./popup/AccountWindow.tsx";
 
 import { setManagedTask, clearManagedTask } from "../helpers/taskManager";
 
@@ -21,9 +21,9 @@ type NotifT =
   | "error";
 
 type PopupContentT =
-  | "settingsWindow"
+  | "accountWindow"
   | "purchaseWindow"
-  | "restoreWindow"
+  | "signInWindow"
   // notifications without "...Window"
   | NotifT;
 
@@ -42,14 +42,14 @@ function PopupWindow() {
   let popupContentLocal;
 
   switch (popupType) {
-    case "settingsWindow":
-      popupContentLocal = <SettingsWindow />;
+    case "accountWindow":
+      popupContentLocal = <AccountWindow />;
       break;
     case "purchaseWindow":
       popupContentLocal = <PurchaseWindow />;
       break;
-    case "restoreWindow":
-      popupContentLocal = <RestoreWindow />;
+    case "signInWindow":
+      popupContentLocal = <SignInWindow />;
       break;
 
     default:
@@ -79,7 +79,7 @@ function PopupWindow() {
   );
 }
 
-export { SettingsWindow, PurchaseWindow };
+export { AccountWindow, PurchaseWindow };
 export default PopupWindow;
 
 export type { PopupContentT, NotifT };

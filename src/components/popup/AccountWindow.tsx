@@ -8,29 +8,24 @@ import { state } from "../../../nexusConfig";
 
 type ThemeT = "light" | "dark" | "system";
 
-function SettingsWindow() {
-  // states
-
-  // refs
-
+function AccountWindow() {
   // nexus-state
   const isPro = state.useNexus("isPro");
-  // const userData = state.useNexus("userData");
-  const userData = {
-    amount: "$5.00",
-    completed: "1/21/1970 8:25:18",
-    created: "9/19/2025 21:56:07",
-    deviceId: "6b43f1e5",
-    email: "schilingeorg@gmail.com",
-    id: "cs_test_a1aeFewGTiKsref3mAQanPf3GLD548DKJapDBT8kXY1OkccfM6mCPnzVEG",
-    status: "paid",
-  };
-  // const theme = state.useNexus("theme");
+  const userData = state.useNexus("userData");
+  // const userData = {
+  //   amount: "$5.00",
+  //   completed: "1/21/1970 8:25:18",
+  //   created: "9/19/2025 21:56:07",
+  //   deviceId: "6b43f1e5",
+  //   email: "schilingeorg@gmail.com",
+  //   id: "cs_test_a1aeFewGTiKsref3mAQanPf3GLD548DKJapDBT8kXY1OkccfM6mCPnzVEG",
+  //   status: "paid",
+  // };
   const themeSettings = state.useNexus("themeSettings");
 
   // vars
   //   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const devices = userData.deviceId.split("/").length;
+  const devices = userData ? userData.deviceId.split("/").length : 0;
 
   // funcs
   const onChangeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -41,7 +36,7 @@ function SettingsWindow() {
 
   return isPro && userData ? (
     <div className="popup-content">
-      <div className="popup-title">Settings</div>
+      <div className="popup-title">Account</div>
 
       <div className="popup-contentBox">
         <MorphScroll
@@ -86,7 +81,7 @@ function SettingsWindow() {
             </div>
           </div>
           <div className="contentWrap">
-            <div className="popup-title small">Appearance:</div>
+            <div className="popup-title small">Settings:</div>
             <div className="contentBox">
               <div className="popup-text bold">Theme:</div>
               <select
@@ -126,4 +121,4 @@ function SettingsWindow() {
   );
 }
 
-export default SettingsWindow;
+export default AccountWindow;

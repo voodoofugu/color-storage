@@ -7,7 +7,7 @@ import Button from "../Button";
 import { setManagedTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
 
-import isExtensionEnv from "../../extension/isExtensionEnv";
+import getUserData from "../../helpers/getUserData";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -25,7 +25,6 @@ function PurchaseWindow() {
   // funcs
   // предусмотреть ошибки при отсутствии интернета!!!
   const restoreHandler = async () => {
-    // actions.popupOpen("restoreWindow");
     if (!isValidEmail) {
       setValidEmail(false);
       setManagedTask(() => setValidEmail(true), 1000, "setValidEmail");
@@ -40,29 +39,6 @@ function PurchaseWindow() {
 
     const { status, deviceIds, id } = await res.json();
 
-    const getUserData = async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/get-user-data`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id }),
-        }
-      );
-
-      if (!res.ok) {
-        console.error("Error during purchase:", res.statusText);
-        return;
-      }
-
-      const userData = await res.json();
-
-      if (!isExtensionEnv()) return;
-      chrome.storage.local.set({
-        userData,
-      });
-    };
-
     switch (status) {
       case "notFound":
         actions.popupOpen("payment-notFound");
@@ -76,7 +52,7 @@ function PurchaseWindow() {
           deviceIds: deviceIds.length,
         });
 
-        getUserData();
+        getUserData(id);
         break;
       case "cancelled":
         actions.popupOpen("payment-cancelled");

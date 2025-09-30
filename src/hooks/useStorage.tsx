@@ -13,6 +13,13 @@ type DataT =
 type StorageTypeT = "local" | "session" | "chrome-local" | "chrome-session";
 type StorageItemT = Parameters<typeof useStorage>[0];
 
+/** Удаляем (null, undefined, false, "") */
+function isValidValue(value: DataT): boolean {
+  return (
+    value !== null && value !== undefined && value !== false && value !== ""
+  );
+}
+
 /** Проверка существования chrome API */
 function chromeExist(): boolean {
   return typeof chrome !== "undefined" && !!chrome.runtime?.id;
@@ -132,12 +139,45 @@ function useStorage(
 
             return new Promise<void>((resolve) => {
               if (item.remove) {
-                storageArea.remove(item.name, resolve);
-              } else if (item.value !== undefined) {
-                storageArea.set({ [item.name]: item.value }, resolve);
-              } else {
-                storageArea.remove(item.name, resolve);
+                storageArea.remove(item.name, () => {
+                  setCurrentValues((prev) => ({ ...prev, [item.name]: null }));
+                  resolve();
+                });
+                return;
               }
+
+              // Сначала читаем старое значение
+              storageArea.get([item.name], (result) => {
+                const oldValue = result[item.name];
+
+                if (isValidValue(item.value)) {
+                  // Обновляем только если реально изменилось
+                  if (JSON.stringify(oldValue) !== JSON.stringify(item.value)) {
+                    storageArea.set({ [item.name]: item.value }, () => {
+                      setCurrentValues((prev) => ({
+                        ...prev,
+                        [item.name]: item.value,
+                      }));
+                      resolve();
+                    });
+                  } else {
+                    resolve();
+                  }
+                } else {
+                  // Если значение "невалидное", а старое есть — удаляем
+                  if (oldValue !== undefined) {
+                    storageArea.remove(item.name, () => {
+                      setCurrentValues((prev) => ({
+                        ...prev,
+                        [item.name]: null,
+                      }));
+                      resolve();
+                    });
+                  } else {
+                    resolve();
+                  }
+                }
+              });
             });
           }
 
@@ -151,17 +191,21 @@ function useStorage(
             return;
           }
 
-          if (item.value !== undefined) {
+          const oldValue = storageType.getItem(item.name);
+
+          if (isValidValue(item.value)) {
             const serializedValue = JSON.stringify(item.value);
-            if (storageType.getItem(item.name) !== serializedValue) {
+
+            if (oldValue !== serializedValue) {
               storageType.setItem(item.name, serializedValue);
               setCurrentValues((prev) => ({
                 ...prev,
                 [item.name]: item.value,
               }));
             }
-          } else {
+          } else if (oldValue !== null) {
             storageType.removeItem(item.name);
+            setCurrentValues((prev) => ({ ...prev, [item.name]: null }));
           }
         } catch (error) {
           console.error(

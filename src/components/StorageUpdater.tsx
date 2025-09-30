@@ -17,6 +17,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
   const stableColorStorage = JSON.stringify(colorStorage);
   const paletteHidden = state.useNexus("paletteHidden");
   const themeSettings = state.useNexus("themeSettings");
+  const userData = state.useNexus("userData");
 
   // hooks
   const storItem = useMemo<StorageItemT>(
@@ -60,15 +61,15 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
       },
       {
         name: "userData",
+        value: userData,
         type: "chrome-local",
-        readOnly: true,
         onLoad: (data) => {
           if (!data) return;
           state.setNexus({ userData: data as Record<string, string> });
         },
       },
     ],
-    [paletteHidden, stableColorStorage, isPro, themeSettings]
+    [paletteHidden, stableColorStorage, isPro, themeSettings, userData]
   );
 
   const handleStorageUpdate = useCallback(() => {
