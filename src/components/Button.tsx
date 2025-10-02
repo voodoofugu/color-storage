@@ -14,6 +14,7 @@ type SvgIdT =
 
 type ButtonT = {
   className?: string;
+  ref?: React.Ref<HTMLButtonElement>;
   data?: string;
   svgID?: SvgIdT;
   color?: string;
@@ -25,6 +26,7 @@ type ButtonT = {
 
 function Button({
   className,
+  ref,
   data,
   svgID,
   color,
@@ -42,6 +44,7 @@ function Button({
       className={`btn${className ? ` ${className}` : ""}${
         bgColor && color && isHexWithAlpha ? " alpha" : ""
       }`}
+      ref={ref}
       draggable={draggable}
       style={{
         ...(bgColor &&

@@ -29,6 +29,7 @@ function StorageColors() {
   };
 
   // refs
+  const clearBtnRef = useRef<HTMLButtonElement | null>(null);
   const resizeWrap = useRef<HTMLDivElement | null>(null);
   const maxWidth = useRef(0);
   const dragItem = useRef<number | null>(null);
@@ -57,8 +58,11 @@ function StorageColors() {
   };
 
   const onMove = useCallback(() => {
-    if (!resizeWrap.current) return;
-    resizeWidth(resizeWrap.current!, maxWidth);
+    if (!resizeWrap.current || !clearBtnRef.current) return;
+
+    if (!maxWidth.current) maxWidth.current = resizeWrap.current.clientWidth;
+
+    resizeWidth(resizeWrap.current!, maxWidth.current, clearBtnRef.current);
   }, []);
 
   const handelOnDragStart = useCallback(
@@ -67,6 +71,7 @@ function StorageColors() {
 
       const enterEl = document.querySelector(`.scroll-wrap`) as HTMLDivElement;
       enterEl!.style.width = `181px`;
+      clearBtnRef.current?.classList.add("view");
 
       startDrag(e);
     },
@@ -76,6 +81,7 @@ function StorageColors() {
   const removeWidth = useCallback(() => {
     const enterEl = document.querySelector(`.scroll-wrap`) as HTMLDivElement;
     enterEl!.style.removeProperty("width");
+    clearBtnRef.current?.classList.remove("view");
   }, []);
 
   const handleDrop = useCallback(() => {
@@ -336,6 +342,7 @@ function StorageColors() {
     <div className="storage-box">
       <Button
         className="clear-btn"
+        ref={clearBtnRef}
         onDrop={clearBtnOnDrop}
         onDragEnter={clearBtnOnEnter}
         onDragLeave={clearBtnOnDragLeave}

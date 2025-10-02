@@ -187,6 +187,20 @@
         }
       }
     }
+    &.reduced {
+      .clear-btn {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: all;
+      }
+    }
+
+    .clear-btn {
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.2s ease-in-out;
+      pointer-events: none;
+    }
     .container {
       width: fit-content;
       .menu-wrap {
