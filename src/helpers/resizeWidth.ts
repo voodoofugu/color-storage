@@ -1,37 +1,64 @@
 // класс для появления кнопки clear
-const classChange = (
+const classChanger = (
   el: HTMLElement,
   minWidth: number,
   clearBtn: HTMLElement
 ) => {
   const width = parseFloat(el.style.width); // лучше чем clientWidth
 
-  if (width <= minWidth + 10) {
+  if (width <= minWidth + 4) {
     clearBtn.classList.add("view");
   } else if (clearBtn.classList.contains("view"))
     clearBtn.classList.remove("view");
 };
 
-function resizeWidth(el: HTMLElement, maxWidth: number, clearBtn: HTMLElement) {
+function resizeWidth(
+  el: HTMLElement,
+  maxWidth: number,
+  clearBtn: HTMLElement,
+  clearBtnOnClick: () => void
+) {
   const controller = new AbortController();
   const { signal } = controller;
   const rect = el.getBoundingClientRect();
 
   const minWidth = maxWidth - 40; // 224 - 40 (184);
+  let clearReady = false;
 
   document.addEventListener(
     "mousemove",
     (moveEvent) => {
       document.body.style.cursor = "ew-resize";
-      const x = moveEvent.clientX - rect.left;
+      const moveX = moveEvent.clientX - rect.left;
 
-      el.style.width = `${Math.min(Math.max(x, minWidth), maxWidth + 2)}px`;
+      el.style.width = `${Math.min(
+        Math.max(moveX, maxWidth - 100),
+        maxWidth + 2
+      )}px`;
       el.style.transition = "unset";
 
-      classChange(el, minWidth, clearBtn);
+      classChanger(el, minWidth, clearBtn);
 
-      if (x < minWidth - 10) {
-        // clearBtn.classList.add("onDragEnter"); дописать!!!
+      // кнопка clear
+      if (moveX < 80) {
+        clearBtn.classList.remove("onDragEnter");
+        clearBtn.classList.add("onClick");
+
+        clearReady = true;
+      }
+
+      if (moveX >= 80) {
+        clearBtn.classList.remove("onDragEnter");
+        clearBtn.classList.remove("onClick");
+
+        clearReady = false;
+      }
+
+      if (moveX < minWidth) {
+        clearBtn.style.width = `${Math.min(
+          Math.abs(moveX - minWidth) + 34,
+          maxWidth - 130
+        )}px`;
       }
     },
     { signal }
@@ -43,16 +70,25 @@ function resizeWidth(el: HTMLElement, maxWidth: number, clearBtn: HTMLElement) {
       controller.abort();
       document.body.style.removeProperty("cursor");
       el.style.removeProperty("transition");
+      const width = parseFloat(el.style.width);
 
       // выравниваем ширину
-      const elWidth = el.getBoundingClientRect().width;
-      if (elWidth <= maxWidth && elWidth !== minWidth) {
+      if (width <= maxWidth && width !== minWidth) {
         el.style.width = `${minWidth}px`;
-      } else if (elWidth > maxWidth) {
+      } else if (width > maxWidth) {
         el.style.width = `${maxWidth}px`;
       }
 
-      classChange(el, minWidth, clearBtn);
+      classChanger(el, minWidth, clearBtn);
+
+      // кнопка clear
+      if (parseFloat(clearBtn.style.width) < minWidth) {
+        clearBtn.style.removeProperty("width");
+      }
+
+      if (clearReady) {
+        clearBtnOnClick();
+      }
     },
     { signal }
   );

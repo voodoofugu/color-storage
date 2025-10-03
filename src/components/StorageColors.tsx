@@ -62,7 +62,12 @@ function StorageColors() {
 
     if (!maxWidth.current) maxWidth.current = resizeWrap.current.clientWidth;
 
-    resizeWidth(resizeWrap.current!, maxWidth.current, clearBtnRef.current);
+    resizeWidth(
+      resizeWrap.current!,
+      maxWidth.current,
+      clearBtnRef.current,
+      clearBtnOnClick
+    );
   }, []);
 
   const handelOnDragStart = useCallback(
