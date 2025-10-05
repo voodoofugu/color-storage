@@ -29,8 +29,8 @@ type MyStateT = {
 
 const { state, actions } = createReactStore({
   state: {
-    // isPro: false,
-    isPro: true,
+    isPro: false,
+    // isPro: true,
     mainColor: "#ffffff", // hex only
     activeColor: "",
     failedColorAdding: false,
@@ -40,16 +40,16 @@ const { state, actions } = createReactStore({
     currentPaletteId: 0,
     popupContent: null,
     paletteHidden: false,
-    // userData: null,
-    userData: {
-      amount: "$5.00",
-      completed: "1/21/1970 8:25:18",
-      created: "9/19/2025 21:56:07",
-      deviceId: "6b43f1e5",
-      email: "schilingeorg@gmail.com",
-      id: "cs_test_a1aeFewGTiKsref3mAQanPf3GLD548DKJapDBT8kXY1OkccfM6mCPnzVEG",
-      status: "paid",
-    },
+    userData: null,
+    // userData: {
+    //   amount: "$5.00",
+    //   completed: "1/21/1970 8:25:18",
+    //   created: "9/19/2025 21:56:07",
+    //   deviceId: "6b43f1e5",
+    //   email: "schilingeorg@gmail.com",
+    //   id: "cs_test_a1aeFewGTiKsref3mAQanPf3GLD548DKJapDBT8kXY1OkccfM6mCPnzVEG",
+    //   status: "paid",
+    // },
     themeSettings: "system",
   } as MyStateT,
 

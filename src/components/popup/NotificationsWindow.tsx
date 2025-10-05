@@ -60,6 +60,9 @@ function NotificationsWindow({ notifType, props }: NotificationsWindowT) {
       case "restore-limit":
         message = <RestoreLimit />;
         break;
+      case "linkSent":
+        message = "Link sent to your email for further verification! ✉️";
+        break;
       case "error":
         message = "An error occurred. Please try again. 😞";
         break;

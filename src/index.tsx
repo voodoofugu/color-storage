@@ -5,9 +5,11 @@ import "./index.css";
 
 import App from "./components/App";
 import StorageUpdater from "./components/StorageUpdater";
+import FetchData from "./components/FetchData";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <FetchData />
     <StorageUpdater>
       <App />
     </StorageUpdater>

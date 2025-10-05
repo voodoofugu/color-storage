@@ -1,27 +1,57 @@
+import { useState } from "react";
 import { MorphScroll } from "morphing-scroll";
 
 import Button from "../Button";
 
-import { state } from "../../../nexusConfig";
+import { state, actions } from "../../../nexusConfig";
 
 // import isExtensionEnv from "../../extension/isExtensionEnv";
 
 type ThemeT = "light" | "dark" | "system";
 
 function AccountWindow() {
+  // states
+  const [loading, setLoading] = useState(false);
+
   // nexus-state
   const userData = state.useNexus("userData");
   const themeSettings = state.useNexus("themeSettings");
 
   // vars
-  //   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const devices = userData ? userData.deviceId.split("/").length : 0;
+  const devices =
+    userData && Object.keys(userData).length > 0
+      ? userData.deviceId.split("/").length
+      : 0;
 
   // funcs
   const onChangeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as ThemeT;
 
     state.setNexus({ themeSettings: value });
+  };
+
+  const exitHandler = async () => {
+    setLoading(true);
+
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
+    const { status } = await res.json();
+
+    if (status === "success") {
+      state.setNexus({ isPro: false });
+      state.setNexus({ userData: null });
+      actions.popupClose();
+    } else {
+      actions.popupOpen("error");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -102,7 +132,8 @@ function AccountWindow() {
             className="exit-btn"
             svgID="sign"
             text="Exit"
-            // onClick={toRestore}
+            loader={loading}
+            onClick={exitHandler}
           />
         </MorphScroll>
       </div>

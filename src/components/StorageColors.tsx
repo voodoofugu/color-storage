@@ -331,7 +331,7 @@ function StorageColors() {
       </div>
     </div>
   ) : colorStorage.length === 0 ? (
-    <div className="storage-box empty">
+    <div className="storage-box empty" key="storageBox1">
       <div className="container">
         <div className="menu-wrap">
           <Button
@@ -344,7 +344,7 @@ function StorageColors() {
       </div>
     </div>
   ) : (
-    <div className="storage-box">
+    <div className="storage-box" key="storageBox2">
       <Button
         className="clear-btn"
         ref={clearBtnRef}

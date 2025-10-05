@@ -8,6 +8,7 @@ import {
   PaletteIcon,
   SignIcon,
   AccountIcon,
+  LoaderIcon,
 } from "../svg/svgIcons";
 import type { SvgIdT } from "./Button";
 
@@ -37,6 +38,8 @@ const SVGIcon = ({ svgID }: SVGIconT) => {
           <SignIcon />
         ) : svgID === "account" ? (
           <AccountIcon />
+        ) : svgID === "loader" ? (
+          <LoaderIcon />
         ) : null}
       </svg>
     </div>

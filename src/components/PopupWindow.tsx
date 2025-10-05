@@ -18,6 +18,7 @@ type NotifT =
   | "payment-cancelled"
   | "payment-notExists"
   | "restore-limit"
+  | "linkSent"
   | "error";
 
 type PopupContentT =

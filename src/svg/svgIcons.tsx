@@ -89,6 +89,25 @@ const AccountIcon = () => {
   );
 };
 
+const LoaderIcon = () => {
+  return (
+    <g className="svgLine">
+      <path d="M43.995 22V28" />
+      <path d="M32.9975 24.9431L35.9975 30.1393" />
+      <path d="M24.9449 32.9957L30.1411 35.9957" />
+      <path d="M28 43.995L22 43.995" />
+      <path d="M30.1411 51.9957L24.9449 54.9957" />
+      <path d="M35.9975 57.8521L32.9975 63.0482" />
+      <path d="M43.995 60V66" />
+      <path d="M51.9975 57.8521L54.9975 63.0482" />
+      <path d="M57.8539 51.9957L63.0501 54.9957" />
+      <path d="M66 43.995L60 43.995" />
+      <path d="M63.05 32.9957L57.8539 35.9957" />
+      <path d="M54.9975 24.9431L51.9975 30.1393" />
+    </g>
+  );
+};
+
 export {
   PickerIcon,
   CopyIcon,
@@ -99,4 +118,5 @@ export {
   PaletteIcon,
   SignIcon,
   AccountIcon,
+  LoaderIcon,
 };

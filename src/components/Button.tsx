@@ -10,7 +10,8 @@ type SvgIdT =
   | "settings"
   | "palette"
   | "sign"
-  | "account";
+  | "account"
+  | "loader";
 
 type ButtonT = {
   className?: string;
@@ -21,6 +22,7 @@ type ButtonT = {
   text?: string;
   bgColor?: boolean;
   draggable?: boolean;
+  loader?: boolean;
   children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLButtonElement>; // 👈 Добавили все стандартные события
 
@@ -33,6 +35,7 @@ function Button({
   text,
   bgColor,
   draggable,
+  loader,
   children,
   ...restProps // 👈 Сюда попадают все onDrag*, onClick и пр.
 }: ButtonT) {
@@ -43,7 +46,7 @@ function Button({
       data-id={data}
       className={`btn${className ? ` ${className}` : ""}${
         bgColor && color && isHexWithAlpha ? " alpha" : ""
-      }`}
+      }${loader ? " loader" : ""}`}
       ref={ref}
       draggable={draggable}
       style={{
@@ -57,8 +60,8 @@ function Button({
       {color && !bgColor && (
         <div className="btn-bg" style={{ backgroundColor: color }} />
       )}
-      {svgID && <SVGIcon svgID={svgID} />}
-      {text && <div className="text">{text}</div>}
+      {loader ? <SVGIcon svgID="loader" /> : svgID && <SVGIcon svgID={svgID} />}
+      {!loader && text && <div className="text">{text}</div>}
       {children}
     </button>
   );
