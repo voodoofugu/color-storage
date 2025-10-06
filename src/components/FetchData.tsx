@@ -1,17 +1,14 @@
 import { useEffect } from "react";
 import { state } from "../../nexusConfig";
-import isExtensionEnv from "../extension/isExtensionEnv";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function FetchData() {
   useEffect(() => {
-    if (!isExtensionEnv()) return;
-
     async function loadUser() {
       try {
         const res = await fetch(`${backendUrl}/api/auth/me`, {
-          credentials: "include",
+          credentials: "include", // <-- обязательно
         });
 
         if (res.status === 401) {
@@ -29,12 +26,14 @@ function FetchData() {
             if (data.status === "authorized") {
               state.setNexus({ isPro: true, userData: data.user });
             }
+            return;
           }
 
-          return;
+          if (!refresh.ok) {
+            state.setNexus({ isPro: false, userData: null });
+            return;
+          }
         }
-
-        if (!res.ok) return;
 
         const data = await res.json();
 
@@ -42,7 +41,7 @@ function FetchData() {
           state.setNexus({ isPro: true, userData: data.user });
         }
       } catch {
-        state.setNexus({ isPro: false });
+        state.setNexus({ isPro: false, userData: null });
       }
     }
 

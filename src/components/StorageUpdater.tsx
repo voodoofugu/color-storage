@@ -7,6 +7,8 @@ import isExtensionEnv from "../extension/isExtensionEnv";
 
 import { state } from "../../nexusConfig";
 
+const mode = import.meta.env.MODE;
+
 function StorageUpdater({ children }: { children: React.ReactNode }) {
   // state
   const [isStorageLoaded, setIsStorageLoaded] = useState(false);
@@ -51,7 +53,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
       {
         name: "themeSettings",
         value: themeSettings,
-        type: "chrome-local",
+        type: mode === "production" ? "chrome-local" : "local",
         onLoad: (data) => {
           if (data)
             state.setNexus({
@@ -62,7 +64,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
       {
         name: "userData",
         value: userData,
-        type: "chrome-local",
+        type: mode === "production" ? "chrome-local" : "local",
         onLoad: (data) => {
           if (!data) return;
           state.setNexus({ userData: data as Record<string, string> });
