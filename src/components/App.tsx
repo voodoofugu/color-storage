@@ -37,6 +37,7 @@ function App() {
   const copiedColorFlag = state.useNexus("copiedColorFlag");
   const paletteHidden = state.useNexus("paletteHidden");
   const colorStorage = state.useNexus("colorStorage");
+  const isPro = state.useNexus("isPro");
 
   // Refs:
   const colorCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -325,7 +326,7 @@ function App() {
   return (
     <div
       className={`content${paletteHidden ? " palette-hidden" : ""}${
-        colorStorage.length ? " witch-palettes" : ""
+        isPro && colorStorage.length ? " witch-palettes" : ""
       }`}
     >
       <Header />
