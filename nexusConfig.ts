@@ -2,35 +2,11 @@ import { createReactStore } from "nexus-state";
 import { setManagedTask } from "./src/helpers/taskManager";
 
 import type { PopupContentT } from "./src/components/PopupWindow";
-
-type MyStateT = {
-  isPro: boolean;
-  mainColor: string;
-  activeColor: string;
-  failedColorAdding: boolean;
-  colorStorage: Array<Record<string, string[]>>;
-  timeouts: Record<
-    string,
-    {
-      id: ReturnType<typeof setTimeout>;
-      originalValue: MyStateT[keyof MyStateT];
-    }
-  >;
-  copiedColorFlag: boolean;
-  currentPaletteId: number;
-  popupContent:
-    | PopupContentT
-    | null
-    | { content: PopupContentT | null; props?: { [key: string]: unknown } };
-  paletteHidden: boolean;
-  userData: Record<string, string> | null;
-  themeSettings: "light" | "dark" | "system";
-};
+import type { MyStateT } from "./nexus/types";
 
 const { state, actions } = createReactStore({
   state: {
     isPro: false,
-    // isPro: true,
     mainColor: "#ffffff", // hex only
     activeColor: "",
     failedColorAdding: false,
@@ -41,15 +17,6 @@ const { state, actions } = createReactStore({
     popupContent: null,
     paletteHidden: false,
     userData: null,
-    // userData: {
-    //   amount: "$5.00",
-    //   completed: "1/21/1970 8:25:18",
-    //   created: "9/19/2025 21:56:07",
-    //   deviceId: "6b43f1e5",
-    //   email: "schilingeorg@gmail.com",
-    //   id: "cs_test_a1aeFewGTiKsref3mAQanPf3GLD548DKJapDBT8kXY1OkccfM6mCPnzVEG",
-    //   status: "paid",
-    // },
     themeSettings: "system",
   } as MyStateT,
 
