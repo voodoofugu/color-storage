@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { state, actions } from "../../nexusConfig.ts";
+import { store, actions } from "../../nexusConfig.ts";
 
 import Button from "./Button";
 import PurchaseWindow from "./popup/PurchaseWindow";
@@ -29,7 +29,7 @@ type PopupContentT =
   | NotifT;
 
 function PopupWindow() {
-  const popupContent = state.useNexus("popupContent");
+  const popupContent = store.useNexus("popupContent");
 
   const popupType =
     popupContent && typeof popupContent === "object"

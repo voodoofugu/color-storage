@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { state, actions } from "../../../nexusConfig";
+import { store, actions } from "../../../nexusConfig";
 
 import Button from "../Button";
 
@@ -47,7 +47,7 @@ function PurchaseWindow() {
         actions.popupOpen("restore-limit");
         break;
       case "paid":
-        state.setNexus({ isPro: true });
+        store.setNexus({ isPro: true });
         actions.popupOpen("payment-found", {
           deviceIds: deviceIds.length,
         });

@@ -1,18 +1,18 @@
-import { state, actions } from "../../nexusConfig.ts";
+import { store, actions } from "../../nexusConfig.ts";
 
 import Button from "./Button";
 
 // import isExtensionEnv from "../extension/isExtensionEnv";
 
 function Header() {
-  // nexus-state
-  const paletteHidden = state.useNexus("paletteHidden");
-  const isPro = state.useNexus("isPro");
-  const userData = state.useNexus("userData");
+  // nexus
+  const paletteHidden = store.useNexus("paletteHidden");
+  const isPro = store.useNexus("isPro");
+  const userData = store.useNexus("userData");
 
   // funcs
   const PaletteIconHandler = () => {
-    state.setNexus((prev) => ({ paletteHidden: !prev.paletteHidden }));
+    store.setNexus((prev) => ({ paletteHidden: !prev.paletteHidden }));
   };
 
   const openSettings = () => actions.popupOpen("accountWindow");

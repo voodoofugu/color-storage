@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { state } from "../../nexusConfig";
+import { store } from "../../nexusConfig";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -24,13 +24,13 @@ function FetchData() {
             });
             const data = await retry.json();
             if (data.status === "authorized") {
-              state.setNexus({ isPro: true, userData: data.user });
+              store.setNexus({ isPro: true, userData: data.user });
             }
             return;
           }
 
           if (!refresh.ok) {
-            state.setNexus({ isPro: false, userData: null });
+            store.setNexus({ isPro: false, userData: null });
             return;
           }
         }
@@ -38,10 +38,10 @@ function FetchData() {
         const data = await res.json();
 
         if (data.status === "authorized") {
-          state.setNexus({ isPro: true, userData: data.user });
+          store.setNexus({ isPro: true, userData: data.user });
         }
       } catch {
-        state.setNexus({ isPro: false, userData: null });
+        store.setNexus({ isPro: false, userData: null });
       }
     }
 

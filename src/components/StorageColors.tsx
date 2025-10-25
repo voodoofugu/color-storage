@@ -1,7 +1,7 @@
 import { useRef, useCallback, useState, useMemo, useEffect } from "react";
 import { MorphScroll } from "morphing-scroll";
 
-import { state, actions } from "../../nexusConfig.ts";
+import { store, actions } from "../../nexusConfig.ts";
 
 import useDragImage from "../hooks/useDragImage";
 
@@ -12,17 +12,17 @@ import resizeWidth from "../helpers/resizeWidth";
 
 function StorageColors() {
   // nexus
-  const isPro = state.useNexus("isPro");
-  const mainColor = state.useNexus("mainColor");
-  const colorStorage = state.useNexus("colorStorage");
-  const failedColorAdding = state.useNexus("failedColorAdding");
-  const currentPaletteId = state.useNexus("currentPaletteId");
-  const paletteHidden = state.useNexus("paletteHidden");
+  const isPro = store.useNexus("isPro");
+  const mainColor = store.useNexus("mainColor");
+  const colorStorage = store.useNexus("colorStorage");
+  const failedColorAdding = store.useNexus("failedColorAdding");
+  const currentPaletteId = store.useNexus("currentPaletteId");
+  const paletteHidden = store.useNexus("paletteHidden");
 
   // stable nexus
   const stableColorStorage = JSON.stringify(colorStorage);
 
-  // state:
+  // store:
   const [_, forceUpdate] = useState<number>(0); // для принудительного обновления
   const triggerUpdate = () => {
     forceUpdate((x) => (typeof x === "number" && x < 1000 ? x + 1 : 0));

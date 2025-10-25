@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
-import { state, actions } from "../../nexusConfig.ts";
+import { store, actions } from "../../nexusConfig.ts";
 
 import useStorage, { type StorageItemT } from "../hooks/useStorage";
 
@@ -33,11 +33,11 @@ function App() {
   };
 
   // nexus-state
-  const activeColor = state.useNexus("activeColor");
-  const copiedColorFlag = state.useNexus("copiedColorFlag");
-  const paletteHidden = state.useNexus("paletteHidden");
-  const colorStorage = state.useNexus("colorStorage");
-  const isPro = state.useNexus("isPro");
+  const activeColor = store.useNexus("activeColor");
+  const copiedColorFlag = store.useNexus("copiedColorFlag");
+  const paletteHidden = store.useNexus("paletteHidden");
+  const colorStorage = store.useNexus("colorStorage");
+  const isPro = store.useNexus("isPro");
 
   // Refs:
   const colorCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -61,7 +61,7 @@ function App() {
         value: paletteHidden,
         type: "local",
         onLoad: (data: boolean) => {
-          if (data) state.setNexus({ paletteHidden: data });
+          if (data) store.setNexus({ paletteHidden: data });
         },
       },
     ],
@@ -274,7 +274,7 @@ function App() {
   // ------------
 
   useEffect(() => {
-    // обновляем цвет в nexus-state
+    // обновляем цвет в nexus-store
     actions.setMainColor(hexColorWithAlpha);
   }, [hexColorWithAlpha]);
 
@@ -305,7 +305,7 @@ function App() {
 
       if (result.payment === "success") {
         if (result.userData.status === "paid") {
-          state.setNexus({ isPro: true });
+          store.setNexus({ isPro: true });
           actions.popupOpen("payment-success");
 
           chrome.storage.local.remove(["payment"]);

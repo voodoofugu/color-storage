@@ -3,7 +3,7 @@ import { MorphScroll } from "morphing-scroll";
 
 import Button from "../Button";
 
-import { state, actions } from "../../../nexusConfig";
+import { store, actions } from "../../../nexusConfig";
 
 // import isExtensionEnv from "../../extension/isExtensionEnv";
 
@@ -13,9 +13,9 @@ function AccountWindow() {
   // states
   const [loading, setLoading] = useState(false);
 
-  // nexus-state
-  const userData = state.useNexus("userData");
-  const themeSettings = state.useNexus("themeSettings");
+  // nexus
+  const userData = store.useNexus("userData");
+  const themeSettings = store.useNexus("themeSettings");
 
   // vars
   const devices =
@@ -27,7 +27,7 @@ function AccountWindow() {
   const onChangeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as ThemeT;
 
-    state.setNexus({ themeSettings: value });
+    store.setNexus({ themeSettings: value });
   };
 
   const exitHandler = async () => {
@@ -44,8 +44,8 @@ function AccountWindow() {
     const { status } = await res.json();
 
     if (status === "success") {
-      state.setNexus({ isPro: false });
-      state.setNexus({ userData: null });
+      store.setNexus({ isPro: false });
+      store.setNexus({ userData: null });
       actions.popupClose();
     } else {
       actions.popupOpen("error");
