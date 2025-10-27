@@ -1,14 +1,12 @@
-import { createActions } from "nexus-state";
+import { createActs } from "nexus-state";
 
 import { setManagedTask } from "../../src/helpers/taskManager";
 import type { PopupContentT } from "../../src/components/PopupWindow";
 import type { MyStateT } from "../types";
 
-import { store } from "../../nexusConfig"; // решить это!
-
-const popup = createActions<MyStateT>((setNexus) => ({
+const popup = createActs<MyStateT>((get, set) => ({
   popupOpen(content: PopupContentT | null, props?: { [key: string]: unknown }) {
-    const currentPopup = store.getNexus("popupContent");
+    const currentPopup = get("popupContent");
     if (currentPopup) {
       this.popupClose();
 
@@ -22,7 +20,7 @@ const popup = createActions<MyStateT>((setNexus) => ({
       return;
     }
 
-    setNexus({ popupContent: props ? { content, props } : content });
+    set({ popupContent: props ? { content, props } : content });
 
     const popupEl = document.querySelector(`.popup-window`) as HTMLDivElement;
     popupEl!.classList.add("opening");
@@ -41,7 +39,7 @@ const popup = createActions<MyStateT>((setNexus) => ({
 
     setManagedTask(
       () => {
-        setNexus({ popupContent: null });
+        set({ popupContent: null });
         popup!.classList.remove("closing");
       },
       200,

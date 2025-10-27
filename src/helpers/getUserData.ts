@@ -1,4 +1,4 @@
-import { store } from "../../nexusConfig";
+import nexus from "../../nexusConfig";
 
 async function getUserData(id: string) {
   const res = await fetch(
@@ -17,7 +17,7 @@ async function getUserData(id: string) {
 
   const userData = await res.json();
 
-  store.setNexus({ userData: userData });
+  nexus.set({ userData: userData });
 }
 
 export default getUserData;

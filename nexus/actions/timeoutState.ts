@@ -1,14 +1,14 @@
-import { createActions } from "nexus-state";
+import { createActs } from "nexus-state";
 
 import type { MyStateT } from "../types";
 
-const timeoutState = createActions<MyStateT>((setNexus) => ({
+const timeoutState = createActs<MyStateT>((get, set) => ({
   setStateWithTimeout: <K extends keyof MyStateT>(
     stateKey: K,
     temporaryValue: MyStateT[K],
     duration: number
   ) => {
-    setNexus((state) => {
+    set((state) => {
       const hasTimeout = stateKey in state.timeouts;
 
       // если уже есть таймер, значит originalValue уже сохранён — просто обновим таймер
@@ -21,7 +21,7 @@ const timeoutState = createActions<MyStateT>((setNexus) => ({
       if (prevTimeout) clearTimeout(prevTimeout);
 
       const timeoutId = setTimeout(() => {
-        setNexus((current) => {
+        set((current) => {
           const { [stateKey]: _, ...newTimeouts } = current.timeouts;
 
           return {

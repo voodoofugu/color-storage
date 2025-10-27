@@ -1,4 +1,4 @@
-import { store, actions } from "../../nexusConfig.ts";
+import nexus from "../../nexusConfig.ts";
 
 import Button from "./Button";
 
@@ -6,19 +6,19 @@ import Button from "./Button";
 
 function Header() {
   // nexus
-  const paletteHidden = store.useNexus("paletteHidden");
-  const isPro = store.useNexus("isPro");
-  const userData = store.useNexus("userData");
+  const paletteHidden = nexus.use("paletteHidden");
+  const isPro = nexus.use("isPro");
+  const userData = nexus.use("userData");
 
   // funcs
   const PaletteIconHandler = () => {
-    store.setNexus((prev) => ({ paletteHidden: !prev.paletteHidden }));
+    nexus.set((prev) => ({ paletteHidden: !prev.paletteHidden }));
   };
 
-  const openSettings = () => actions.popupOpen("accountWindow");
+  const openSettings = () => nexus.acts.popupOpen("accountWindow");
 
   const toRestore = () => {
-    actions.popupOpen("signInWindow");
+    nexus.acts.popupOpen("signInWindow");
   };
 
   return (

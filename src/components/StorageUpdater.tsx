@@ -5,21 +5,21 @@ import type { StorageItemT } from "../hooks/useStorage";
 
 import isExtensionEnv from "../extension/isExtensionEnv";
 
-import { store } from "../../nexusConfig";
+import nexus from "../../nexusConfig";
 
 const mode = import.meta.env.MODE;
 
 function StorageUpdater({ children }: { children: React.ReactNode }) {
-  // store
+  // nexus
   const [isStorageLoaded, setIsStorageLoaded] = useState(false);
 
   // nexus
-  const isPro = store.useNexus("isPro");
-  const colorStorage = store.useNexus("colorStorage");
+  const isPro = nexus.use("isPro");
+  const colorStorage = nexus.use("colorStorage");
   const stableColorStorage = JSON.stringify(colorStorage);
-  const paletteHidden = store.useNexus("paletteHidden");
-  const themeSettings = store.useNexus("themeSettings");
-  const userData = store.useNexus("userData");
+  const paletteHidden = nexus.use("paletteHidden");
+  const themeSettings = nexus.use("themeSettings");
+  const userData = nexus.use("userData");
 
   // hooks
   const storItem = useMemo<StorageItemT>(
@@ -29,7 +29,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         value: paletteHidden,
         type: "local",
         onLoad: (data) => {
-          if (data) store.setNexus({ paletteHidden: data as boolean });
+          if (data) nexus.set({ paletteHidden: data as boolean });
         },
       },
       {
@@ -39,7 +39,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         remove: !colorStorage.length,
         onLoad: (data) => {
           if (typeof data === "object" && !data?.length) return;
-          store.setNexus({ colorStorage: data as Record<string, string[]>[] });
+          nexus.set({ colorStorage: data as Record<string, string[]>[] });
         },
       },
       {
@@ -47,7 +47,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         value: isPro,
         type: "local",
         onLoad: (data) => {
-          if (data) store.setNexus({ isPro: data as boolean });
+          if (data) nexus.set({ isPro: data as boolean });
         },
       },
       {
@@ -56,7 +56,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         type: mode === "production" ? "chrome-local" : "local",
         onLoad: (data) => {
           if (data)
-            store.setNexus({
+            nexus.set({
               themeSettings: data as "system" | "light" | "dark",
             });
         },
@@ -67,7 +67,7 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         type: mode === "production" ? "chrome-local" : "local",
         onLoad: (data) => {
           if (!data) return;
-          store.setNexus({ userData: data as Record<string, string> });
+          nexus.set({ userData: data as Record<string, string> });
         },
       },
     ],

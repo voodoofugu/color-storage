@@ -1,14 +1,14 @@
-import { createActions } from "nexus-state";
+import { createActs } from "nexus-state";
 
 import type { MyStateT } from "../types";
 
-const colors = createActions<MyStateT>((setNexus) => ({
+const colors = createActs<MyStateT>((get, set) => ({
   setMainColor: (color: string) => {
-    setNexus({ mainColor: color });
+    set({ mainColor: color });
   },
 
   setNewColorsOrder: (newOrder: string[]) => {
-    setNexus((state) => ({
+    set((state) => ({
       colorStorage: state.colorStorage.map((palette) => {
         const [name, _] = Object.entries(palette)[0];
         return name ===
@@ -20,7 +20,7 @@ const colors = createActions<MyStateT>((setNexus) => ({
   },
 
   clearColor: (color: string) => {
-    setNexus((state) => ({
+    set((state) => ({
       colorStorage: state.colorStorage.map((palette) => {
         const [name, colors] = Object.entries(palette)[0];
         return {

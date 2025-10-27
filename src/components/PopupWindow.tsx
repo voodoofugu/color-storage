@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { store, actions } from "../../nexusConfig.ts";
+import nexus from "../../nexusConfig.ts";
 
 import Button from "./Button";
 import PurchaseWindow from "./popup/PurchaseWindow";
@@ -29,7 +29,7 @@ type PopupContentT =
   | NotifT;
 
 function PopupWindow() {
-  const popupContent = store.useNexus("popupContent");
+  const popupContent = nexus.use("popupContent");
 
   const popupType =
     popupContent && typeof popupContent === "object"
@@ -62,7 +62,7 @@ function PopupWindow() {
   useEffect(() => {
     // regEx проверка заканчивается ли popupContent на "...Window"
     if (popupType && !/Window$/i.test(popupType ? popupType : ""))
-      setManagedTask(() => actions.popupClose(), 6000, "autoClosePopup");
+      setManagedTask(() => nexus.acts.popupClose(), 6000, "autoClosePopup");
 
     return () => {
       clearManagedTask("autoClosePopup");
@@ -73,7 +73,11 @@ function PopupWindow() {
     <div className="popup-window">
       <div className="popup-bg"></div>
       {popupContentLocal}
-      <Button svgID="plus" className="close-btn" onClick={actions.popupClose} />
+      <Button
+        svgID="plus"
+        className="close-btn"
+        onClick={nexus.acts.popupClose}
+      />
     </div>
   ) : (
     <div className="popup-window" />

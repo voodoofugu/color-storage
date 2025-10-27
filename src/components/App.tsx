@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
-import { store, actions } from "../../nexusConfig.ts";
+import nexus from "../../nexusConfig.ts";
 
 import useStorage, { type StorageItemT } from "../hooks/useStorage";
 
@@ -33,11 +33,11 @@ function App() {
   };
 
   // nexus-state
-  const activeColor = store.useNexus("activeColor");
-  const copiedColorFlag = store.useNexus("copiedColorFlag");
-  const paletteHidden = store.useNexus("paletteHidden");
-  const colorStorage = store.useNexus("colorStorage");
-  const isPro = store.useNexus("isPro");
+  const activeColor = nexus.use("activeColor");
+  const copiedColorFlag = nexus.use("copiedColorFlag");
+  const paletteHidden = nexus.use("paletteHidden");
+  const colorStorage = nexus.use("colorStorage");
+  const isPro = nexus.use("isPro");
 
   // Refs:
   const colorCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -61,7 +61,7 @@ function App() {
         value: paletteHidden,
         type: "local",
         onLoad: (data: boolean) => {
-          if (data) store.setNexus({ paletteHidden: data });
+          if (data) nexus.set({ paletteHidden: data });
         },
       },
     ],
@@ -183,7 +183,7 @@ function App() {
       .writeText(colorWithAlpha as string)
       .then(() => {
         // Показать "copied" только если всё прошло успешно
-        actions.setStateWithTimeout("copiedColorFlag", true, 300);
+        nexus.acts.setStateWithTimeout("copiedColorFlag", true, 300);
       })
       .catch((e) => {
         errorText(`Clipboard write failed: ${e}`);
@@ -274,8 +274,8 @@ function App() {
   // ------------
 
   useEffect(() => {
-    // обновляем цвет в nexus-store
-    actions.setMainColor(hexColorWithAlpha);
+    // обновляем цвет в nexus-nexus
+    nexus.acts.setMainColor(hexColorWithAlpha);
   }, [hexColorWithAlpha]);
 
   useEffect(() => {
@@ -293,7 +293,7 @@ function App() {
     // обновляем палитру при изменении activeColor
     getColor(hex, false);
 
-    actions.setActiveColor("");
+    nexus.acts.setActiveColor("");
   }, [hex, activeAlpha]);
 
   // эффекты для расширения
@@ -305,16 +305,16 @@ function App() {
 
       if (result.payment === "success") {
         if (result.userData.status === "paid") {
-          store.setNexus({ isPro: true });
-          actions.popupOpen("payment-success");
+          nexus.set({ isPro: true });
+          nexus.acts.popupOpen("payment-success");
 
           chrome.storage.local.remove(["payment"]);
         }
       } else {
         if (result.payment === "cancel") {
-          actions.popupOpen("payment-cancelled");
+          nexus.acts.popupOpen("payment-cancelled");
         } else if (result.payment === "pending") {
-          actions.popupOpen("payment-notFinished");
+          nexus.acts.popupOpen("payment-notFinished");
         }
 
         chrome.storage.local.remove(["payment"]);

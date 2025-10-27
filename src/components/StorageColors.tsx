@@ -1,7 +1,7 @@
 import { useRef, useCallback, useState, useMemo, useEffect } from "react";
 import { MorphScroll } from "morphing-scroll";
 
-import { store, actions } from "../../nexusConfig.ts";
+import nexus from "../../nexusConfig.ts";
 
 import useDragImage from "../hooks/useDragImage";
 
@@ -12,17 +12,17 @@ import resizeWidth from "../helpers/resizeWidth";
 
 function StorageColors() {
   // nexus
-  const isPro = store.useNexus("isPro");
-  const mainColor = store.useNexus("mainColor");
-  const colorStorage = store.useNexus("colorStorage");
-  const failedColorAdding = store.useNexus("failedColorAdding");
-  const currentPaletteId = store.useNexus("currentPaletteId");
-  const paletteHidden = store.useNexus("paletteHidden");
+  const isPro = nexus.use("isPro");
+  const mainColor = nexus.use("mainColor");
+  const colorStorage = nexus.use("colorStorage");
+  const failedColorAdding = nexus.use("failedColorAdding");
+  const currentPaletteId = nexus.use("currentPaletteId");
+  const paletteHidden = nexus.use("paletteHidden");
 
   // stable nexus
   const stableColorStorage = JSON.stringify(colorStorage);
 
-  // store:
+  // nexus:
   const [_, forceUpdate] = useState<number>(0); // для принудительного обновления
   const triggerUpdate = () => {
     forceUpdate((x) => (typeof x === "number" && x < 1000 ? x + 1 : 0));
@@ -49,12 +49,12 @@ function StorageColors() {
 
   // functions
   const addColor = () => {
-    actions.setNewPaletteColor(mainColor);
+    nexus.acts.setNewPaletteColor(mainColor);
   };
 
   const newGroup = () => {
-    actions.setNewPalette();
-    actions.setCurrentPaletteId();
+    nexus.acts.setNewPalette();
+    nexus.acts.setCurrentPaletteId();
   };
 
   const onMove = useCallback(() => {
@@ -117,7 +117,7 @@ function StorageColors() {
     dragItem.current = null;
     dragOverItem.current = null;
 
-    actions.setNewColorsOrder(newColors);
+    nexus.acts.setNewColorsOrder(newColors);
   }, [currentPaletteId, stableColorStorage, removeWidth]);
 
   const onDragOver = useCallback((e: React.DragEvent) => {
@@ -125,7 +125,7 @@ function StorageColors() {
   }, []);
 
   const clearBtnOnDrop = useCallback(() => {
-    actions.clearColor(
+    nexus.acts.clearColor(
       colorStorage[currentPaletteId][activePalette.current][dragItem.current!]
     );
     const leaveEl = document.querySelector(`.clear-btn`);
@@ -149,7 +149,7 @@ function StorageColors() {
   }, []);
 
   const clearBtnOnClick = useCallback(() => {
-    actions.deleteCurrentPalette(currentPaletteId!);
+    nexus.acts.deleteCurrentPalette(currentPaletteId!);
     removeWidth();
   }, [removeWidth, currentPaletteId]);
 
@@ -200,14 +200,17 @@ function StorageColors() {
               .querySelector(`[data-id="${index}"]`)!
               .classList.remove("dragEnter");
           }}
-          onClick={() => actions.setActiveColor(color)}
+          onClick={() => nexus.acts.setActiveColor(color)}
         />
       ));
     },
     [mainColor, handelOnDragStart, handleDrop, onDragOver]
   );
 
-  const onGetPro = useCallback(() => actions.popupOpen("purchaseWindow"), []);
+  const onGetPro = useCallback(
+    () => nexus.acts.popupOpen("purchaseWindow"),
+    []
+  );
 
   // content
   const paletteMenu = useMemo(() => {
@@ -222,7 +225,7 @@ function StorageColors() {
               (palette) => Object.keys(palette)[0] === selectedName
             );
 
-            actions.setCurrentPaletteId(selectedIndex);
+            nexus.acts.setCurrentPaletteId(selectedIndex);
           }}
         >
           {colorStorage.map((palette, index) => {
@@ -258,7 +261,7 @@ function StorageColors() {
               newPaletteName.current &&
               newPaletteName.current !== activePalette.current
             ) {
-              actions.paletteRename(newPaletteName.current);
+              nexus.acts.paletteRename(newPaletteName.current);
             }
           }}
         />

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { actions } from "../../../nexusConfig";
+import nexus from "../../../nexusConfig";
 
 import Button from "../Button";
 
@@ -39,12 +39,12 @@ function SignInWindow() {
     const { status } = await res.json();
     if (status === "linkSent") {
       setLoading(false);
-      actions.popupOpen("linkSent");
+      nexus.acts.popupOpen("linkSent");
     }
 
     if (status === "serverError" || !status) {
       setLoading(false);
-      actions.popupOpen("error");
+      nexus.acts.popupOpen("error");
     }
   };
 

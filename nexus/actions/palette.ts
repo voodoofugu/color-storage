@@ -1,10 +1,10 @@
-import { createActions } from "nexus-state";
+import { createActs } from "nexus-state";
 
 import type { MyStateT } from "../types";
 
-const palette = createActions<MyStateT>((setNexus) => ({
+const palette = createActs<MyStateT>((get, set) => ({
   setNewPalette: (paletteName?: string) => {
-    setNexus((state) => {
+    set((state) => {
       const existingNames = state.colorStorage.map(
         (item) => Object.keys(item)[0]
       );
@@ -29,7 +29,7 @@ const palette = createActions<MyStateT>((setNexus) => ({
   },
 
   setCurrentPaletteId: (id?: number) => {
-    setNexus((state) => ({
+    set((state) => ({
       currentPaletteId:
         typeof id === "number" ? id : state.colorStorage.length - 1,
     }));
@@ -38,7 +38,7 @@ const palette = createActions<MyStateT>((setNexus) => ({
   setNewPaletteColor(color: string) {
     let isDuplicate = false;
 
-    setNexus((state) => {
+    set((state) => {
       isDuplicate = state.colorStorage.some((palette) => {
         const [name, colors] = Object.entries(palette)[0];
         return (
@@ -65,7 +65,7 @@ const palette = createActions<MyStateT>((setNexus) => ({
   },
 
   paletteRename: (newName: string) => {
-    setNexus((state) => ({
+    set((state) => ({
       colorStorage: state.colorStorage.map((palette) => {
         const [name, colors] = Object.entries(palette)[0];
         return name ===
@@ -77,7 +77,7 @@ const palette = createActions<MyStateT>((setNexus) => ({
   },
 
   deleteCurrentPalette: (currentPaletteId: number) => {
-    setNexus((state) => ({
+    set((state) => ({
       colorStorage: state.colorStorage.filter(
         (_, index) => index !== currentPaletteId
       ),

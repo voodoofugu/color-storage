@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { store, actions } from "../../../nexusConfig";
+import nexus from "../../../nexusConfig";
 
 import Button from "../Button";
 
@@ -41,25 +41,25 @@ function PurchaseWindow() {
 
     switch (status) {
       case "notFound":
-        actions.popupOpen("payment-notFound");
+        nexus.acts.popupOpen("payment-notFound");
         break;
       case "limit":
-        actions.popupOpen("restore-limit");
+        nexus.acts.popupOpen("restore-limit");
         break;
       case "paid":
-        store.setNexus({ isPro: true });
-        actions.popupOpen("payment-found", {
+        nexus.set({ isPro: true });
+        nexus.acts.popupOpen("payment-found", {
           deviceIds: deviceIds.length,
         });
 
         getUserData(id);
         break;
       case "cancelled":
-        actions.popupOpen("payment-cancelled");
+        nexus.acts.popupOpen("payment-cancelled");
         break;
 
       default:
-        actions.popupOpen("error");
+        nexus.acts.popupOpen("error");
     }
   };
 

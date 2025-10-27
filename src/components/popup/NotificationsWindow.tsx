@@ -1,6 +1,6 @@
 import type { NotifT } from "../PopupWindow";
 
-import { actions } from "../../../nexusConfig";
+import nexus from "../../../nexusConfig";
 
 type NotificationsWindowT = {
   notifType: NotifT | null;
@@ -19,7 +19,7 @@ function PaymentFound({ deviceIds }: { deviceIds: number }) {
 }
 
 function RestoreLimit() {
-  const openSettings = () => actions.popupOpen("accountWindow");
+  const openSettings = () => nexus.acts.popupOpen("accountWindow");
   return (
     <>
       Max devices connected 3/3. 👀
