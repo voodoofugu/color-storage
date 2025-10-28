@@ -7,7 +7,7 @@ import timeoutState from "./nexus/actions/timeoutState";
 
 import type { MyStateT } from "./nexus/types";
 
-const nexus = createReactNexus({
+const nexus = createReactNexus<MyStateT>({
   state: {
     isPro: false,
     mainColor: "#ffffff", // hex only
@@ -21,7 +21,7 @@ const nexus = createReactNexus({
     paletteHidden: false,
     userData: null,
     themeSettings: "system",
-  } as MyStateT,
+  },
 
   acts: [colors, palette, popup, timeoutState],
 });
