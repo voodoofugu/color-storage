@@ -2,7 +2,7 @@ import { createActs } from "nexus-state";
 
 import type { MyStateT } from "../types";
 
-const colors = createActs<MyStateT>((get, set) => ({
+const colors = createActs<MyStateT>((_, set) => ({
   setMainColor: (color: string) => {
     set({ mainColor: color });
   },

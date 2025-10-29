@@ -21,7 +21,7 @@ type MyStateT = {
     | { content: PopupContentT | null; props?: { [key: string]: unknown } };
   paletteHidden: boolean;
   userData: Record<string, string> | null;
-  themeSettings: "light" | "dark" | "system";
+  themeSettings: "light" | "dark" | "system" | null;
 };
 
 export type { MyStateT };

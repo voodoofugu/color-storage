@@ -20,7 +20,7 @@ const nexus = createReactNexus<MyStateT>({
     popupContent: null,
     paletteHidden: false,
     userData: null,
-    themeSettings: "system",
+    themeSettings: null,
   },
 
   acts: [colors, palette, popup, timeoutState],

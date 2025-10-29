@@ -57,7 +57,9 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
         onLoad: (data) => {
           if (data)
             nexus.set({
-              themeSettings: data as "system" | "light" | "dark",
+              themeSettings: !data
+                ? "system"
+                : (data as "system" | "light" | "dark" | null),
             });
         },
       },

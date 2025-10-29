@@ -7,7 +7,7 @@ import nexus from "../../../nexusConfig";
 
 // import isExtensionEnv from "../../extension/isExtensionEnv";
 
-type ThemeT = "light" | "dark" | "system";
+type ThemeT = "light" | "dark" | "system" | null;
 
 function AccountWindow() {
   // states
@@ -27,7 +27,7 @@ function AccountWindow() {
   const onChangeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as ThemeT;
 
-    nexus.set({ themeSettings: value });
+    nexus.set({ themeSettings: value === "system" ? null : value });
   };
 
   const exitHandler = async () => {
@@ -107,7 +107,7 @@ function AccountWindow() {
               <select
                 className="theme-color"
                 id="theme"
-                value={themeSettings}
+                value={!themeSettings ? "system" : themeSettings}
                 onChange={onChangeTheme}
               >
                 <option value="light">Light</option>

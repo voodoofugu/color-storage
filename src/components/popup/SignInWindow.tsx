@@ -36,10 +36,15 @@ function SignInWindow() {
       body: JSON.stringify({ email, deviceId: getDeviceId() }),
     });
 
-    const { status } = await res.json();
+    // !!! получаем линк сразу для разработки
+    const { status, link } = await res.json();
     if (status === "linkSent") {
       setLoading(false);
       nexus.acts.popupOpen("linkSent");
+
+      setTimeout(() => {
+        window.open(link);
+      }, 1000);
     }
 
     if (status === "serverError" || !status) {
