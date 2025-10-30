@@ -4,18 +4,6 @@ import react from "@vitejs/plugin-react";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    // open: true, // автоматически откроет браузер
-    proxy: {
-      // для разработки локально
-      "/api": {
-        target: "https://color-storage.vercel.app",
-        changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/api/, "/api"),
-      },
-    },
-  },
   build: {
     outDir: "dist",
     rollupOptions: {

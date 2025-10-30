@@ -22,6 +22,7 @@ type MyStateT = {
   paletteHidden: boolean;
   userData: Record<string, string> | null;
   themeSettings: "light" | "dark" | "system" | null;
+  timestamp: number;
 };
 
 export type { MyStateT };

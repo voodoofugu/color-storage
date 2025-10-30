@@ -19,7 +19,8 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
   const stableColorStorage = JSON.stringify(colorStorage);
   const paletteHidden = nexus.use("paletteHidden");
   const themeSettings = nexus.use("themeSettings");
-  const userData = nexus.use("userData");
+  const stableUserData = JSON.stringify(nexus.use("userData"));
+  const timestamp = nexus.use("timestamp");
 
   // hooks
   const storItem = useMemo<StorageItemT>(
@@ -65,15 +66,38 @@ function StorageUpdater({ children }: { children: React.ReactNode }) {
       },
       {
         name: "userData",
-        value: userData,
+        value: stableUserData,
         type: mode === "production" ? "chrome-local" : "local",
         onLoad: (data) => {
           if (!data) return;
           nexus.set({ userData: data as Record<string, string> });
         },
       },
+      {
+        name: "tm",
+        value: timestamp,
+        type: mode === "production" ? "chrome-local" : "local",
+        onLoad: (data) => {
+          // !!! не понятно как обновлять timestamp
+          // console.log("data", data);
+          // if (!data) {
+          //   nexus.set({ timestamp: Date.now() });
+          //   return;
+          // }
+
+          if (data !== nexus.get("timestamp"))
+            nexus.set({ timestamp: data as number });
+        },
+      },
     ],
-    [paletteHidden, stableColorStorage, isPro, themeSettings, userData]
+    [
+      paletteHidden,
+      stableColorStorage,
+      isPro,
+      themeSettings,
+      stableUserData,
+      timestamp,
+    ]
   );
 
   const handleStorageUpdate = useCallback(() => {
