@@ -1,10 +1,14 @@
 import { createActs } from "nexus-state";
 
-import type { MyStateT } from "../types";
+import type { MyState } from "../types";
 
-const colors = createActs<MyStateT>((_, set) => ({
+const colors = createActs<MyState>((_, set) => ({
   setMainColor: (color: string) => {
     set({ mainColor: color });
+  },
+
+  setActiveColor: (color: string) => {
+    set({ activeColor: color });
   },
 
   setNewColorsOrder: (newOrder: string[]) => {

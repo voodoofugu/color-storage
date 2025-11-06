@@ -4,10 +4,11 @@ import colors from "./nexus/actions/colors";
 import palette from "./nexus/actions/palette";
 import popup from "./nexus/actions/popup";
 import timeoutState from "./nexus/actions/timeoutState";
+import additional from "./nexus/actions/additional";
 
-import type { MyStateT } from "./nexus/types";
+import type { MyState, MyActs } from "./nexus/types";
 
-const nexus = createReactNexus<MyStateT>({
+const nexus = createReactNexus<MyState, MyActs>({
   state: {
     isPro: false,
     mainColor: "#ffffff", // hex only
@@ -22,9 +23,10 @@ const nexus = createReactNexus<MyStateT>({
     userData: null,
     themeSettings: null,
     timestamp: 0,
+    syncStatus: null,
   },
 
-  acts: [colors, palette, popup, timeoutState],
+  acts: [colors, palette, popup, timeoutState, additional],
 });
 
 export default nexus;

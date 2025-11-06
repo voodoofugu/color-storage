@@ -2,9 +2,9 @@ import { createActs } from "nexus-state";
 
 import { setManagedTask } from "../../src/helpers/taskManager";
 import type { PopupContentT } from "../../src/components/PopupWindow";
-import type { MyStateT } from "../types";
+import type { MyState } from "../types";
 
-const popup = createActs<MyStateT>((get, set) => ({
+const popup = createActs<MyState>((get, set) => ({
   popupOpen(content: PopupContentT | null, props?: { [key: string]: unknown }) {
     const currentPopup = get("popupContent");
     if (currentPopup) {

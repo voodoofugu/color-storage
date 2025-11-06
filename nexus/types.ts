@@ -1,6 +1,6 @@
 import type { PopupContentT } from "../src/components/PopupWindow";
 
-type MyStateT = {
+type MyState = {
   isPro: boolean;
   mainColor: string;
   activeColor: string;
@@ -10,7 +10,7 @@ type MyStateT = {
     string,
     {
       id: ReturnType<typeof setTimeout>;
-      originalValue: MyStateT[keyof MyStateT];
+      originalValue: MyState[keyof MyState];
     }
   >;
   copiedColorFlag: boolean;
@@ -23,6 +23,36 @@ type MyStateT = {
   userData: Record<string, string> | null;
   themeSettings: "light" | "dark" | "system" | null;
   timestamp: number;
+  syncStatus:
+    | "pending"
+    | "success fadeIn"
+    | "success fadeOut"
+    | "error fadeIn"
+    | "error fadeOut"
+    | null;
 };
 
-export type { MyStateT };
+type MyActs = {
+  setMainColor: (color: string) => void;
+  setActiveColor: (color: string) => void;
+  setNewColorsOrder: (newOrder: string[]) => void;
+  clearColor: (color: string) => void;
+  setNewPalette: (paletteName?: string) => void;
+  setCurrentPaletteId: (id?: number) => void;
+  setNewPaletteColor: (color: string) => void;
+  paletteRename: (newName: string) => void;
+  deleteCurrentPalette: (currentPaletteId: number) => void;
+  popupOpen: (
+    content: MyState["popupContent"],
+    props?: { [key: string]: unknown }
+  ) => void;
+  popupClose: () => void;
+  setStateWithTimeout: <K extends keyof MyState>(
+    stateKey: K,
+    temporaryValue: MyState[K],
+    duration: number
+  ) => void;
+  syncStatusUpdate: (status: "success" | "error") => void;
+};
+
+export type { MyState, MyActs };

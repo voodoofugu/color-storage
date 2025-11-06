@@ -9,6 +9,7 @@ function Header() {
   const paletteHidden = nexus.use("paletteHidden");
   const isPro = nexus.use("isPro");
   const userData = nexus.use("userData");
+  const syncStatus = nexus.use("syncStatus");
 
   // funcs
   const PaletteIconHandler = () => {
@@ -29,7 +30,12 @@ function Header() {
         onClick={PaletteIconHandler}
       />
 
-      <div className="title">Color Storage</div>
+      <div className="title">
+        Color Storage
+        <div
+          className={`sync-status-el${syncStatus ? ` ${syncStatus}` : ""}`}
+        ></div>
+      </div>
 
       {isPro && userData ? (
         <Button

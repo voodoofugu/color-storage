@@ -1,11 +1,11 @@
 import { createActs } from "nexus-state";
 
-import type { MyStateT } from "../types";
+import type { MyState } from "../types";
 
-const timeoutState = createActs<MyStateT>((_, set) => ({
-  setStateWithTimeout: <K extends keyof MyStateT>(
+const timeoutState = createActs<MyState>((_, set) => ({
+  setStateWithTimeout: <K extends keyof MyState>(
     stateKey: K,
-    temporaryValue: MyStateT[K],
+    temporaryValue: MyState[K],
     duration: number
   ) => {
     set((state) => {

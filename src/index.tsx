@@ -4,14 +4,12 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 
 import App from "./components/App";
-import StorageUpdater from "./components/StorageUpdater";
-import FetchData from "./components/FetchData";
+import Fetching from "./components/Fetching";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <FetchData />
-    <StorageUpdater>
+    <Fetching>
       <App />
-    </StorageUpdater>
+    </Fetching>
   </StrictMode>
 );

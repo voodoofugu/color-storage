@@ -2,8 +2,6 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
 import nexus from "../../nexusConfig.ts";
 
-import useStorage, { type StorageItemT } from "../hooks/useStorage";
-
 import "../styles/App.scss";
 import "../styles/animations.scss";
 import "../styles/elements.scss";
@@ -52,22 +50,6 @@ function App() {
   const colorFormat = useRef<"hex" | "rgb" | "hsl">("hex");
   const alpha = useRef(1);
   const isColorCanvasReady = useRef(false);
-
-  // hooks
-  const storItem = useMemo(
-    () => [
-      {
-        name: "paletteHidden",
-        value: paletteHidden,
-        type: "local",
-        onLoad: (data: boolean) => {
-          if (data) nexus.set({ paletteHidden: data });
-        },
-      },
-    ],
-    [paletteHidden]
-  );
-  useStorage(storItem as StorageItemT);
 
   // error
   const errorText = (text: string) => {

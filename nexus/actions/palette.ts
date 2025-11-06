@@ -1,8 +1,8 @@
 import { createActs } from "nexus-state";
 
-import type { MyStateT } from "../types";
+import type { MyState } from "../types";
 
-const palette = createActs<MyStateT>((_, set) => ({
+const palette = createActs<MyState>((_, set) => ({
   setNewPalette: (paletteName?: string) => {
     set((state) => {
       const existingNames = state.colorStorage.map(
