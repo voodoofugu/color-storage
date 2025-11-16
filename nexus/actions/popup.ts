@@ -1,6 +1,6 @@
 import { createActs } from "nexus-state";
 
-import { setManagedTask } from "../../src/helpers/taskManager";
+import { setTask } from "../../src/helpers/taskManager";
 import type { PopupContentT } from "../../src/components/PopupWindow";
 import type { MyState } from "../types";
 
@@ -10,7 +10,7 @@ const popup = createActs<MyState>((get, set) => ({
     if (currentPopup) {
       this.popupClose();
 
-      setManagedTask(
+      setTask(
         () => {
           this.popupOpen(content, props);
         },
@@ -37,7 +37,7 @@ const popup = createActs<MyState>((get, set) => ({
       popup.classList.add("closing");
     }
 
-    setManagedTask(
+    setTask(
       () => {
         set({ popupContent: null });
         popup!.classList.remove("closing");

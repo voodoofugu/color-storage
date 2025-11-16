@@ -8,7 +8,7 @@ import NotificationsWindow from "./popup/NotificationsWindow";
 import SignInWindow from "./popup/SignInWindow";
 import AccountWindow from "./popup/AccountWindow.tsx";
 
-import { setManagedTask, clearManagedTask } from "../helpers/taskManager";
+import { setTask, cancelTask } from "../helpers/taskManager";
 
 type NotifT =
   | "payment-notFinished"
@@ -62,10 +62,10 @@ function PopupWindow() {
   useEffect(() => {
     // regEx проверка заканчивается ли popupContent на "...Window"
     if (popupType && !/Window$/i.test(popupType ? popupType : ""))
-      setManagedTask(() => nexus.acts.popupClose(), 6000, "autoClosePopup");
+      setTask(() => nexus.acts.popupClose(), 6000, "autoClosePopup");
 
     return () => {
-      clearManagedTask("autoClosePopup");
+      cancelTask("autoClosePopup");
     };
   }, [popupType]);
 

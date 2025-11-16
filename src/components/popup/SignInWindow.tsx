@@ -4,7 +4,7 @@ import nexus from "../../../nexusConfig";
 
 import Button from "../Button";
 
-import { setManagedTask } from "../../helpers/taskManager";
+import { setTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -25,7 +25,7 @@ function SignInWindow() {
   const checkHandler = async () => {
     if (!isValidEmail) {
       setValidEmail(false);
-      setManagedTask(() => setValidEmail(true), 1000, "setValidEmail");
+      setTask(() => setValidEmail(true), 1000, "setValidEmail");
       return;
     }
 
@@ -54,7 +54,7 @@ function SignInWindow() {
   };
 
   const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setManagedTask(() => setEmail(e.target.value), 200, "setValidEmail");
+    setTask(() => setEmail(e.target.value), 200, "setValidEmail");
   };
 
   const inputOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
