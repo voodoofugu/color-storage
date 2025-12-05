@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "morphing-scroll": "^2.5.3",
+    "morphing-scroll": "^2.6.0",
     "nexus-state": "^3.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

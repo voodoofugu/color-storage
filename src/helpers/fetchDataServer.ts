@@ -66,7 +66,7 @@ async function fetchDataServer() {
   const isPro = nexus.get("isPro");
   const userData = nexus.get("userData");
   const timestamp = nexus.get("timestamp");
-  const syncStatus = nexus.get("syncStatus");
+  // const syncStatus = nexus.get("syncStatus");
 
   // !!! придумать как запускать проверку авторизации
   // проверка от ручной записи
