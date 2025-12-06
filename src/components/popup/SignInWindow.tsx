@@ -42,6 +42,7 @@ function SignInWindow() {
       setLoading(false);
       nexus.acts.popupOpen("linkSent");
 
+      // потом убрать
       setTimeout(() => {
         window.open(link);
       }, 1000);

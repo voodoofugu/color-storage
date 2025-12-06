@@ -8,10 +8,10 @@ export default defineConfig({
     outDir: "dist",
     rollupOptions: {
       input: {
-        popup: "index.html",
-        background: "src/extension/background.ts",
-        messageListener: "src/extension/messageListener.ts",
-        themeWatcher: "src/extension/themeWatcher.ts",
+        popup: "./index.html",
+        background: "./src/extension/background.ts",
+        messageListener: "./src/extension/messageListener.ts",
+        themeWatcher: "./src/extension/themeWatcher.ts",
       },
       output: {
         entryFileNames: "[name].js",
