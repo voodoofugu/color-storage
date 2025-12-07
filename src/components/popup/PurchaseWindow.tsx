@@ -6,8 +6,8 @@ import Button from "../Button";
 
 import { setTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
-
 import getUserData from "../../helpers/getUserData";
+import api from "../../helpers/api";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -31,13 +31,10 @@ function PurchaseWindow() {
       return;
     }
 
-    const res = await fetch(`${backendUrl}/api/email-checkout`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, deviceId: getDeviceId() }),
-    });
-
-    const { status, deviceIds, id } = await res.json();
+    const { status, deviceIds, id } = await api.emailCheckout(
+      email,
+      getDeviceId()
+    );
 
     switch (status) {
       case "notFound":
@@ -70,18 +67,7 @@ function PurchaseWindow() {
       return;
     }
 
-    const res = await fetch(`${backendUrl}/api/start-payment`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, deviceId: getDeviceId() }),
-    });
-
-    if (!res.ok) {
-      console.error("Error during purchase:", res.statusText);
-      return;
-    }
-
-    const { url } = await res.json();
+    const { url } = await api.startPayment(email, getDeviceId());
     // вместо stripe — идём на промежуточную страницу
     const startPaymentUrl = `${backendUrl}/Checkout?stripeUrl=${encodeURIComponent(
       url

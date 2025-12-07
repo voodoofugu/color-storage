@@ -2,10 +2,8 @@ import { useState } from "react";
 import { MorphScroll } from "morphing-scroll";
 
 import Button from "../Button";
-
 import nexus from "../../../nexusConfig";
-
-// import isExtensionEnv from "../../extension/isExtensionEnv";
+import api from "../../helpers/api";
 
 type ThemeT = "light" | "dark" | "system" | null;
 
@@ -32,20 +30,10 @@ function AccountWindow() {
 
   const exitHandler = async () => {
     setLoading(true);
-
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`,
-      {
-        method: "POST",
-        credentials: "include",
-      }
-    );
-
-    const { status } = await res.json();
+    const { status } = await api.logout();
 
     if (status === "success") {
-      nexus.set({ isPro: false });
-      nexus.set({ userData: null });
+      nexus.set({ isPro: false, userData: null });
       nexus.acts.popupClose();
     } else {
       nexus.acts.popupOpen("error");

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import createStorageSync from "../helpers/createStorageSync";
-import fetchDataServer from "../helpers/fetchDataServer";
+import { fetchDataServer, loadUser } from "../helpers/fetchDataServer";
 
 import isExtensionEnv from "../extension/isExtensionEnv";
 
@@ -9,12 +9,25 @@ import nexus from "../../nexusConfig";
 
 const mode = import.meta.env.MODE;
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const checkData = async (attempt = 0) => {
+  if (attempt > 10) return; // защита от бесконечности на 9 раз
+
+  await delay(1000);
+  await loadUser();
+
+  if (!nexus.get("userData")) {
+    checkData(attempt + 1);
+  }
+};
+
 function Fetching({ children }: { children: React.ReactNode }) {
   // state
   const [isStorageLoaded, setIsStorageLoaded] = useState(false);
 
   // nexus
   const themeSettings = nexus.use("themeSettings");
+  const readyToFetch = nexus.use("readyToFetch");
 
   // effects
   useEffect(() => {
@@ -57,6 +70,10 @@ function Fetching({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (readyToFetch) checkData();
+  }, [readyToFetch]);
+
+  useEffect(() => {
     // Синхронизация темы
     if (!isExtensionEnv()) return;
 
@@ -70,21 +87,22 @@ function Fetching({ children }: { children: React.ReactNode }) {
       type: "theme",
       theme: isDark ? "dark" : "light",
     });
+    const doc = document.documentElement;
 
     if (themeSettings === "system") {
       if (isDark) {
-        document.documentElement.setAttribute("data-theme", "dark");
-        document.documentElement.style.colorScheme = "dark";
+        doc.setAttribute("data-theme", "dark");
+        doc.style.colorScheme = "dark";
       } else {
-        document.documentElement.removeAttribute("data-theme");
-        document.documentElement.removeAttribute("style");
+        doc.removeAttribute("data-theme");
+        doc.removeAttribute("style");
       }
     } else if (themeSettings === "light") {
-      document.documentElement.removeAttribute("data-theme");
-      document.documentElement.style.colorScheme = "light";
+      doc.removeAttribute("data-theme");
+      doc.style.colorScheme = "light";
     } else if (themeSettings === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-      document.documentElement.style.colorScheme = "dark";
+      doc.setAttribute("data-theme", "dark");
+      doc.style.colorScheme = "dark";
     }
   }, [themeSettings]);
 

@@ -24,6 +24,7 @@ const nexus = createReactNexus<MyState, MyActs>({
     themeSettings: null,
     timestamp: 0,
     syncStatus: null,
+    readyToFetch: false,
   },
 
   acts: [colors, palette, popup, timeoutState, additional],

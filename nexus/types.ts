@@ -30,6 +30,7 @@ type MyState = {
     | "error fadeIn"
     | "error fadeOut"
     | null;
+  readyToFetch: boolean;
 };
 
 type MyActs = {

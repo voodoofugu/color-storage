@@ -6,8 +6,7 @@ import Button from "../Button";
 
 import { setTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import api from "../../helpers/api";
 
 function SignInWindow() {
   // states
@@ -30,17 +29,13 @@ function SignInWindow() {
     }
 
     setLoading(true);
-    const res = await fetch(`${backendUrl}/api/auth/request-magic-link`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, deviceId: getDeviceId() }),
-    });
-
     // !!! получаем линк сразу для разработки
-    const { status, link } = await res.json();
+    const { status, link } = await api.authMagicLink(email, getDeviceId());
+
     if (status === "linkSent") {
       setLoading(false);
       nexus.acts.popupOpen("linkSent");
+      nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
 
       // потом убрать
       setTimeout(() => {

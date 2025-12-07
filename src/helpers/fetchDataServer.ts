@@ -1,15 +1,14 @@
 import nexus from "../../nexusConfig";
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import api from "../helpers/api";
 
 // ограничиваем запросы к серверу
 const ONE_DAY = 24 * 60 * 60 * 1000;
-function isTimestampPlausible(ts: any) {
-  if (typeof ts !== "number" || !Number.isFinite(ts)) return false;
+function isTimestampPlausible(time: number) {
+  if (!Number.isFinite(time)) return false;
 
   const now = Date.now();
-  if (ts > now + ONE_DAY) return false; // будущее
-  if (ts < now - 2 * ONE_DAY) return false; // прошлое
+  if (time > now + ONE_DAY) return false; // будущее
+  if (time < now - 2 * ONE_DAY) return false; // прошлое
 
   return true;
 }
@@ -18,22 +17,13 @@ async function loadUser() {
   nexus.set({ syncStatus: "pending" });
 
   try {
-    const res = await fetch(`${backendUrl}/api/auth/me`, {
-      credentials: "include",
-    });
-    const data = await res.json();
+    const data = await api.authMe();
 
     if (data.status === "unauthorized") {
-      const refresh = await fetch(`${backendUrl}/api/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const refresh = await api.authRefresh();
 
       if (refresh.ok) {
-        const retry = await fetch(`${backendUrl}/api/auth/me`, {
-          credentials: "include",
-        });
-        const retryData = await retry.json();
+        const retryData = await api.authMe();
 
         if (retryData.status === "authorized") {
           nexus.set({ isPro: true, userData: retryData.user });
@@ -66,10 +56,8 @@ async function fetchDataServer() {
   const isPro = nexus.get("isPro");
   const userData = nexus.get("userData");
   const timestamp = nexus.get("timestamp");
-  // const syncStatus = nexus.get("syncStatus");
 
-  // !!! придумать как запускать проверку авторизации
-  // проверка от ручной записи
+  // защита от ручной записи
   if (!isPro || !userData || (userData && Object.keys(userData).length === 0)) {
     nexus.set({ isPro: false, userData: null, timestamp: 0 });
     return;
@@ -83,4 +71,4 @@ async function fetchDataServer() {
   }
 }
 
-export default fetchDataServer;
+export { fetchDataServer, loadUser };
