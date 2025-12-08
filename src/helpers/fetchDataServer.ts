@@ -13,40 +13,40 @@ function isTimestampPlausible(time: number) {
   return true;
 }
 
+const reset = () => {
+  nexus.set({ isPro: false, userData: null });
+  nexus.acts.syncStatusUpdate("error");
+};
+
 async function loadUser() {
   nexus.set({ syncStatus: "pending" });
 
   try {
-    const data = await api.authMe();
+    const data = await api.authMe<{
+      user: Record<string, string>;
+      status: string;
+    }>(5); // запускаем при ошибке 5
 
-    if (data.status === "unauthorized") {
-      const refresh = await api.authRefresh();
+    if (data.ok) {
+      if (data.status === "unauthorized") {
+        const refresh = await api.authRefresh();
 
-      if (refresh.ok) {
-        const retryData = await api.authMe();
+        if (refresh.ok) {
+          const retryData = await api.authMe();
 
-        if (retryData.status === "authorized") {
-          nexus.set({ isPro: true, userData: retryData.user });
-          nexus.acts.syncStatusUpdate("success");
-        } else {
-          nexus.set({ isPro: false, userData: null });
-          nexus.acts.syncStatusUpdate("error");
-        }
-      } else {
-        nexus.set({ isPro: false, userData: null });
-        nexus.acts.syncStatusUpdate("error");
-      }
-    } else if (data.status === "authorized") {
-      nexus.set({ isPro: true, userData: data.user });
-      nexus.acts.syncStatusUpdate("success");
-    } else {
-      nexus.set({ isPro: false, userData: null });
-      nexus.acts.syncStatusUpdate("error");
+          if (retryData.status === "authorized") {
+            nexus.set({ isPro: true, userData: retryData.user });
+            nexus.acts.syncStatusUpdate("success");
+          } else reset();
+        } else reset();
+      } else if (data.status === "authorized") {
+        nexus.set({ isPro: true, userData: data.user });
+        nexus.acts.syncStatusUpdate("success");
+      } else reset();
     }
   } catch (err) {
     console.error(err);
-    nexus.set({ isPro: false, userData: null });
-    nexus.acts.syncStatusUpdate("error");
+    reset();
     nexus.acts.popupOpen("error");
   }
 }
