@@ -30,22 +30,20 @@ function SignInWindow() {
 
     setLoading(true);
     // !!! получаем линк сразу для разработки
-    const { status, link } = await api.authMagicLink(email, getDeviceId());
+    const res = await api.authMagicLink(email, getDeviceId());
 
-    if (status === "linkSent") {
+    if (!res.data || res.data.status === "serverError") {
+      setLoading(false);
+      nexus.acts.popupOpen("error");
+    } else if (res.data.status === "linkSent") {
       setLoading(false);
       nexus.acts.popupOpen("linkSent");
       nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
 
       // потом убрать
       setTimeout(() => {
-        window.open(link);
+        window.open(res.data.link);
       }, 1000);
-    }
-
-    if (status === "serverError" || !status) {
-      setLoading(false);
-      nexus.acts.popupOpen("error");
     }
   };
 

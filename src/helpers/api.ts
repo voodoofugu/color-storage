@@ -4,17 +4,23 @@ interface SafeFetchOptions extends RequestInit {
   retryDelay?: number; // задержка для повтора
 }
 
-type SafeFetchResult<T> =
-  | { ok: true; data: T; status: number }
-  | { ok: false; status: number | string };
+// type SafeFetchResult<T> =
+//   | { status: number; data: T } // успешный JSON или ошибка уровня сервера (400/500), но JSON прочитан
+//   | { status: number; error: "bad_json"; data: null } // тело не удалось распарсить
+//   | { status: 0; error: "network_error" | "timeout"; data: null }; // сетевые сбои
 
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 // helper для обработки запросов
-async function safeFetch<T = unknown>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function safeFetch<T = any>(
   url: string,
   options: SafeFetchOptions = {}
-): Promise<SafeFetchResult<T>> {
+): Promise<{
+  status: number;
+  data: T | null;
+  error?: string;
+}> {
   const { timeout, retryDelay, retries, ...fetchOptions } = {
     timeout: 8000,
     retries: 0,
@@ -36,25 +42,19 @@ async function safeFetch<T = unknown>(
         signal: controller.signal,
       });
 
-      // если это 5xx — можно повторить
-      if (!res.ok) {
-        if (res.status >= 500 && attempt < retriesLocal) continue;
-        return { ok: false, status: res.status };
-      }
-
       try {
-        return { ok: true, data: (await res.json()) as T, status: res.status };
+        return { status: res.status, data: (await res.json()) as T };
       } catch {
-        return { ok: false, status: "bad_json" };
+        return { status: res.status, error: "bad_json", data: null };
       }
     } catch (error: unknown) {
       // если это последняя попытка, удаляем timeout, возвращаем ошибку
       if (attempt === retriesLocal) {
         if (error instanceof DOMException && error.name === "AbortError") {
-          return { ok: false, status: "timeout" };
+          return { status: 0, error: "timeout", data: null };
         }
 
-        return { ok: false, status: "network_error" };
+        return { status: 0, error: "network_error", data: null };
       }
 
       // экспоненциальный ** для повтора
@@ -67,8 +67,10 @@ async function safeFetch<T = unknown>(
   throw new Error("safeFetch: unexpected end of function");
 }
 
+// !!! обработать везде использование api с типами и сделать helper для всего что ниже
 const api = {
-  authMe: async <T = unknown>(retries?: number) => {
+  // "GET"
+  authMe: async <T = any>(retries?: number) => {
     const res = await safeFetch<T>(`${API_URL}/auth/me`, {
       credentials: "include",
       retries,
@@ -77,16 +79,16 @@ const api = {
   },
 
   // "POST"
-  authRefresh: async () => {
-    const res = await safeFetch(`${API_URL}/auth/refresh`, {
+  authRefresh: async <T = any>() => {
+    const res = await safeFetch<T>(`${API_URL}/auth/refresh`, {
       method: "POST",
       credentials: "include",
     });
     return res;
   },
 
-  authMagicLink: async (email: string, deviceId: string) => {
-    const res = await safeFetch(`${API_URL}/auth/request-magic-link`, {
+  authMagicLink: async <T = any>(email: string, deviceId: string) => {
+    const res = await safeFetch<T>(`${API_URL}/auth/request-magic-link`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, deviceId }),
@@ -94,16 +96,16 @@ const api = {
     return res;
   },
 
-  logout: async () => {
-    const res = await safeFetch(`${API_URL}/auth/logout`, {
+  logout: async <T = any>() => {
+    const res = await safeFetch<T>(`${API_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
     return res;
   },
 
-  emailCheckout: async (email: string, deviceId: string) => {
-    const res = await safeFetch(`${API_URL}/email-checkout`, {
+  emailCheckout: async <T = any>(email: string, deviceId: string) => {
+    const res = await safeFetch<T>(`${API_URL}/email-checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, deviceId }),
@@ -111,8 +113,8 @@ const api = {
     return res;
   },
 
-  startPayment: async (email: string, deviceId: string) => {
-    const res = await safeFetch(`${API_URL}/start-payment`, {
+  startPayment: async <T = any>(email: string, deviceId: string) => {
+    const res = await safeFetch<T>(`${API_URL}/start-payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, deviceId }),
@@ -120,8 +122,8 @@ const api = {
     return res;
   },
 
-  getUserData: async (id: string) => {
-    const res = await safeFetch(`${API_URL}/get-user-data`, {
+  getUserData: async <T = any>(id: string) => {
+    const res = await safeFetch<T>(`${API_URL}/get-user-data`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),

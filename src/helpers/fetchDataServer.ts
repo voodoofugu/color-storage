@@ -22,27 +22,36 @@ async function loadUser() {
   nexus.set({ syncStatus: "pending" });
 
   try {
-    const data = await api.authMe<{
+    const resMe = await api.authMe<{
       user: Record<string, string>;
       status: string;
-    }>(5); // запускаем при ошибке 5
+    }>(5); // запускаем при ошибке 5 раз
 
-    if (data.ok) {
-      if (data.status === "unauthorized") {
-        const refresh = await api.authRefresh();
+    if ("error" in resMe) return reset();
 
-        if (refresh.ok) {
-          const retryData = await api.authMe();
+    if (resMe.data?.status === "unauthorized") {
+      const resRefresh = await api.authRefresh<{ ok: boolean }>();
 
-          if (retryData.status === "authorized") {
-            nexus.set({ isPro: true, userData: retryData.user });
-            nexus.acts.syncStatusUpdate("success");
-          } else reset();
-        } else reset();
-      } else if (data.status === "authorized") {
-        nexus.set({ isPro: true, userData: data.user });
+      if ("error" in resRefresh) return reset();
+      if (!resRefresh.data?.ok) return reset();
+
+      // повторный запрос после обновления токена
+      const resMe2 = await api.authMe<{
+        user: Record<string, string>;
+        status: string;
+      }>();
+
+      if ("error" in resMe2) return reset();
+
+      if (resMe2.data?.status === "authorized") {
+        nexus.set({ isPro: true, userData: resMe2.data.user });
         nexus.acts.syncStatusUpdate("success");
       } else reset();
+    } else if (resMe.data?.status === "authorized") {
+      nexus.set({ isPro: true, userData: resMe.data.user });
+      nexus.acts.syncStatusUpdate("success");
+    } else {
+      reset();
     }
   } catch (err) {
     console.error(err);

@@ -4,14 +4,12 @@ import api from "../helpers/api";
 async function getUserData(id: string) {
   const res = await api.getUserData(id);
 
-  if (!res.ok) {
-    console.error("Error during purchase:", res.statusText);
+  if (!res.data.ok) {
+    console.error("Error during purchase:", res.data.statusText);
     return;
   }
 
-  const userData = await res.json();
-
-  nexus.set({ userData: userData });
+  nexus.set({ userData: res.data });
 }
 
 export default getUserData;
