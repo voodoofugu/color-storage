@@ -31,11 +31,17 @@ function PurchaseWindow() {
       return;
     }
 
-    const { status, deviceIds, id } = await api.emailCheckout(
-      email,
-      getDeviceId()
-    );
+    const emailCheckout = await api.emailCheckout<{
+      status: string;
+      deviceIds: string[];
+      id: string;
+    }>(email, getDeviceId());
+    if (!emailCheckout.resData) {
+      nexus.acts.popupOpen("error");
+      return;
+    }
 
+    const { status, deviceIds, id } = emailCheckout.resData;
     switch (status) {
       case "notFound":
         nexus.acts.popupOpen("payment-notFound");
@@ -48,7 +54,6 @@ function PurchaseWindow() {
         nexus.acts.popupOpen("payment-found", {
           deviceIds: deviceIds.length,
         });
-
         getUserData(id);
         break;
       case "cancelled":
@@ -67,10 +72,18 @@ function PurchaseWindow() {
       return;
     }
 
-    const { url } = await api.startPayment(email, getDeviceId());
+    const startPayment = await api.startPayment<{ url: string }>(
+      email,
+      getDeviceId()
+    );
+
+    if (!startPayment.resData) {
+      nexus.acts.popupOpen("error");
+      return;
+    }
     // вместо stripe — идём на промежуточную страницу
     const startPaymentUrl = `${backendUrl}/Checkout?stripeUrl=${encodeURIComponent(
-      url
+      startPayment.resData.url
     )}&email=${encodeURIComponent(email)}`;
 
     window.open(startPaymentUrl, "_blank");

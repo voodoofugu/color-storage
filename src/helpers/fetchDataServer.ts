@@ -29,11 +29,11 @@ async function loadUser() {
 
     if ("error" in resMe) return reset();
 
-    if (resMe.data?.status === "unauthorized") {
+    if (resMe.resData?.status === "unauthorized") {
       const resRefresh = await api.authRefresh<{ ok: boolean }>();
 
       if ("error" in resRefresh) return reset();
-      if (!resRefresh.data?.ok) return reset();
+      if (!resRefresh.resData?.ok) return reset();
 
       // повторный запрос после обновления токена
       const resMe2 = await api.authMe<{
@@ -43,12 +43,12 @@ async function loadUser() {
 
       if ("error" in resMe2) return reset();
 
-      if (resMe2.data?.status === "authorized") {
-        nexus.set({ isPro: true, userData: resMe2.data.user });
+      if (resMe2.resData?.status === "authorized") {
+        nexus.set({ isPro: true, userData: resMe2.resData.user });
         nexus.acts.syncStatusUpdate("success");
       } else reset();
-    } else if (resMe.data?.status === "authorized") {
-      nexus.set({ isPro: true, userData: resMe.data.user });
+    } else if (resMe.resData?.status === "authorized") {
+      nexus.set({ isPro: true, userData: resMe.resData.user });
       nexus.acts.syncStatusUpdate("success");
     } else {
       reset();

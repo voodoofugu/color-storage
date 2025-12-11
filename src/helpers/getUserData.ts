@@ -2,14 +2,15 @@ import nexus from "../../nexusConfig";
 import api from "../helpers/api";
 
 async function getUserData(id: string) {
-  const res = await api.getUserData(id);
+  const res = await api.getUserData<{
+    userData: Record<string, string>;
+    status: string;
+  }>(id);
 
-  if (!res.data.ok) {
-    console.error("Error during purchase:", res.data.statusText);
-    return;
-  }
-
-  nexus.set({ userData: res.data });
+  if (!res.resData) return;
+  else if (res.resData.status === "notFound") return;
+  else if (res.resData.status === "success")
+    nexus.set({ userData: res.resData.userData });
 }
 
 export default getUserData;

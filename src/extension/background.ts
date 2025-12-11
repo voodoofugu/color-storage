@@ -35,9 +35,11 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 const getUserData = async (id: string) => {
-  const userData = await api.getUserData(id);
+  const req = await api.getUserData<{ userData: Record<string, string> }>(id);
+  if (!req.resData) return;
+
   chrome.storage.local.set({
-    userData,
+    userData: req.resData.userData,
   });
 };
 

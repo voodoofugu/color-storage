@@ -4,7 +4,6 @@ import createStorageSync from "../helpers/createStorageSync";
 import { fetchDataServer, loadUser } from "../helpers/fetchDataServer";
 
 import isExtensionEnv from "../extension/isExtensionEnv";
-
 import nexus from "../../nexusConfig";
 
 const mode = import.meta.env.MODE;

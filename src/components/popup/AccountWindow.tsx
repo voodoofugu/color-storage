@@ -30,9 +30,9 @@ function AccountWindow() {
 
   const exitHandler = async () => {
     setLoading(true);
-    const res = await api.logout();
+    const res = await api.logout<{ status: string }>();
 
-    if (res.data.status === "success") {
+    if (res.resData?.status === "success") {
       nexus.set({ isPro: false, userData: null });
       nexus.acts.popupClose();
     } else {

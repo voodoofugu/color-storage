@@ -30,19 +30,24 @@ function SignInWindow() {
 
     setLoading(true);
     // !!! получаем линк сразу для разработки
-    const res = await api.authMagicLink(email, getDeviceId());
+    const res = await api.authMagicLink<{ status: string; link: string }>(
+      email,
+      getDeviceId()
+    );
 
-    if (!res.data || res.data.status === "serverError") {
+    // !!! обработать notFound
+    console.log("res", res.resData?.status);
+    if (!res.resData || res.resData.status === "serverError") {
       setLoading(false);
       nexus.acts.popupOpen("error");
-    } else if (res.data.status === "linkSent") {
+    } else if (res.resData.status === "linkSent") {
       setLoading(false);
       nexus.acts.popupOpen("linkSent");
       nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
 
       // потом убрать
       setTimeout(() => {
-        window.open(res.data.link);
+        window.open(res.resData?.link);
       }, 1000);
     }
   };
