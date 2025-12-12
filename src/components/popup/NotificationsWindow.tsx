@@ -54,9 +54,6 @@ function NotificationsWindow({ notifType, props }: NotificationsWindowT) {
       case "payment-cancelled":
         message = "Payment Cancelled! 😞";
         break;
-      case "payment-notExists":
-        message = "Payment not found! 😞";
-        break;
       case "restore-limit":
         message = <RestoreLimit />;
         break;

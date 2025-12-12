@@ -40,7 +40,16 @@ function SignInWindow() {
     if (!res.resData || res.resData.status === "serverError") {
       setLoading(false);
       nexus.acts.popupOpen("error");
-    } else if (res.resData.status === "linkSent") {
+      return;
+    }
+
+    if (res.resData.status === "notFound") {
+      setLoading(false);
+      nexus.acts.popupOpen("payment-notFound");
+      return;
+    }
+
+    if (res.resData.status === "linkSent") {
       setLoading(false);
       nexus.acts.popupOpen("linkSent");
       nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer

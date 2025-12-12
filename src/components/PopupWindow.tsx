@@ -16,7 +16,6 @@ type NotifT =
   | "payment-found"
   | "payment-notFound"
   | "payment-cancelled"
-  | "payment-notExists"
   | "restore-limit"
   | "linkSent"
   | "error";
