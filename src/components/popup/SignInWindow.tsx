@@ -35,8 +35,6 @@ function SignInWindow() {
       getDeviceId()
     );
 
-    // !!! обработать notFound
-    console.log("res", res.resData?.status);
     if (!res.resData || res.resData.status === "serverError") {
       setLoading(false);
       nexus.acts.popupOpen("error");
