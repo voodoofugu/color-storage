@@ -3,8 +3,8 @@ import nexus from "../../nexusConfig";
 import type { StorageItem } from "./storage";
 
 export function createStorageSync(
-  items: StorageItem[],
-  sourceName = "storage",
+  items: StorageItem[], // !!! расширить тип для объекта
+  sourceName = "storage", // источник данных - в моём случае всегда "storage"
   callback?: () => void
 ) {
   // --- Первичная загрузка из хранилища ---

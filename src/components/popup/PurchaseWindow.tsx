@@ -6,7 +6,6 @@ import Button from "../Button";
 
 import { setTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
-import getUserData from "../../helpers/getUserData";
 import api from "../../helpers/api";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -15,6 +14,7 @@ function PurchaseWindow() {
   // states
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // refs
   const inputRef = useRef<HTMLInputElement>(null);
@@ -23,45 +23,41 @@ function PurchaseWindow() {
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // funcs
-  // предусмотреть ошибки при отсутствии интернета!!!
-  const restoreHandler = async () => {
+  const checkEmailLogin = async () => {
     if (!isValidEmail) {
       setValidEmail(false);
       setTask(() => setValidEmail(true), 1000, "setValidEmail");
       return;
     }
 
-    const emailCheckout = await api.emailCheckout<{
-      status: string;
-      deviceIds: string[];
-      id: string;
-    }>(email, getDeviceId());
-    if (!emailCheckout.resData) {
+    setLoading(true);
+    // !!! получаем линк сразу для разработки
+    const res = await api.authMagicLink<{ status: string; link: string }>(
+      email,
+      getDeviceId()
+    );
+
+    if (!res.resData || res.resData.status === "serverError") {
+      setLoading(false);
       nexus.acts.popupOpen("error");
       return;
     }
 
-    const { status, deviceIds, id } = emailCheckout.resData;
-    switch (status) {
-      case "notFound":
-        nexus.acts.popupOpen("payment-notFound");
-        break;
-      case "limit":
-        nexus.acts.popupOpen("restore-limit");
-        break;
-      case "paid":
-        nexus.set({ isPro: true });
-        nexus.acts.popupOpen("payment-found", {
-          deviceIds: deviceIds.length,
-        });
-        getUserData(id);
-        break;
-      case "cancelled":
-        nexus.acts.popupOpen("payment-cancelled");
-        break;
+    if (res.resData.status === "notFound") {
+      setLoading(false);
+      nexus.acts.popupOpen("payment-notFound");
+      return;
+    }
 
-      default:
-        nexus.acts.popupOpen("error");
+    if (res.resData.status === "linkSent") {
+      setLoading(false);
+      nexus.acts.popupOpen("linkSent");
+      nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
+
+      // потом убрать
+      setTimeout(() => {
+        window.open(res.resData?.link);
+      }, 1000);
     }
   };
 
@@ -109,7 +105,7 @@ function PurchaseWindow() {
     <div className="popup-content">
       <div className="popup-title">Purchase</div>
       <div className="popup-text">
-        To purchase or restore the pro version, specify your email address:
+        To purchase the pro version, specify your email address:
       </div>
 
       <div className={`input-wrap${!validEmail ? " invalid" : ""}`}>
@@ -127,8 +123,9 @@ function PurchaseWindow() {
           I already have a pro version:{" "}
           <Button
             className="restore-btn"
-            text="restore"
-            onClick={restoreHandler}
+            text="login"
+            loader={loading}
+            onClick={checkEmailLogin}
           />
         </div>
       </div>
@@ -136,6 +133,7 @@ function PurchaseWindow() {
       <Button
         className={`popup-btn${!isValidEmail ? " disabled" : ""}`}
         text="Get Pro - $4.99"
+        // loader={true}
         onClick={purchaseHandel}
       />
     </div>

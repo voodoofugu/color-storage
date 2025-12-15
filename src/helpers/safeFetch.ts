@@ -2,7 +2,7 @@
 
 interface SafeFetchOptions extends RequestInit {
   timeout?: number | null; // максимальное время запроса
-  retries?: number; // повтор запроса
+  retries?: number; // повтор запроса можно добавить
   retryDelay?: number; // задержка для повтора
   onProgress?: (loaded: number, total: number | null) => void;
   progressThrottle?: number;

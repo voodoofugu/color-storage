@@ -30,7 +30,7 @@ const api: Record<string, ApiMethod> = {
   },
 
   authMagicLink: async (email: string, deviceId: string) => {
-    return safeFetch(`${API_URL}/auth/request-magic-link`, {
+    return safeFetch(`${API_URL}/auth/magic-link`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, deviceId }),
@@ -41,14 +41,6 @@ const api: Record<string, ApiMethod> = {
     return safeFetch(`${API_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
-    });
-  },
-
-  emailCheckout: async (email: string, deviceId: string) => {
-    return safeFetch(`${API_URL}/email-checkout`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, deviceId }),
     });
   },
 

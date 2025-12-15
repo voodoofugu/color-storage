@@ -60,8 +60,8 @@ function Button({
       {color && !bgColor && (
         <div className="btn-bg" style={{ backgroundColor: color }} />
       )}
+      {text && <div className="text">{text}</div>}
       {loader ? <SVGIcon svgID="loader" /> : svgID && <SVGIcon svgID={svgID} />}
-      {!loader && text && <div className="text">{text}</div>}
       {children}
     </button>
   );

@@ -16,9 +16,9 @@ function Header() {
     nexus.set((prev) => ({ paletteHidden: !prev.paletteHidden }));
   };
 
-  const openSettings = () => nexus.acts.popupOpen("accountWindow");
+  const openAccount = () => nexus.acts.popupOpen("accountWindow");
 
-  const toRestore = () => {
+  const openSignIn = () => {
     nexus.acts.popupOpen("signInWindow");
   };
 
@@ -41,13 +41,13 @@ function Header() {
         <Button
           className="sign flat header-btn"
           svgID="account"
-          onClick={openSettings}
+          onClick={openAccount}
         />
       ) : (
         <Button
           className="sign flat header-btn"
           svgID="sign"
-          onClick={toRestore}
+          onClick={openSignIn}
         />
       )}
     </>

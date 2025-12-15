@@ -21,7 +21,7 @@ function SignInWindow() {
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // funcs
-  const checkHandler = async () => {
+  const checkEmailLogin = async () => {
     if (!isValidEmail) {
       setValidEmail(false);
       setTask(() => setValidEmail(true), 1000, "setValidEmail");
@@ -65,7 +65,7 @@ function SignInWindow() {
 
   const inputOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      checkHandler();
+      checkEmailLogin();
     }
   };
 
@@ -99,7 +99,7 @@ function SignInWindow() {
         className={`popup-btn${!isValidEmail ? " disabled" : ""}`}
         text="Sign in"
         loader={loading}
-        onClick={checkHandler}
+        onClick={checkEmailLogin}
       />
     </div>
   );

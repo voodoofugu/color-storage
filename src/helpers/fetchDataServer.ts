@@ -18,6 +18,21 @@ const reset = () => {
   nexus.acts.syncStatusUpdate("error");
 };
 
+const setData = (res: {
+  status: number;
+  resData: {
+    user: Record<string, string>;
+    status: string;
+  } | null;
+  error?: string;
+}) => {
+  nexus.set({
+    isPro: true,
+    userData: res.resData?.user,
+    readyToFetch: false,
+  });
+  nexus.acts.syncStatusUpdate("success");
+};
 async function loadUser() {
   nexus.set({ syncStatus: "pending" });
 
@@ -25,7 +40,7 @@ async function loadUser() {
     const resMe = await api.authMe<{
       user: Record<string, string>;
       status: string;
-    }>(5); // запускаем при ошибке 5 раз
+    }>(5); // запускаем при ошибке до 5 раз
 
     if ("error" in resMe) return reset();
 
@@ -43,16 +58,10 @@ async function loadUser() {
 
       if ("error" in resMe2) return reset();
 
-      if (resMe2.resData?.status === "authorized") {
-        nexus.set({ isPro: true, userData: resMe2.resData.user });
-        nexus.acts.syncStatusUpdate("success");
-      } else reset();
-    } else if (resMe.resData?.status === "authorized") {
-      nexus.set({ isPro: true, userData: resMe.resData.user });
-      nexus.acts.syncStatusUpdate("success");
-    } else {
-      reset();
-    }
+      if (resMe2.resData?.status === "authorized") setData(resMe2);
+      else reset();
+    } else if (resMe.resData?.status === "authorized") setData(resMe);
+    else reset();
   } catch (err) {
     console.error(err);
     reset();

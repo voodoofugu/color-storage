@@ -8,18 +8,6 @@ import nexus from "../../nexusConfig";
 
 const mode = import.meta.env.MODE;
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const checkData = async (attempt = 0) => {
-  if (attempt > 10) return; // защита от бесконечности на 9 раз
-
-  await delay(1000);
-  await loadUser();
-
-  if (!nexus.get("userData")) {
-    checkData(attempt + 1);
-  }
-};
-
 function Fetching({ children }: { children: React.ReactNode }) {
   // state
   const [isStorageLoaded, setIsStorageLoaded] = useState(false);
@@ -27,11 +15,10 @@ function Fetching({ children }: { children: React.ReactNode }) {
   // nexus
   const themeSettings = nexus.use("themeSettings");
   const readyToFetch = nexus.use("readyToFetch");
+  const type = mode === "production" ? "chrome-local" : "local";
 
   // effects
   useEffect(() => {
-    const type = mode === "production" ? "chrome-local" : "local";
-
     createStorageSync(
       [
         {
@@ -69,7 +56,16 @@ function Fetching({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (readyToFetch) checkData();
+    // обработка флага
+    createStorageSync([
+      {
+        name: "readyToFetch",
+        type,
+      },
+    ]);
+
+    // загрузка данных
+    if (readyToFetch) loadUser();
   }, [readyToFetch]);
 
   useEffect(() => {
