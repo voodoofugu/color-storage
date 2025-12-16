@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 
-import nexus from "../../../nexusConfig";
-
 import Button from "../Button";
 
 import { setTask } from "../../helpers/taskManager";
-import getDeviceId from "../../helpers/getDeviceId";
-import api from "../../helpers/api";
+import checkEmailLogin from "../../helpers/request/checkEmailLogin";
+import isValidEmail from "../../helpers/isValidEmail";
 
 function SignInWindow() {
   // states
@@ -17,46 +15,9 @@ function SignInWindow() {
   // refs
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // vars
-  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
   // funcs
-  const checkEmailLogin = async () => {
-    if (!isValidEmail) {
-      setValidEmail(false);
-      setTask(() => setValidEmail(true), 1000, "setValidEmail");
-      return;
-    }
-
-    setLoading(true);
-    // !!! получаем линк сразу для разработки
-    const res = await api.authMagicLink<{ status: string; link: string }>(
-      email,
-      getDeviceId()
-    );
-
-    if (!res.resData || res.resData.status === "serverError") {
-      setLoading(false);
-      nexus.acts.popupOpen("error");
-      return;
-    }
-
-    if (res.resData.status === "notFound") {
-      setLoading(false);
-      nexus.acts.popupOpen("payment-notFound");
-      return;
-    }
-
-    if (res.resData.status === "linkSent") {
-      setLoading(false);
-      nexus.acts.popupOpen("linkSent");
-      nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
-
-      // потом убрать
-      setTimeout(() => {
-        window.open(res.resData?.link);
-      }, 1000);
-    }
+  const checkEmailLoginLocal = async () => {
+    await checkEmailLogin({ email, setValidEmail, setLoading });
   };
 
   const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +26,7 @@ function SignInWindow() {
 
   const inputOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      checkEmailLogin();
+      checkEmailLoginLocal();
     }
   };
 
@@ -99,7 +60,7 @@ function SignInWindow() {
         className={`popup-btn${!isValidEmail ? " disabled" : ""}`}
         text="Sign in"
         loader={loading}
-        onClick={checkEmailLogin}
+        onClick={checkEmailLoginLocal}
       />
     </div>
   );

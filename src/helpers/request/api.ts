@@ -1,4 +1,4 @@
-import safeFetch from "./safeFetch";
+import safeFetch from "../safeFetch";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 

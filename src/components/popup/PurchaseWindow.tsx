@@ -6,7 +6,9 @@ import Button from "../Button";
 
 import { setTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
-import api from "../../helpers/api";
+import api from "../../helpers/request/api";
+import checkEmailLogin from "../../helpers/request/checkEmailLogin";
+import isValidEmail from "../../helpers/isValidEmail";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -19,46 +21,9 @@ function PurchaseWindow() {
   // refs
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // vars
-  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
   // funcs
-  const checkEmailLogin = async () => {
-    if (!isValidEmail) {
-      setValidEmail(false);
-      setTask(() => setValidEmail(true), 1000, "setValidEmail");
-      return;
-    }
-
-    setLoading(true);
-    // !!! получаем линк сразу для разработки
-    const res = await api.authMagicLink<{ status: string; link: string }>(
-      email,
-      getDeviceId()
-    );
-
-    if (!res.resData || res.resData.status === "serverError") {
-      setLoading(false);
-      nexus.acts.popupOpen("error");
-      return;
-    }
-
-    if (res.resData.status === "notFound") {
-      setLoading(false);
-      nexus.acts.popupOpen("payment-notFound");
-      return;
-    }
-
-    if (res.resData.status === "linkSent") {
-      setLoading(false);
-      nexus.acts.popupOpen("linkSent");
-      nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
-
-      // потом убрать
-      setTimeout(() => {
-        window.open(res.resData?.link);
-      }, 1000);
-    }
+  const checkEmailLoginLocal = async () => {
+    await checkEmailLogin({ email, setValidEmail, setLoading });
   };
 
   const purchaseHandel = async () => {
@@ -125,7 +90,7 @@ function PurchaseWindow() {
             className="restore-btn"
             text="login"
             loader={loading}
-            onClick={checkEmailLogin}
+            onClick={checkEmailLoginLocal}
           />
         </div>
       </div>

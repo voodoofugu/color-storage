@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import createStorageSync from "../helpers/createStorageSync";
-import { fetchDataServer, loadUser } from "../helpers/fetchDataServer";
+import { fetchDataServer, loadUser } from "../helpers/request/fetchDataServer";
 
 import isExtensionEnv from "../extension/isExtensionEnv";
 import nexus from "../../nexusConfig";

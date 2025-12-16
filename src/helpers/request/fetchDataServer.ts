@@ -1,5 +1,5 @@
-import nexus from "../../nexusConfig";
-import api from "../helpers/api";
+import nexus from "../../../nexusConfig";
+import api from "./api";
 
 // ограничиваем запросы к серверу
 const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -33,6 +33,7 @@ const setData = (res: {
   });
   nexus.acts.syncStatusUpdate("success");
 };
+
 async function loadUser() {
   nexus.set({ syncStatus: "pending" });
 

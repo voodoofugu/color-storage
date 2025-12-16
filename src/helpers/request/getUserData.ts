@@ -1,5 +1,5 @@
-import nexus from "../../nexusConfig";
-import api from "../helpers/api";
+import nexus from "../../../nexusConfig";
+import api from "./api";
 
 async function getUserData(id: string) {
   const res = await api.getUserData<{

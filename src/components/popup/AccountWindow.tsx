@@ -3,7 +3,7 @@ import { MorphScroll } from "morphing-scroll";
 
 import Button from "../Button";
 import nexus from "../../../nexusConfig";
-import api from "../../helpers/api";
+import api from "../../helpers/request/api";
 
 type ThemeT = "light" | "dark" | "system" | null;
 
