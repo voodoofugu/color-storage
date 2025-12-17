@@ -50,6 +50,7 @@ function SignInWindow() {
           type="email"
           name="email"
           required
+          autoComplete="email"
           placeholder="Email"
           onChange={inputOnChange}
           onKeyDown={inputOnKeyDown}

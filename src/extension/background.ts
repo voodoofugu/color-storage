@@ -51,7 +51,7 @@ chrome.runtime.onMessage.addListener((message) => {
     updateIcon();
   }
 
-  // сервер
+  // !!! сервер
   // Обработка платежей
   if (message.payment === "pending") {
     //

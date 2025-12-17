@@ -17,6 +17,7 @@ function PurchaseWindow() {
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [purchaseLoad, setPurchaseLoad] = useState(false);
 
   // refs
   const inputRef = useRef<HTMLInputElement>(null);
@@ -27,12 +28,13 @@ function PurchaseWindow() {
   };
 
   const purchaseHandel = async () => {
-    if (!isValidEmail) {
+    if (!isValidEmail(email)) {
       setValidEmail(false);
       setTask(() => setValidEmail(true), 1000, "setValidEmail");
       return;
     }
 
+    setPurchaseLoad(true);
     const startPayment = await api.startPayment<{ url: string }>(
       email,
       getDeviceId()
@@ -45,9 +47,10 @@ function PurchaseWindow() {
     // вместо stripe — идём на промежуточную страницу
     const startPaymentUrl = `${backendUrl}/Checkout?stripeUrl=${encodeURIComponent(
       startPayment.resData.url
-    )}&email=${encodeURIComponent(email)}`;
+    )}&email=${encodeURIComponent(email)}&deviceId=${getDeviceId()}`;
 
     window.open(startPaymentUrl, "_blank");
+    setPurchaseLoad(false);
   };
 
   const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +83,7 @@ function PurchaseWindow() {
           type="email"
           name="email"
           required
+          autoComplete="email"
           placeholder="Email"
           onChange={inputOnChange}
           onKeyDown={inputOnKeyDown}
@@ -96,9 +100,9 @@ function PurchaseWindow() {
       </div>
 
       <Button
-        className={`popup-btn${!isValidEmail ? " disabled" : ""}`}
+        className={`popup-btn${!isValidEmail(email) ? " disabled" : ""}`}
         text="Get Pro - $4.99"
-        // loader={true}
+        loader={purchaseLoad}
         onClick={purchaseHandel}
       />
     </div>
