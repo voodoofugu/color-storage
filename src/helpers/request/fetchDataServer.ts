@@ -3,6 +3,7 @@ import api from "./api";
 
 // ограничиваем запросы к серверу
 const ONE_DAY = 24 * 60 * 60 * 1000;
+
 function isTimestampPlausible(time: number) {
   if (!Number.isFinite(time)) return false;
 
@@ -78,7 +79,7 @@ async function fetchDataServer() {
 
   // защита от ручной записи
   if (!isPro || !userData || (userData && Object.keys(userData).length === 0)) {
-    nexus.set({ isPro: false, userData: null, timestamp: 0 });
+    nexus.set({ isPro: false, userData: null });
     return;
   }
 

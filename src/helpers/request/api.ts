@@ -37,10 +37,11 @@ const api: Record<string, ApiMethod> = {
     });
   },
 
-  logout: async () => {
+  authLogout: async (email: string, deviceId: string) => {
     return safeFetch(`${API_URL}/auth/logout`, {
       method: "POST",
-      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, deviceId }),
     });
   },
 
@@ -49,14 +50,6 @@ const api: Record<string, ApiMethod> = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, deviceId }),
-    });
-  },
-
-  getUserData: async (id: string) => {
-    return safeFetch(`${API_URL}/get-user-data`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
     });
   },
 };

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import SVGIcon from "./SVGIcon";
+
 import createStorageSync from "../helpers/createStorageSync";
 import { fetchDataServer, loadUser } from "../helpers/request/fetchDataServer";
 
@@ -18,6 +20,22 @@ function Fetching({ children }: { children: React.ReactNode }) {
   const type = mode === "production" ? "chrome-local" : "local";
 
   // effects
+  useEffect(() => {
+    // обработка флага
+    createStorageSync([
+      {
+        name: "readyToFetch",
+        type,
+      },
+    ]);
+
+    // загрузка данных
+    if (readyToFetch) {
+      nexus.set({ timestamp: Date.now() });
+      loadUser();
+    }
+  }, [readyToFetch]);
+
   useEffect(() => {
     createStorageSync(
       [
@@ -56,19 +74,6 @@ function Fetching({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // обработка флага
-    createStorageSync([
-      {
-        name: "readyToFetch",
-        type,
-      },
-    ]);
-
-    // загрузка данных
-    if (readyToFetch) loadUser();
-  }, [readyToFetch]);
-
-  useEffect(() => {
     // Синхронизация темы
     if (!isExtensionEnv()) return;
 
@@ -101,7 +106,15 @@ function Fetching({ children }: { children: React.ReactNode }) {
     }
   }, [themeSettings]);
 
-  return isStorageLoaded ? children : null;
+  return isStorageLoaded ? (
+    children
+  ) : (
+    <div className="content">
+      <div className="loaderWrap">
+        <SVGIcon svgID="loader" />
+      </div>
+    </div>
+  );
 }
 
 export default Fetching;

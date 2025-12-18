@@ -4,6 +4,7 @@ import { MorphScroll } from "morphing-scroll";
 import Button from "../Button";
 import nexus from "../../../nexusConfig";
 import api from "../../helpers/request/api";
+import getDeviceId from "../../helpers/getDeviceId";
 
 type ThemeT = "light" | "dark" | "system" | null;
 
@@ -30,10 +31,13 @@ function AccountWindow() {
 
   const exitHandler = async () => {
     setLoading(true);
-    const res = await api.logout<{ status: string }>();
+    const res = await api.authLogout<{ status: string }>(
+      userData?.email,
+      getDeviceId()
+    );
 
     if (res.resData?.status === "success") {
-      nexus.set({ isPro: false, userData: null });
+      nexus.set({ isPro: false, userData: null, timestamp: 0 });
       nexus.acts.popupClose();
     } else {
       nexus.acts.popupOpen("error");

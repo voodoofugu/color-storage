@@ -1,7 +1,6 @@
 .content {
   position: relative;
   width: 224px;
-  // height: fit-content;
   height: 258px;
   display: flex;
   flex-direction: column;
@@ -15,6 +14,20 @@
   }
   &.palette-hidden {
     height: 220px;
+  }
+
+  .loaderWrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .svgIcon {
+      width: 80px;
+    }
   }
 
   .title {
