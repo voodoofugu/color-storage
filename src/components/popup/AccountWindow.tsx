@@ -36,8 +36,8 @@ function AccountWindow() {
       getDeviceId()
     );
 
+    nexus.set({ isPro: false, userData: null, timestamp: 0 });
     if (res.resData?.status === "success") {
-      nexus.set({ isPro: false, userData: null, timestamp: 0 });
       nexus.acts.popupClose();
     } else {
       nexus.acts.popupOpen("error");

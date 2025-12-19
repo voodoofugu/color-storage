@@ -41,7 +41,7 @@ function PurchaseWindow() {
     );
 
     if (!startPayment.resData) {
-      nexus.acts.popupOpen("error");
+      nexus.acts.popupOpen("error"); // можно сделать оплата не удалась
       return;
     }
     // вместо stripe — идём на промежуточную страницу
