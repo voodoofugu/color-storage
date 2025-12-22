@@ -10,8 +10,6 @@ import api from "../../helpers/request/api";
 import checkEmailLogin from "../../helpers/request/checkEmailLogin";
 import isValidEmail from "../../helpers/isValidEmail";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
 function PurchaseWindow() {
   // states
   const [email, setEmail] = useState("");
@@ -44,13 +42,10 @@ function PurchaseWindow() {
       nexus.acts.popupOpen("error"); // можно сделать оплата не удалась
       return;
     }
-    // вместо stripe — идём на промежуточную страницу
-    const startPaymentUrl = `${backendUrl}/Checkout?stripeUrl=${encodeURIComponent(
-      startPayment.resData.url
-    )}&email=${encodeURIComponent(email)}&deviceId=${getDeviceId()}`;
-
-    window.open(startPaymentUrl, "_blank");
+    // идём в stripe
     setPurchaseLoad(false);
+    nexus.acts.popupClose();
+    window.open(startPayment.resData.url, "_blank");
   };
 
   const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
