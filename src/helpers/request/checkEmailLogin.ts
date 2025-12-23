@@ -42,7 +42,7 @@ const checkEmailLogin = async ({
   if (res.resData.status === "linkSent") {
     setLoading(false);
     nexus.acts.popupOpen("linkSent");
-    nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
+    // nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
 
     // потом убрать
     setTimeout(() => {

@@ -40,10 +40,8 @@ chrome.runtime.onMessage.addListener((message) => {
     updateIcon();
   }
 
-  // !!! сервер
-  // if (message.payment === "pending") {
-  //   //
-  // }
-
-  chrome.storage.local.set({ payment: message.payment });
+  // сообщения от сервера
+  if (message.ok) {
+    chrome.storage.local.set({ readyToFetch: true });
+  }
 });
