@@ -31,10 +31,7 @@ function AccountWindow() {
 
   const exitHandler = async () => {
     setLoading(true);
-    const res = await api.authLogout<{ status: string }>(
-      userData?.email,
-      getDeviceId()
-    );
+    const res = await api.authLogout<{ status: string }>(getDeviceId());
 
     nexus.set({ isPro: false, userData: null, timestamp: 0 });
     if (res.resData?.status === "success") {

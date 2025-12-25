@@ -37,11 +37,11 @@ const api: Record<string, ApiMethod> = {
     });
   },
 
-  authLogout: async (email: string, deviceId: string) => {
+  authLogout: async (deviceId: string) => {
     return safeFetch(`${API_URL}/auth/logout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, deviceId }),
+      body: JSON.stringify({ deviceId }),
     });
   },
 
