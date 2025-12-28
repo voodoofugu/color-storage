@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import SVGIcon from "./SVGIcon";
 
 type SvgIdT =
@@ -26,6 +26,11 @@ type ButtonT = {
   children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLButtonElement>; // 👈 Добавили все стандартные события
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isPromise<T = unknown>(value: any): value is Promise<T> {
+  return value && typeof value.then === "function";
+}
+
 function Button({
   className,
   ref,
@@ -40,13 +45,14 @@ function Button({
   ...restProps // 👈 Сюда попадают все onDrag*, onClick и пр.
 }: ButtonT) {
   const isHexWithAlpha = color?.match(/#([A-Fa-f0-9]{8})/);
+  const [loading, setLoading] = useState(false);
 
   return (
     <button
       data-id={data}
       className={`btn${className ? ` ${className}` : ""}${
         bgColor && color && isHexWithAlpha ? " alpha" : ""
-      }${loader ? " loader" : ""}`}
+      }${loading ? " loader" : ""}`}
       ref={ref}
       draggable={draggable}
       style={{
@@ -56,12 +62,24 @@ function Button({
           }),
       }}
       {...restProps} // 👈 Прокидываем все события и прочие атрибуты
+      onClick={(e) => {
+        const result = restProps.onClick?.(e);
+
+        if (isPromise(result)) {
+          setLoading(true);
+          result.finally(() => setLoading(false));
+        }
+      }}
     >
       {color && !bgColor && (
         <div className="btn-bg" style={{ backgroundColor: color }} />
       )}
       {text && <div className="text">{text}</div>}
-      {loader ? <SVGIcon svgID="loader" /> : svgID && <SVGIcon svgID={svgID} />}
+      {loading ? (
+        <SVGIcon svgID="loader" />
+      ) : (
+        svgID && <SVGIcon svgID={svgID} />
+      )}
       {children}
     </button>
   );

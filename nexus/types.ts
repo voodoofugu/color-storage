@@ -15,10 +15,6 @@ type MyState = {
   >;
   copiedColorFlag: boolean;
   currentPaletteId: number;
-  popupContent:
-    | PopupContentT
-    | null
-    | { content: PopupContentT | null; props?: { [key: string]: unknown } };
   paletteHidden: boolean;
   userData: Record<string, string> | null;
   themeSettings: "light" | "dark" | "system" | null;
@@ -31,6 +27,9 @@ type MyState = {
     | "error fadeOut"
     | null;
   readyToFetch: boolean;
+
+  popupContent: PopupContentT | null;
+  clarificationPopup: { text: string; onConfirm: () => void } | null;
 };
 
 type MyActs = {
@@ -43,17 +42,20 @@ type MyActs = {
   setNewPaletteColor: (color: string) => void;
   paletteRename: (newName: string) => void;
   deleteCurrentPalette: (currentPaletteId: number) => void;
-  popupOpen: (
-    content: MyState["popupContent"],
-    props?: { [key: string]: unknown }
-  ) => void;
-  popupClose: () => void;
   setStateWithTimeout: <K extends keyof MyState>(
     stateKey: K,
     temporaryValue: MyState[K],
     duration: number
   ) => void;
   syncStatusUpdate: (status: "success" | "error") => void;
+
+  popupOpen: (
+    content: MyState["popupContent"],
+    props?: { [key: string]: unknown }
+  ) => void;
+  popupClose: () => void;
+  clarificationClose: () => void;
+  clarificationOpen: (text: string, onConfirm: () => void) => void;
 };
 
 export type { MyState, MyActs };

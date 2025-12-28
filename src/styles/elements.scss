@@ -379,6 +379,7 @@
 
   &.disabled {
     filter: grayscale(0.8) opacity(0.8);
+    pointer-events: none;
   }
 
   &.exit-btn {

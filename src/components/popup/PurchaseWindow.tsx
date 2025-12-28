@@ -14,15 +14,13 @@ function PurchaseWindow() {
   // states
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [purchaseLoad, setPurchaseLoad] = useState(false);
 
   // refs
   const inputRef = useRef<HTMLInputElement>(null);
 
   // funcs
   const checkEmailLoginLocal = async () => {
-    await checkEmailLogin({ email, setValidEmail, setLoading });
+    await checkEmailLogin({ email, setValidEmail });
   };
 
   const purchaseHandel = async () => {
@@ -32,18 +30,16 @@ function PurchaseWindow() {
       return;
     }
 
-    setPurchaseLoad(true);
     const startPayment = await api.startPayment<{ url: string }>(
       email,
       getDeviceId()
     );
 
     if (!startPayment.resData) {
-      nexus.acts.popupOpen("error"); // можно сделать оплата не удалась
+      nexus.acts.popupOpen({ text: "error" }); // можно сделать оплата не удалась
       return;
     }
     // идём в stripe
-    setPurchaseLoad(false);
     nexus.acts.popupClose();
     window.open(startPayment.resData.url, "_blank");
   };
@@ -88,7 +84,7 @@ function PurchaseWindow() {
           <Button
             className="restore-btn"
             text="login"
-            loader={loading}
+            loader
             onClick={checkEmailLoginLocal}
           />
         </div>
@@ -97,7 +93,7 @@ function PurchaseWindow() {
       <Button
         className={`popup-btn${!isValidEmail(email) ? " disabled" : ""}`}
         text="Get Pro - $4.99"
-        loader={purchaseLoad}
+        loader
         onClick={purchaseHandel}
       />
     </div>

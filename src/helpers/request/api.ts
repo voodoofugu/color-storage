@@ -11,8 +11,18 @@ type ApiMethod = <T = any>(
   resData: T | null;
   error?: string;
 }>;
+
+type ApiMap =
+  | "authMe"
+  | "authRefresh"
+  | "authMagicLink"
+  | "authLogout"
+  | "startPayment"
+  | "devicesReset"
+  | "updateUserData";
+
 // !!! обработать везде использование api с типами и сделать helper для всего что ниже
-const api: Record<string, ApiMethod> = {
+const api: { [K in ApiMap]: ApiMethod } = {
   // "GET"
   authMe: async (retries?: number) => {
     return safeFetch(`${API_URL}/auth/me`, {
@@ -50,6 +60,21 @@ const api: Record<string, ApiMethod> = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, deviceId }),
+    });
+  },
+
+  devicesReset: async (deviceId: string) => {
+    return safeFetch(`${API_URL}/devices-reset`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deviceId }),
+    });
+  },
+
+  updateUserData: async () => {
+    return safeFetch(`${API_URL}/update-user-data`, {
+      method: "POST",
+      credentials: "include",
     });
   },
 };

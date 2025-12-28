@@ -8,11 +8,9 @@ import isValidEmail from "../isValidEmail";
 const checkEmailLogin = async ({
   email,
   setValidEmail,
-  setLoading,
 }: {
   email: string;
   setValidEmail: (value: React.SetStateAction<boolean>) => void;
-  setLoading: (value: React.SetStateAction<boolean>) => void;
 }) => {
   if (!isValidEmail(email)) {
     setValidEmail(false);
@@ -20,7 +18,6 @@ const checkEmailLogin = async ({
     return;
   }
 
-  setLoading(true);
   // !!! получаем линк сразу для разработки
   const res = await api.authMagicLink<{ status: string; link: string }>(
     email,
@@ -28,20 +25,19 @@ const checkEmailLogin = async ({
   );
 
   if (!res.resData || res.resData.status === "serverError") {
-    setLoading(false);
-    nexus.acts.popupOpen("error");
+    nexus.acts.popupOpen({ text: "error" });
     return;
   }
 
   if (res.resData.status === "notFound") {
-    setLoading(false);
-    nexus.acts.popupOpen("payment-notFound");
+    nexus.acts.popupOpen({ text: "Payment is not finished! 😞" });
     return;
   }
 
   if (res.resData.status === "linkSent") {
-    setLoading(false);
-    nexus.acts.popupOpen("linkSent");
+    nexus.acts.popupOpen({
+      text: "Link sent to your email for further verification! ✉️",
+    });
     // nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
 
     // потом убрать

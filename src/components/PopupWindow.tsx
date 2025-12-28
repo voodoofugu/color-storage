@@ -10,34 +10,22 @@ import AccountWindow from "./popup/AccountWindow.tsx";
 
 import { setTask, cancelTask } from "../helpers/taskManager";
 
-type NotifT =
-  | "payment-notFinished"
-  | "payment-success"
-  | "payment-found"
-  | "payment-notFound"
-  | "payment-cancelled"
-  | "restore-limit"
-  | "linkSent"
-  | "error";
-
 type PopupContentT =
   | "accountWindow"
   | "purchaseWindow"
   | "signInWindow"
   // notifications without "...Window"
-  | NotifT;
+  | { text: string };
 
 function PopupWindow() {
   const popupContent = nexus.use("popupContent");
 
   const popupType =
     popupContent && typeof popupContent === "object"
-      ? popupContent.content
+      ? "defaultInfo"
       : popupContent;
   const popupProps =
-    popupContent && typeof popupContent === "object"
-      ? popupContent.props
-      : undefined;
+    popupContent && typeof popupContent === "object" ? popupContent : undefined;
 
   let popupContentLocal;
 
@@ -54,12 +42,12 @@ function PopupWindow() {
 
     default:
       popupContentLocal = popupContent ? (
-        <NotificationsWindow notifType={popupType} props={popupProps} />
+        <NotificationsWindow {...popupProps} />
       ) : null;
   }
 
   useEffect(() => {
-    // regEx проверка заканчивается ли popupContent на "...Window"
+    // regEx проверка заканчивается ли popupContent на "...Window" для закрытия
     if (popupType && !/Window$/i.test(popupType ? popupType : ""))
       setTask(() => nexus.acts.popupClose(), 6000, "autoClosePopup");
 
@@ -86,4 +74,4 @@ function PopupWindow() {
 export { AccountWindow, PurchaseWindow };
 export default PopupWindow;
 
-export type { PopupContentT, NotifT };
+export type { PopupContentT };

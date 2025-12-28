@@ -67,7 +67,7 @@ async function loadUser() {
   } catch (err) {
     console.error(err);
     reset();
-    nexus.acts.popupOpen("error");
+    nexus.acts.popupOpen({ text: "error" });
   }
 }
 

@@ -10,14 +10,13 @@ function SignInWindow() {
   // states
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(true);
-  const [loading, setLoading] = useState(false);
 
   // refs
   const inputRef = useRef<HTMLInputElement>(null);
 
   // funcs
   const checkEmailLoginLocal = async () => {
-    await checkEmailLogin({ email, setValidEmail, setLoading });
+    await checkEmailLogin({ email, setValidEmail });
   };
 
   const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +59,7 @@ function SignInWindow() {
       <Button
         className={`popup-btn${!isValidEmail ? " disabled" : ""}`}
         text="Sign in"
-        loader={loading}
+        loader
         onClick={checkEmailLoginLocal}
       />
     </div>

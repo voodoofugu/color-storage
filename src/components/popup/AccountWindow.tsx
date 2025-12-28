@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { MorphScroll } from "morphing-scroll";
 
 import Button from "../Button";
@@ -9,9 +8,6 @@ import getDeviceId from "../../helpers/getDeviceId";
 type ThemeT = "light" | "dark" | "system" | null;
 
 function AccountWindow() {
-  // states
-  const [loading, setLoading] = useState(false);
-
   // nexus
   const userData = nexus.use("userData");
   const themeSettings = nexus.use("themeSettings");
@@ -30,17 +26,32 @@ function AccountWindow() {
   };
 
   const exitHandler = async () => {
-    setLoading(true);
     const res = await api.authLogout<{ status: string }>(getDeviceId());
 
     nexus.set({ isPro: false, userData: null, timestamp: 0 });
-    if (res.resData?.status === "success") {
-      nexus.acts.popupClose();
-    } else {
-      nexus.acts.popupOpen("error");
-    }
+    if (res.resData?.status === "success") nexus.acts.popupClose();
+    else nexus.acts.popupOpen({ text: "error" });
+  };
 
-    setLoading(false);
+  const resetDevices = async () => {
+    nexus.acts.clarificationOpen(
+      "Resetting active devices will delete them except for the current device",
+      async () => {
+        const res = await api.devicesReset<{ status: string }>(getDeviceId());
+
+        if (res.resData?.status !== "success")
+          nexus.acts.popupOpen({ text: "error" });
+
+        const resUpdate = await api.updateUserData();
+        if (resUpdate.resData?.status !== "success")
+          nexus.acts.popupOpen({ text: "error" });
+
+        // !!! обновляем userData
+
+        nexus.acts.popupOpen({ text: "Devices have been reset ✅" });
+        nexus.acts.clarificationClose();
+      }
+    );
   };
 
   return (
@@ -79,6 +90,7 @@ function AccountWindow() {
                   <Button
                     className={`restore-btn${devices < 2 ? " disabled" : ""}`}
                     text="reset"
+                    onClick={resetDevices}
                   />
                 </div>
                 <div className="popup-text">connected {devices}/3</div>
@@ -121,7 +133,7 @@ function AccountWindow() {
             className="exit-btn"
             svgID="sign"
             text="Exit"
-            loader={loading}
+            loader
             onClick={exitHandler}
           />
         </MorphScroll>

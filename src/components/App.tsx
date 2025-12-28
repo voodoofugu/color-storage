@@ -22,6 +22,7 @@ import Button from "./Button";
 import Header from "./Header";
 import StorageColors from "./StorageColors";
 import PopupWindow from "./PopupWindow";
+import ClarificationWindow from "./ClarificationWindow";
 
 function App() {
   // State:
@@ -288,15 +289,15 @@ function App() {
       if (result.payment === "success") {
         if (result.userData.status === "paid") {
           nexus.set({ isPro: true });
-          nexus.acts.popupOpen("payment-success");
+          nexus.acts.popupOpen({ text: "Payment Successful! 🎉" });
 
           chrome.storage.local.remove(["payment"]);
         }
       } else {
         if (result.payment === "cancel") {
-          nexus.acts.popupOpen("payment-cancelled");
+          nexus.acts.popupOpen({ text: "Payment Cancelled! 😞" });
         } else if (result.payment === "pending") {
-          nexus.acts.popupOpen("payment-notFinished");
+          nexus.acts.popupOpen({ text: "Payment is not finished! 😞" });
         }
 
         chrome.storage.local.remove(["payment"]);
@@ -375,6 +376,7 @@ function App() {
 
       <StorageColors />
       <PopupWindow />
+      <ClarificationWindow />
     </div>
   );
 }
