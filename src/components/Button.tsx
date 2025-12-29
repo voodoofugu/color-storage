@@ -26,11 +26,6 @@ type ButtonT = {
   children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLButtonElement>; // 👈 Добавили все стандартные события
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isPromise<T = unknown>(value: any): value is Promise<T> {
-  return value && typeof value.then === "function";
-}
-
 function Button({
   className,
   ref,
@@ -52,7 +47,7 @@ function Button({
       data-id={data}
       className={`btn${className ? ` ${className}` : ""}${
         bgColor && color && isHexWithAlpha ? " alpha" : ""
-      }${loading ? " loader" : ""}`}
+      }${loading ? " inFetch" : ""}`}
       ref={ref}
       draggable={draggable}
       style={{
@@ -65,9 +60,14 @@ function Button({
       onClick={(e) => {
         const result = restProps.onClick?.(e);
 
-        if (isPromise(result)) {
+        if (
+          result &&
+          typeof (result as Promise<unknown>).finally === "function"
+        ) {
           setLoading(true);
-          result.finally(() => setLoading(false));
+          (result as Promise<unknown>).finally(() => {
+            setLoading(false);
+          });
         }
       }}
     >

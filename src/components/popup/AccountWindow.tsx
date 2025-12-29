@@ -37,19 +37,32 @@ function AccountWindow() {
     nexus.acts.clarificationOpen(
       "Resetting active devices will delete them except for the current device",
       async () => {
+        const error = () => {
+          nexus.acts.clarificationClose();
+          nexus.acts.popupOpen({ text: "error" });
+          return;
+        };
+
         const res = await api.devicesReset<{ status: string }>(getDeviceId());
+        if (!res.resData || res.resData.status !== "success") error();
 
-        if (res.resData?.status !== "success")
-          nexus.acts.popupOpen({ text: "error" });
+        const resGetUser = await api.getUser<{
+          status: string;
+          userData: Record<string, string>;
+        }>();
 
-        const resUpdate = await api.updateUserData();
-        if (resUpdate.resData?.status !== "success")
-          nexus.acts.popupOpen({ text: "error" });
+        if (!resGetUser.resData) error();
 
-        // !!! обновляем userData
+        const { status, userData } = resGetUser.resData!;
+        if (status !== "success" || !userData) {
+          exitHandler();
+          error();
+        }
 
-        nexus.acts.popupOpen({ text: "Devices have been reset ✅" });
+        nexus.set({ userData });
+
         nexus.acts.clarificationClose();
+        nexus.acts.popupOpen({ text: "Devices have been reset ✅" });
       }
     );
   };

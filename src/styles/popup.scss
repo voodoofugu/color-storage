@@ -199,15 +199,19 @@
       text-align: center;
       filter: drop-shadow(0 1px 1px #fff);
     }
-    .btn-box {
+    .clarification-btn-box {
       .btn {
+        display: inline-block;
         width: 72px;
         transition: width 0.2s ease-in-out;
         .text {
           font-size: 12px;
         }
-        &.loader {
+        &.inFetch {
           width: 100%;
+        }
+        &.ok-btn {
+          float: right;
         }
       }
     }

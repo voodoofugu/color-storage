@@ -19,7 +19,7 @@ type ApiMap =
   | "authLogout"
   | "startPayment"
   | "devicesReset"
-  | "updateUserData";
+  | "getUser";
 
 // !!! обработать везде использование api с типами и сделать helper для всего что ниже
 const api: { [K in ApiMap]: ApiMethod } = {
@@ -71,8 +71,8 @@ const api: { [K in ApiMap]: ApiMethod } = {
     });
   },
 
-  updateUserData: async () => {
-    return safeFetch(`${API_URL}/update-user-data`, {
+  getUser: async () => {
+    return safeFetch(`${API_URL}/get-user`, {
       method: "POST",
       credentials: "include",
     });

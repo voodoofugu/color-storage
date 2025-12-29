@@ -13,11 +13,12 @@ function ClarificationWindow() {
 
       <div className="clarification-content">
         <div className="clarification-text ">{clarificationPopup.text}</div>
-        <div className="btn-box">
+        <div className="clarification-btn-box">
           {viewCancel && (
             <Button text="cancel" onClick={nexus.acts.clarificationClose} />
           )}
           <Button
+            className="ok-btn"
             text="ok"
             loader
             onClick={() => {
