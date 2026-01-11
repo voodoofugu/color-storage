@@ -14,60 +14,63 @@ function isTimestampPlausible(time: number) {
   return true;
 }
 
-const reset = () => {
+const reset = (): { status: "error" } => {
   nexus.set({ isPro: false, userData: null });
   nexus.acts.syncStatusUpdate("error");
+  return { status: "error" };
 };
 
 const setData = (res: {
   status: number;
   resData: {
-    user: Record<string, string>;
     status: string;
+    userData: Record<string, string>;
   } | null;
   error?: string;
-}) => {
+}): { status: "success" } => {
   nexus.set({
     isPro: true,
-    userData: res.resData?.user,
+    userData: res.resData?.userData,
     readyToFetch: false,
   });
   nexus.acts.syncStatusUpdate("success");
+
+  return { status: "success" };
 };
 
-async function loadUser() {
+async function loadUser(): Promise<{ status: "success" | "error" }> {
   nexus.set({ syncStatus: "pending" });
 
   try {
     const resMe = await api.authMe<{
-      user: Record<string, string>;
       status: string;
-    }>(5); // запускаем при ошибке до 5 раз
+      userData: Record<string, string>;
+    }>(4); // запускаем при ошибке до 4-x раз
 
-    if ("error" in resMe) return reset();
+    if (resMe.resData?.status !== "success") {
+      const resRefresh = await api.authRefresh<{ status: string }>();
 
-    if (resMe.resData?.status === "unauthorized") {
-      const resRefresh = await api.authRefresh<{ ok: boolean }>();
-
-      if ("error" in resRefresh) return reset();
-      if (!resRefresh.resData?.ok) return reset();
+      if (resRefresh.resData?.status !== "success") return reset();
 
       // повторный запрос после обновления токена
       const resMe2 = await api.authMe<{
-        user: Record<string, string>;
         status: string;
+        userData: Record<string, string>;
       }>();
 
-      if ("error" in resMe2) return reset();
+      if (resMe2.resData?.status !== "success") {
+        nexus.acts.popupOpen({ text: "error" });
+        return reset();
+      }
 
-      if (resMe2.resData?.status === "authorized") setData(resMe2);
-      else reset();
-    } else if (resMe.resData?.status === "authorized") setData(resMe);
-    else reset();
+      return setData(resMe2);
+    }
+
+    return setData(resMe);
   } catch (err) {
     console.error(err);
-    reset();
     nexus.acts.popupOpen({ text: "error" });
+    return reset();
   }
 }
 

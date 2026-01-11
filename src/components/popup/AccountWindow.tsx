@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { MorphScroll } from "morphing-scroll";
 
 import Button from "../Button";
 import nexus from "../../../nexusConfig";
 import api from "../../helpers/request/api";
 import getDeviceId from "../../helpers/getDeviceId";
+import { setTask } from "../../helpers/taskManager";
+import { loadUser } from "../../helpers/request/fetchDataServer";
 
 type ThemeT = "light" | "dark" | "system" | null;
 
@@ -11,6 +14,9 @@ function AccountWindow() {
   // nexus
   const userData = nexus.use("userData");
   const themeSettings = nexus.use("themeSettings");
+
+  // states
+  const [successUpdate, setSuccessUpdate] = useState(false);
 
   // vars
   const devices =
@@ -33,33 +39,25 @@ function AccountWindow() {
     else nexus.acts.popupOpen({ text: "error" });
   };
 
+  const error = () => {
+    nexus.acts.clarificationClose();
+    nexus.acts.popupOpen({ text: "error" });
+    return;
+  };
+
   const resetDevices = async () => {
     nexus.acts.clarificationOpen(
-      "Resetting active devices will delete them except for the current device",
+      "Resetting active devices will delete them except for the current device:",
       async () => {
-        const error = () => {
-          nexus.acts.clarificationClose();
-          nexus.acts.popupOpen({ text: "error" });
-          return;
-        };
-
         const res = await api.devicesReset<{ status: string }>(getDeviceId());
         if (!res.resData || res.resData.status !== "success") error();
 
-        const resGetUser = await api.getUser<{
-          status: string;
-          userData: Record<string, string>;
-        }>();
-
-        if (!resGetUser.resData) error();
-
-        const { status, userData } = resGetUser.resData!;
-        if (status !== "success" || !userData) {
+        const { status } = await loadUser();
+        if (status !== "success") {
           exitHandler();
           error();
+          return;
         }
-
-        nexus.set({ userData });
 
         nexus.acts.clarificationClose();
         nexus.acts.popupOpen({ text: "Devices have been reset ✅" });
@@ -67,9 +65,27 @@ function AccountWindow() {
     );
   };
 
+  const updateUser = async () => {
+    const { status } = await loadUser();
+
+    if (status !== "success") {
+      exitHandler();
+      error();
+      return;
+    }
+
+    setSuccessUpdate(true);
+    setTask(() => setSuccessUpdate(false), 2000);
+  };
+
   return (
     <div className="popup-content">
       <div className="popup-title">Account</div>
+      <Button
+        className={`withoutBg update-btns${successUpdate ? " disabled" : ""}`}
+        svgID={`${successUpdate ? "check" : "update"}`}
+        onClick={updateUser}
+      />
 
       <div className="popup-contentBox">
         <MorphScroll
@@ -146,7 +162,6 @@ function AccountWindow() {
             className="exit-btn"
             svgID="sign"
             text="Exit"
-            loader
             onClick={exitHandler}
           />
         </MorphScroll>

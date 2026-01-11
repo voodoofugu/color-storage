@@ -6,7 +6,7 @@
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  padding: 14px 20px 26px 20px;
+  padding: 14px 20px 20px 20px;
   transition: height 0.2s ease-in-out;
   overflow: hidden;
   &.witch-palettes {
@@ -34,7 +34,6 @@
     text-transform: uppercase;
     font-weight: bold;
     font-size: 12px;
-    user-select: none;
     position: relative;
     .sync-status-el {
       position: absolute;
@@ -209,7 +208,6 @@
         .color-format {
           height: 18px;
           font-size: inherit;
-          user-select: none;
           border: unset;
           box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
           border-radius: 3px;
@@ -225,7 +223,6 @@
           pointer-events: none;
           font-size: inherit;
           transition: all 0.1s ease-in-out;
-          user-select: none;
           box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
           border-radius: 3px;
           margin: 1px;
@@ -245,28 +242,9 @@
 
   .storage-box {
     width: 220px;
-    position: absolute;
-    bottom: 26px;
-    width: calc(100% - 40px);
+    width: 100%;
     opacity: 0;
     animation: fadeIn 0.2s ease-in-out 0.2s 1 forwards;
-    &:before {
-      content: "";
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      width: calc(100% - 2px);
-      height: 60px;
-      border-radius: 0 0 10px 0;
-      box-shadow: unset;
-      margin: unset;
-      margin-top: 17px;
-      border: 0;
-      border-right: 1px;
-      border-bottom: 1px;
-      border-style: solid;
-      border-color: rgba(0, 0, 0, 0.2);
-    }
     &.empty {
       &:before {
         margin: unset;
@@ -336,7 +314,6 @@
             background: none;
             font-size: 12px;
             color: inherit;
-            user-select: none;
             max-width: 100%;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -382,7 +359,7 @@
           .ms-edge {
             z-index: -1;
             background: linear-gradient(
-              90deg,
+              -90deg,
               rgba(0, 0, 0, 0.06) 0,
               transparent 100%
             );
@@ -456,10 +433,6 @@ html[data-theme="dark"] {
     }
 
     .storage-box {
-      &:before {
-        border-color: #575757;
-        filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.16));
-      }
       .container {
         .menu-wrap {
           .menu {
@@ -487,7 +460,7 @@ html[data-theme="dark"] {
             box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);
             .ms-edge {
               background: linear-gradient(
-                90deg,
+                -90deg,
                 rgba(0, 0, 0, 0.14) 0,
                 transparent 100%
               );

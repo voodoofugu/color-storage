@@ -84,7 +84,7 @@ function Fetching({ children }: { children: React.ReactNode }) {
     const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     // сообщение в background для смены иконки
     chrome.runtime.sendMessage({
-      type: "theme",
+      source: "color-storage",
       theme: isDark ? "dark" : "light",
     });
     const doc = document.documentElement;

@@ -1,6 +1,7 @@
 function sendTheme() {
   const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   chrome.runtime.sendMessage({
+    source: "color-storage",
     type: "theme",
     theme: isDark ? "dark" : "light",
   });

@@ -108,6 +108,26 @@ const LoaderIcon = () => {
   );
 };
 
+const UpdateIcon = () => {
+  return (
+    <g className="svgLine">
+      <path d="M44 66C56.1503 66 66 56.1503 66 44C66 35.8569 61.5758 28.7471 55 24.9432" />
+      <path d="M44 22C31.8497 22 22 31.8497 22 44C22 52.1431 26.4242 59.2529 33 63.0568" />
+      <path d="M63.4451 22.8023L54.7386 24.2386L53.3023 32.9452" />
+      <path d="M25 66.1429L33.7065 64.7066L35.1429 56" />
+    </g>
+  );
+};
+
+const CheckIcon = () => {
+  return (
+    <g className="svgLine">
+      <path d="M32 43.3L41.1772 52L56 38" />
+      <circle cx="44" cy="44" r="22" />
+    </g>
+  );
+};
+
 export {
   PickerIcon,
   CopyIcon,
@@ -119,4 +139,6 @@ export {
   SignIcon,
   AccountIcon,
   LoaderIcon,
+  UpdateIcon,
+  CheckIcon,
 };

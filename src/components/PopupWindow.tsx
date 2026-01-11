@@ -62,7 +62,7 @@ function PopupWindow() {
       {popupContentLocal}
       <Button
         svgID="plus"
-        className="close-btn"
+        className="withoutBg close-btn"
         onClick={nexus.acts.popupClose}
       />
     </div>

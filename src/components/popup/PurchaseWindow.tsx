@@ -70,6 +70,7 @@ function PurchaseWindow() {
       <div className={`input-wrap${!validEmail ? " invalid" : ""}`}>
         <input
           ref={inputRef}
+          id="purchaseEmailInput"
           className="popup-input"
           type="email"
           name="email"
@@ -84,7 +85,6 @@ function PurchaseWindow() {
           <Button
             className="restore-btn"
             text="login"
-            loader
             onClick={checkEmailLoginLocal}
           />
         </div>
@@ -93,7 +93,6 @@ function PurchaseWindow() {
       <Button
         className={`popup-btn${!isValidEmail(email) ? " disabled" : ""}`}
         text="Get Pro - $4.99"
-        loader
         onClick={purchaseHandel}
       />
     </div>

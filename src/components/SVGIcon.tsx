@@ -9,41 +9,38 @@ import {
   SignIcon,
   AccountIcon,
   LoaderIcon,
+  UpdateIcon,
+  CheckIcon,
 } from "../svg/svgIcons";
-import type { SvgIdT } from "./Button";
 
-type SVGIconT = {
-  svgID: SvgIdT;
+const iconMap = {
+  picker: PickerIcon,
+  copy: CopyIcon,
+  plus: PlusIcon,
+  drag: DragIcon,
+  trash: TrashIcon,
+  settings: SettingsIcon,
+  palette: PaletteIcon,
+  sign: SignIcon,
+  account: AccountIcon,
+  loader: LoaderIcon,
+  update: UpdateIcon,
+  check: CheckIcon,
 };
 
-const SVGIcon = ({ svgID }: SVGIconT) => {
+type SvgIdT = keyof typeof iconMap;
+
+const SVGIcon = ({ svgID }: { svgID: SvgIdT }) => {
+  const IconComponent = iconMap[svgID];
+
   return (
     <div className="svgIcon">
       <svg id={`${svgID}`} viewBox="0 0 88 88">
-        {svgID === "picker" ? (
-          <PickerIcon />
-        ) : svgID === "copy" ? (
-          <CopyIcon />
-        ) : svgID === "plus" ? (
-          <PlusIcon />
-        ) : svgID === "drag" ? (
-          <DragIcon />
-        ) : svgID === "trash" ? (
-          <TrashIcon />
-        ) : svgID === "settings" ? (
-          <SettingsIcon />
-        ) : svgID === "palette" ? (
-          <PaletteIcon />
-        ) : svgID === "sign" ? (
-          <SignIcon />
-        ) : svgID === "account" ? (
-          <AccountIcon />
-        ) : svgID === "loader" ? (
-          <LoaderIcon />
-        ) : null}
+        {IconComponent && <IconComponent />}
       </svg>
     </div>
   );
 };
 
 export default SVGIcon;
+export type { SvgIdT };

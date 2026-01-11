@@ -9,7 +9,7 @@ function ClarificationWindow() {
 
   return clarificationPopup ? (
     <div className="clarification-window">
-      <div className="popup-bg"></div>
+      <div className="popup-bg" onClick={nexus.acts.clarificationClose}></div>
 
       <div className="clarification-content">
         <div className="clarification-text ">{clarificationPopup.text}</div>
@@ -20,10 +20,10 @@ function ClarificationWindow() {
           <Button
             className="ok-btn"
             text="ok"
-            loader
-            onClick={() => {
+            onClick={async () => {
               setViewCancel(false);
-              clarificationPopup.onConfirm();
+              await clarificationPopup.onConfirm();
+              setViewCancel(true);
             }}
           />
         </div>

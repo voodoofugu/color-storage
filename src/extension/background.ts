@@ -34,8 +34,11 @@ chrome.runtime.onConnect.addListener((port) => {
 
 // слушаем сообщения
 chrome.runtime.onMessage.addListener((message) => {
-  // При изменении темы от themeWatcher или App
-  if (message.type === "theme") {
+  // проверяем namespace
+  if (message?.source !== "color-storage") return;
+
+  // смена темы
+  if (message.theme) {
     theme = message.theme;
     updateIcon();
   }

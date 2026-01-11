@@ -21,7 +21,6 @@ function Header() {
   const openSignIn = () => {
     nexus.acts.popupOpen("signInWindow");
   };
-  nexus.acts.popupOpen("accountWindow");
 
   return (
     <>

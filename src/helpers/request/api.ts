@@ -3,43 +3,43 @@ import safeFetch from "../safeFetch";
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ApiMethod = <T = any>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ...args: any[]
-) => Promise<{
+type ApiResponse<T = any> = {
   status: number;
   resData: T | null;
   error?: string;
-}>;
+};
 
-type ApiMap =
-  | "authMe"
-  | "authRefresh"
-  | "authMagicLink"
-  | "authLogout"
-  | "startPayment"
-  | "devicesReset"
-  | "getUser";
+// Helper для преобразования простого типа функции в ApiMethod с generic
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AsApiMethod<F extends (...args: any[]) => any> = <R = any>(
+  ...args: Parameters<F>
+) => Promise<ApiResponse<R>>;
+
+type ApiMethods = {
+  authMe: AsApiMethod<(retries?: number) => void>;
+  authRefresh: AsApiMethod<() => void>;
+  authMagicLink: AsApiMethod<(email: string, deviceId: string) => void>;
+  authLogout: AsApiMethod<(deviceId: string) => void>;
+  startPayment: AsApiMethod<(email: string, deviceId: string) => void>;
+  devicesReset: AsApiMethod<(deviceId: string) => void>;
+};
 
 // !!! обработать везде использование api с типами и сделать helper для всего что ниже
-const api: { [K in ApiMap]: ApiMethod } = {
-  // "GET"
-  authMe: async (retries?: number) => {
+const api: ApiMethods = {
+  authMe: async (retries) => {
     return safeFetch(`${API_URL}/auth/me`, {
-      credentials: "include",
+      credentials: "include", // нужен для кук
       retries,
     });
   },
 
-  // "POST"
   authRefresh: async () => {
     return safeFetch(`${API_URL}/auth/refresh`, {
-      method: "POST",
       credentials: "include",
     });
   },
 
-  authMagicLink: async (email: string, deviceId: string) => {
+  authMagicLink: async (email, deviceId) => {
     return safeFetch(`${API_URL}/auth/magic-link`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -47,15 +47,16 @@ const api: { [K in ApiMap]: ApiMethod } = {
     });
   },
 
-  authLogout: async (deviceId: string) => {
+  authLogout: async (deviceId) => {
     return safeFetch(`${API_URL}/auth/logout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include", // нужен для кук
       body: JSON.stringify({ deviceId }),
     });
   },
 
-  startPayment: async (email: string, deviceId: string) => {
+  startPayment: async (email, deviceId) => {
     return safeFetch(`${API_URL}/start-payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -63,18 +64,12 @@ const api: { [K in ApiMap]: ApiMethod } = {
     });
   },
 
-  devicesReset: async (deviceId: string) => {
+  devicesReset: async (deviceId) => {
     return safeFetch(`${API_URL}/devices-reset`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include", // нужен для куки так передаются токены
       body: JSON.stringify({ deviceId }),
-    });
-  },
-
-  getUser: async () => {
-    return safeFetch(`${API_URL}/get-user`, {
-      method: "POST",
-      credentials: "include",
     });
   },
 };

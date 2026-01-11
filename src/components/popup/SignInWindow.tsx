@@ -48,6 +48,7 @@ function SignInWindow() {
           className="popup-input"
           type="email"
           name="email"
+          id="signInEmailInput"
           required
           autoComplete="email"
           placeholder="Email"
@@ -59,7 +60,6 @@ function SignInWindow() {
       <Button
         className={`popup-btn${!isValidEmail ? " disabled" : ""}`}
         text="Sign in"
-        loader
         onClick={checkEmailLoginLocal}
       />
     </div>

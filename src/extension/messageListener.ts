@@ -4,7 +4,7 @@
     if (e.origin !== window.location.origin) return; // защита по origin
 
     const data = e.data;
-    if (!data || data.__cs !== "color-storage") return; // простая сигнатура
+    if (!data || data.source !== "color-storage") return; // простая сигнатура
 
     chrome.runtime.sendMessage({ ...data });
   });
