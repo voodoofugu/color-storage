@@ -219,7 +219,6 @@ function StorageColors() {
         <select
           className="palette-select"
           value={activePalette.current}
-          id="paletteSelect"
           onChange={(e) => {
             const selectedName = e.target.value;
             const selectedIndex = colorStorage.findIndex(
@@ -243,7 +242,6 @@ function StorageColors() {
         <input
           className="palette-input"
           type="text"
-          id="paletteInput"
           value={newPaletteName.current}
           onChange={(e) => {
             newPaletteName.current = sanitizeInputName(e.target.value);
@@ -377,6 +375,9 @@ function StorageColors() {
           <div className="scroll">
             <MorphScroll
               className="palette-scroll"
+              progressTrigger={{
+                wheel: false,
+              }}
               size="auto"
               objectsSize="size"
               gap={4}

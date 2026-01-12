@@ -10,25 +10,23 @@ import api from "../../helpers/request/api";
 import checkEmailLogin from "../../helpers/request/checkEmailLogin";
 import isValidEmail from "../../helpers/isValidEmail";
 
-function PurchaseWindow() {
-  // states
-  const [email, setEmail] = useState("");
-  const [validEmail, setValidEmail] = useState(true);
+import useEmailInput from "../../hooks/useEmailInput";
 
+function PurchaseWindow() {
   // refs
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // hooks
+  const { email, isValid, onChange, validate } = useEmailInput();
+
   // funcs
   const checkEmailLoginLocal = async () => {
-    await checkEmailLogin({ email, setValidEmail });
+    if (!validate()) return;
+    await checkEmailLogin({ email });
   };
 
   const purchaseHandel = async () => {
-    if (!isValidEmail(email)) {
-      setValidEmail(false);
-      setTask(() => setValidEmail(true), 1000, "setValidEmail");
-      return;
-    }
+    if (!validate()) return;
 
     const startPayment = await api.startPayment<{ url: string }>(
       email,
@@ -42,10 +40,6 @@ function PurchaseWindow() {
     // идём в stripe
     nexus.acts.popupClose();
     window.open(startPayment.resData.url, "_blank");
-  };
-
-  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTask(() => setEmail(e.target.value), 200, "setValidEmail");
   };
 
   const inputOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -67,7 +61,7 @@ function PurchaseWindow() {
         To purchase the pro version, specify your email address:
       </div>
 
-      <div className={`input-wrap${!validEmail ? " invalid" : ""}`}>
+      <div className={`input-wrap${!isValid ? " invalid" : ""}`}>
         <input
           ref={inputRef}
           id="purchaseEmailInput"
@@ -77,7 +71,7 @@ function PurchaseWindow() {
           required
           autoComplete="email"
           placeholder="Email"
-          onChange={inputOnChange}
+          onChange={onChange}
           onKeyDown={inputOnKeyDown}
         />
         <div className="popup-text small">

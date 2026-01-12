@@ -82,7 +82,9 @@ function AccountWindow() {
     <div className="popup-content">
       <div className="popup-title">Account</div>
       <Button
-        className={`withoutBg update-btns${successUpdate ? " disabled" : ""}`}
+        className={`withoutBg update-btns${
+          successUpdate ? " disabled green" : ""
+        }`}
         svgID={`${successUpdate ? "check" : "update"}`}
         onClick={updateUser}
       />
@@ -112,6 +114,7 @@ function AccountWindow() {
                   <Button className={`restore-btn`} text="change" />
                 </div>
                 <div className="popup-text">{userData?.email}</div>
+                <input className="popup-input" type="email"></input>
               </div>
               <div className="text-box">
                 <div className="popup-text bold">

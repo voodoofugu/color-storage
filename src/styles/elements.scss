@@ -412,6 +412,12 @@
     background: none;
     filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 1));
   }
+
+  &.green {
+    .svgIcon svg .svgLine {
+      stroke: #00aa09;
+    }
+  }
 }
 
 #loader {

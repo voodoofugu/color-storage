@@ -1,23 +1,9 @@
 import nexus from "../../../nexusConfig";
 
-import { setTask } from "../taskManager";
 import getDeviceId from "../getDeviceId";
 import api from "./api";
-import isValidEmail from "../isValidEmail";
 
-const checkEmailLogin = async ({
-  email,
-  setValidEmail,
-}: {
-  email: string;
-  setValidEmail: (value: React.SetStateAction<boolean>) => void;
-}) => {
-  if (!isValidEmail(email)) {
-    setValidEmail(false);
-    setTask(() => setValidEmail(true), 1000, "setValidEmail");
-    return;
-  }
-
+const checkEmailLogin = async ({ email }: { email: string }) => {
   // !!! получаем линк сразу для разработки
   const res = await api.authMagicLink<{ status: string; link: string }>(
     email,
