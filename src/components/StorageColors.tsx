@@ -37,7 +37,7 @@ function StorageColors() {
 
   // update refs
   const activePalette = useRef(
-    colorStorage.length ? Object.keys(colorStorage[0])[0] : ""
+    colorStorage.length ? Object.keys(colorStorage[0])[0] : "",
   );
   const newPaletteName = useRef("");
 
@@ -66,7 +66,7 @@ function StorageColors() {
       resizeWrap.current!,
       maxWidth.current,
       clearBtnRef.current,
-      clearBtnOnClick
+      clearBtnOnClick,
     );
   }, []);
 
@@ -80,7 +80,7 @@ function StorageColors() {
 
       startDrag(e);
     },
-    [startDrag]
+    [startDrag],
   );
 
   const removeWidth = useCallback(() => {
@@ -108,7 +108,7 @@ function StorageColors() {
     newColors.splice(
       dragOverItem.current,
       0,
-      newColors.splice(dragItem.current, 1)[0]
+      newColors.splice(dragItem.current, 1)[0],
     );
 
     document
@@ -126,7 +126,7 @@ function StorageColors() {
 
   const clearBtnOnDrop = useCallback(() => {
     nexus.acts.clearColor(
-      colorStorage[currentPaletteId][activePalette.current][dragItem.current!]
+      colorStorage[currentPaletteId][activePalette.current][dragItem.current!],
     );
     const leaveEl = document.querySelector(`.clear-btn`);
     leaveEl!.classList.remove("onDragEnter");
@@ -158,7 +158,7 @@ function StorageColors() {
     triggerUpdate();
 
     const enterEl = document.querySelector(
-      `.palette-input`
+      `.palette-input`,
     ) as HTMLInputElement;
     if (!enterEl) return;
 
@@ -204,12 +204,12 @@ function StorageColors() {
         />
       ));
     },
-    [mainColor, handelOnDragStart, handleDrop, onDragOver]
+    [mainColor, handelOnDragStart, handleDrop, onDragOver],
   );
 
   const onGetPro = useCallback(
     () => nexus.acts.popupOpen("purchaseWindow"),
-    []
+    [],
   );
 
   // content
@@ -222,7 +222,7 @@ function StorageColors() {
           onChange={(e) => {
             const selectedName = e.target.value;
             const selectedIndex = colorStorage.findIndex(
-              (palette) => Object.keys(palette)[0] === selectedName
+              (palette) => Object.keys(palette)[0] === selectedName,
             );
 
             nexus.acts.setCurrentPaletteId(selectedIndex);
@@ -290,6 +290,7 @@ function StorageColors() {
             wrapperMargin={[10, 0]}
             scrollBarOnHover
             scrollBarEdge={8}
+            dragScroll
           >
             <Button
               key="add"
