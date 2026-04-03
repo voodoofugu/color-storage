@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import nexus from "../../../nexusConfig";
 
 import Button from "../Button";
 
-import { setTask } from "../../helpers/taskManager";
 import getDeviceId from "../../helpers/getDeviceId";
 import api from "../../helpers/request/api";
 import checkEmailLogin from "../../helpers/request/checkEmailLogin";
@@ -30,7 +29,7 @@ function PurchaseWindow() {
 
     const startPayment = await api.startPayment<{ url: string }>(
       email,
-      getDeviceId()
+      getDeviceId(),
     );
 
     if (!startPayment.resData) {
