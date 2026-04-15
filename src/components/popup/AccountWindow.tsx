@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { MorphScroll } from "morphing-scroll";
 
 import Button from "../Button";
@@ -8,15 +8,24 @@ import getDeviceId from "../../helpers/getDeviceId";
 import { setTask } from "../../helpers/taskManager";
 import { loadUser } from "../../helpers/request/fetchDataServer";
 
+import useEmailInput from "../../hooks/useEmailInput";
+
 type ThemeT = "light" | "dark" | "system" | null;
 
 function AccountWindow() {
-  // nexus
+  // -- nexus
   const userData = nexus.use("userData");
   const themeSettings = nexus.use("themeSettings");
 
-  // states
+  // -- states
   const [successUpdate, setSuccessUpdate] = useState(false);
+  const [isOnChainge, setIsOnChainge] = useState(false);
+
+  // -- refs
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // -- hooks
+  const { email, isValid, onChange, validate } = useEmailInput();
 
   // vars
   const devices =
@@ -24,7 +33,7 @@ function AccountWindow() {
       ? userData.deviceId.split("/").length
       : 0;
 
-  // funcs
+  // -- funcs
   const onChangeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as ThemeT;
 
@@ -61,7 +70,7 @@ function AccountWindow() {
 
         nexus.acts.clarificationClose();
         nexus.acts.popupOpen({ text: "Devices have been reset ✅" });
-      }
+      },
     );
   };
 
@@ -77,6 +86,30 @@ function AccountWindow() {
     setSuccessUpdate(true);
     setTask(() => setSuccessUpdate(false), 2000);
   };
+
+  // input handlers
+  const inputOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (!validate()) return;
+      // await checkEmailLogin({ email });
+      inputClose();
+    }
+  };
+
+  const changeEmail = async () => {
+    if (!isOnChainge) {
+      setIsOnChainge(true);
+      inputRef.current?.focus();
+
+      return;
+    }
+
+    if (!validate()) return;
+    // await checkEmailLogin({ email });
+    inputClose();
+  };
+
+  const inputClose = () => setIsOnChainge(false);
 
   return (
     <div className="popup-content">
@@ -111,10 +144,33 @@ function AccountWindow() {
               <div className="text-box">
                 <div className="popup-text bold">
                   Email:
-                  <Button className={`restore-btn`} text="change" />
+                  <Button
+                    className={`restore-btn`}
+                    text="change"
+                    onClick={changeEmail}
+                  />
                 </div>
-                <div className="popup-text">{userData?.email}</div>
-                <input className="popup-input" type="email"></input>
+                <div className="popup-text">
+                  {userData?.email}
+                  <div
+                    className={`input-wrap email-change${!isValid ? " invalid" : ""}${!isOnChainge ? " disabled" : ""}`}
+                  >
+                    <input
+                      id="emailChange"
+                      ref={inputRef}
+                      className="popup-input"
+                      type="email"
+                      defaultValue={userData?.email}
+                      onChange={onChange}
+                      onKeyDown={inputOnKeyDown}
+                    />
+                    <Button
+                      className="close-btn"
+                      svgID="plus"
+                      onClick={inputClose}
+                    />
+                  </div>
+                </div>
               </div>
               <div className="text-box">
                 <div className="popup-text bold">

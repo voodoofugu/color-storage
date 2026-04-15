@@ -42,9 +42,7 @@ function PurchaseWindow() {
   };
 
   const inputOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      purchaseHandel();
-    }
+    if (e.key === "Enter") purchaseHandel();
   };
 
   // effects
