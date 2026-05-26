@@ -1,7 +1,7 @@
 import safeFetch from "../safeFetch";
 
 const API_URL = import.meta.env.DEV
-  ? "/api" // через proxy из vite.config.ts
+  ? "http://localhost:4000/api"
   : `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

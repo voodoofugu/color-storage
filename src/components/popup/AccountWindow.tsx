@@ -25,7 +25,7 @@ function AccountWindow() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   // -- hooks
-  const { email, isValid, onChange, validate } = useEmailInput();
+  const { isValid, onChange, validate } = useEmailInput();
 
   // vars
   const devices =
