@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { setTask } from "keytask-core";
 
 import isValidEmail from "../helpers/isValidEmail";
-import { setTask } from "../helpers/taskManager";
 
 function useEmailInput({ debounce = 200 } = {}) {
   const [email, setEmail] = useState("");

@@ -7,7 +7,7 @@ const checkEmailLogin = async ({ email }: { email: string }) => {
   // !!! получаем линк сразу для разработки
   const res = await api.authMagicLink<{ status: string; link: string }>(
     email,
-    getDeviceId()
+    getDeviceId(),
   );
 
   if (!res.resData || res.resData.status === "serverError") {
@@ -26,7 +26,7 @@ const checkEmailLogin = async ({ email }: { email: string }) => {
     });
     // nexus.set({ readyToFetch: true }); // устанавливаем флаг для fetchDataServer
 
-    // потом убрать
+    // setTimeout потом убрать
     setTimeout(() => {
       window.open(res.resData?.link);
     }, 1000);

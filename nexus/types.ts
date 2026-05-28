@@ -6,13 +6,6 @@ type MyState = {
   activeColor: string;
   failedColorAdding: boolean;
   colorStorage: Array<Record<string, string[]>>;
-  timeouts: Record<
-    string,
-    {
-      id: ReturnType<typeof setTimeout>;
-      originalValue: MyState[keyof MyState];
-    }
-  >;
   copiedColorFlag: boolean;
   currentPaletteId: number;
   paletteHidden: boolean;
@@ -45,13 +38,13 @@ type MyActs = {
   setStateWithTimeout: <K extends keyof MyState>(
     stateKey: K,
     temporaryValue: MyState[K],
-    duration: number
+    duration: number,
   ) => void;
   syncStatusUpdate: (status: "success" | "error") => void;
 
   popupOpen: (
     content: MyState["popupContent"],
-    props?: { [key: string]: unknown }
+    props?: { [key: string]: unknown },
   ) => void;
   popupClose: () => void;
   clarificationClose: () => void;

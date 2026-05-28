@@ -5,7 +5,6 @@ import Button from "../Button";
 import nexus from "../../../nexusConfig";
 import api from "../../helpers/request/api";
 import getDeviceId from "../../helpers/getDeviceId";
-import { setTask } from "../../helpers/taskManager";
 import { loadUser } from "../../helpers/request/fetchDataServer";
 
 import useEmailInput from "../../hooks/useEmailInput";
@@ -84,7 +83,7 @@ function AccountWindow() {
     }
 
     setSuccessUpdate(true);
-    setTask(() => setSuccessUpdate(false), 2000);
+    setTimeout(() => setSuccessUpdate(false), 2000);
   };
 
   // input handlers

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { setTask, cancelTask } from "keytask-core";
 
 import nexus from "../../nexusConfig.ts";
 
@@ -7,8 +8,6 @@ import PurchaseWindow from "./popup/PurchaseWindow";
 import NotificationsWindow from "./popup/NotificationsWindow";
 import SignInWindow from "./popup/SignInWindow";
 import AccountWindow from "./popup/AccountWindow.tsx";
-
-import { setTask, cancelTask } from "../helpers/taskManager";
 
 type PopupContentT =
   | "accountWindow"

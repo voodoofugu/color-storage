@@ -1,47 +1,41 @@
 import { createActs } from "nexus-state";
+import { setTask, setLockTask, hasTask } from "keytask-core";
+
+import nexus from "../../nexusConfig";
 
 import type { MyState } from "../types";
 
-const timeoutState = createActs<MyState>((_, set) => ({
+let originalValue: null | any = null;
+
+const timeoutState = createActs<MyState>(() => ({
+  // TODO fix it
   setStateWithTimeout: <K extends keyof MyState>(
     stateKey: K,
     temporaryValue: MyState[K],
-    duration: number
+    duration: number,
   ) => {
-    set((state) => {
-      const hasTimeout = stateKey in state.timeouts;
+    if (!originalValue) originalValue = nexus.get(stateKey);
 
-      // если уже есть таймер, значит originalValue уже сохранён — просто обновим таймер
-      const originalValue = hasTimeout
-        ? state.timeouts[stateKey].originalValue
-        : state[stateKey];
+    setLockTask(
+      () => {
+        nexus.set({ [stateKey]: temporaryValue });
+      },
+      duration,
+      stateKey,
+    );
 
-      // если таймер уже есть, очистим его
-      const prevTimeout = hasTimeout ? state.timeouts[stateKey].id : null;
-      if (prevTimeout) clearTimeout(prevTimeout);
-
-      const timeoutId = setTimeout(() => {
-        set((current) => {
-          const { [stateKey]: _, ...newTimeouts } = current.timeouts;
-
-          return {
-            [stateKey]: originalValue,
-            timeouts: newTimeouts,
-          };
-        });
-      }, duration);
-
-      return {
-        [stateKey]: temporaryValue,
-        timeouts: {
-          ...state.timeouts,
-          [stateKey]: {
-            id: timeoutId,
-            originalValue,
-          },
-        },
-      };
-    });
+    // setTask(
+    //   () => {
+    //     nexus.set({ [stateKey]: originalValue });
+    //     originalValue = null;
+    //   },
+    //   duration,
+    //   `${stateKey}2`,
+    // );
+    setTask(() => {
+      nexus.set({ [stateKey]: originalValue });
+      originalValue = null;
+    }, duration);
   },
 }));
 

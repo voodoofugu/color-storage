@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
-import nexus from "../../nexusConfig.ts";
+import nexus from "../../nexusConfig";
 
 import "../styles/App.scss";
 import "../styles/animations.scss";
@@ -205,7 +205,7 @@ function App() {
           const { h: _, s, l } = hexToHsl(color.current);
           const x = Math.min(
             Math.max(e.clientX - rect.left, 0),
-            rect.width - 1
+            rect.width - 1,
           );
           if (x === hueThumbX.current) return;
 
@@ -219,7 +219,7 @@ function App() {
         },
       });
     },
-    [color.current]
+    [color.current],
   );
 
   const handleAlphaClick = useCallback((e: React.MouseEvent) => {

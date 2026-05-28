@@ -4,7 +4,6 @@ import colors from "./nexus/actions/colors";
 import palette from "./nexus/actions/palette";
 import popup from "./nexus/actions/popup";
 import timeoutState from "./nexus/actions/timeoutState";
-import additional from "./nexus/actions/additional";
 
 import type { MyState, MyActs } from "./nexus/types";
 
@@ -25,7 +24,6 @@ const nexus = createReactNexus<MyState, MyActs>({
     activeColor: "",
     failedColorAdding: false,
     colorStorage: [],
-    timeouts: {},
     copiedColorFlag: false,
     currentPaletteId: 0,
     paletteHidden: false,
@@ -39,7 +37,7 @@ const nexus = createReactNexus<MyState, MyActs>({
     clarificationPopup: null,
   },
 
-  acts: [colors, palette, popup, timeoutState, additional],
+  acts: [colors, palette, popup, timeoutState],
 });
 
 export default nexus;

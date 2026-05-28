@@ -1,6 +1,6 @@
 import { createActs } from "nexus-state";
+import { setTask } from "keytask-core";
 
-import { setTask } from "../../src/helpers/taskManager";
 import type { PopupContentT } from "../../src/components/PopupWindow";
 import type { MyState } from "../types";
 
@@ -14,7 +14,7 @@ const popup = createActs<MyState>((get, set) => ({
           this.popupOpen(content);
         },
         200,
-        "popupReopen"
+        "popupReopen",
       );
 
       return;
@@ -43,7 +43,7 @@ const popup = createActs<MyState>((get, set) => ({
         popup!.classList.remove("closing");
       },
       200,
-      "popupClose"
+      "popupClose",
     );
   },
 
@@ -76,7 +76,7 @@ const popup = createActs<MyState>((get, set) => ({
         clarificationPopup.classList.remove("closing");
       },
       200,
-      "popupClose"
+      "popupClose",
     );
   },
 }));
