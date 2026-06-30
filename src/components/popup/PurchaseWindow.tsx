@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import nexus from "../../../nexusConfig";
 
@@ -6,30 +6,45 @@ import Button from "../Button";
 
 import getDeviceId from "../../helpers/getDeviceId";
 import api from "../../helpers/request/api";
-import checkEmailLogin from "../../helpers/request/checkEmailLogin";
-import isValidEmail from "../../helpers/isValidEmail";
+import type { SubscriptionPlan } from "../../helpers/request/api";
 
 import useEmailInput from "../../hooks/useEmailInput";
+
+const SUBSCRIPTION_PLANS: Array<{
+  id: SubscriptionPlan;
+  title: string;
+  price: string;
+}> = [
+  {
+    id: "monthly",
+    title: "Monthly",
+    price: "$4.99",
+  },
+  {
+    id: "yearly",
+    title: "Yearly",
+    price: "$49.99",
+  },
+];
 
 function PurchaseWindow() {
   // refs
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // state
+  const [plan, setPlan] = useState<SubscriptionPlan>("monthly");
+
   // hooks
-  const { email, isValid, onChange, validate } = useEmailInput();
+  const { email, validate } = useEmailInput();
 
   // funcs
-  const checkEmailLoginLocal = async () => {
-    if (!validate()) return;
-    await checkEmailLogin({ email });
-  };
-
   const purchaseHandel = async () => {
     if (!validate()) return;
 
     const startPayment = await api.startPayment<{ url: string }>(
       email,
       getDeviceId(),
+      plan,
     );
 
     if (!startPayment.resData) {
@@ -41,10 +56,6 @@ function PurchaseWindow() {
     window.open(startPayment.resData.url, "_blank");
   };
 
-  const inputOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") purchaseHandel();
-  };
-
   // effects
   useEffect(() => {
     inputRef.current?.focus();
@@ -52,38 +63,26 @@ function PurchaseWindow() {
 
   // render
   return (
-    <div className="popup-content">
+    <div className="popup-content purchase-content">
       <div className="popup-title">Purchase</div>
-      <div className="popup-text">
-        To purchase the pro version, specify your email address:
-      </div>
+      <div className="popup-text">Choose a subscription plan:</div>
 
-      <div className={`input-wrap${!isValid ? " invalid" : ""}`}>
-        <input
-          ref={inputRef}
-          id="purchaseEmailInput"
-          className="popup-input"
-          type="email"
-          name="email"
-          required
-          autoComplete="email"
-          placeholder="Email"
-          onChange={onChange}
-          onKeyDown={inputOnKeyDown}
-        />
-        <div className="popup-text small">
-          I already have a pro version:{" "}
-          <Button
-            className="restore-btn"
-            text="login"
-            onClick={checkEmailLoginLocal}
-          />
-        </div>
+      <div className="subscription-plan-box">
+        {SUBSCRIPTION_PLANS.map((subscriptionPlan) => (
+          <div className="plan-info-wrap">
+            <div className="popup-text">{subscriptionPlan.title}</div>
+            <Button
+              className={`restore-btn${plan === subscriptionPlan.id ? " active" : " gray"}`}
+              text={subscriptionPlan.price}
+              onClick={() => setPlan(subscriptionPlan.id)}
+            />
+          </div>
+        ))}
       </div>
 
       <Button
-        className={`popup-btn${!isValidEmail(email) ? " disabled" : ""}`}
-        text="Get Pro - $4.99"
+        className="popup-btn"
+        text={plan === "monthly" ? "Subscribe - $5" : "Subscribe - $50"}
         onClick={purchaseHandel}
       />
     </div>

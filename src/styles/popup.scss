@@ -33,7 +33,7 @@
   .popup-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
     &.notif {
       position: absolute;
       top: 50%;
@@ -103,6 +103,15 @@
     .popup-title,
     .popup-text {
       filter: drop-shadow(0 1px 1px #fff);
+    }
+
+    .subscription-plan-box {
+      display: flex;
+      justify-content: space-between;
+      .restore-btn {
+        width: 104px;
+        font-size: 16px;
+      }
     }
 
     .input-wrap {
@@ -182,8 +191,8 @@
           top: 0;
           right: -26px;
           .svgIcon svg .svgLine {
-            stroke-width: 6px;
-            stroke: #ff4d4d;
+            stroke-width: 12px;
+            stroke: #7f7f7f;
           }
         }
       }
@@ -245,9 +254,7 @@
         display: inline-block;
         width: 72px;
         transition: width 0.2s ease-in-out;
-        .text {
-          font-size: 12px;
-        }
+        font-size: 12px;
         &.inFetch {
           width: 100%;
         }
@@ -279,10 +286,10 @@
     width: auto;
     height: auto;
     background: #f5f5f5;
-    padding: 2px 5px;
+    padding: 0.2em 0.5em;
     float: right;
+    font-size: 11px;
     .text {
-      font-size: 11px;
       color: #0400ff;
     }
   }
@@ -293,8 +300,8 @@
     position: absolute;
     bottom: 20px;
     width: calc(100% - 40px);
+    font-size: 14px;
     .text {
-      font-size: 14px;
       color: rgba(0, 0, 0, 0.8);
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
     }

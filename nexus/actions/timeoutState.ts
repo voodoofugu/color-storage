@@ -1,41 +1,52 @@
 import { createActs } from "nexus-state";
-import { setTask, setLockTask, hasTask } from "keytask-core";
+import { setTask } from "keytask-core";
 
 import nexus from "../../nexusConfig";
 
 import type { MyState } from "../types";
 
-let originalValue: null | any = null;
+const originalValues = new Map<keyof MyState, MyState[keyof MyState]>();
 
 const timeoutState = createActs<MyState>(() => ({
-  // TODO fix it
   setStateWithTimeout: <K extends keyof MyState>(
     stateKey: K,
     temporaryValue: MyState[K],
     duration: number,
   ) => {
-    if (!originalValue) originalValue = nexus.get(stateKey);
+    if (!originalValues.has(stateKey)) {
+      originalValues.set(stateKey, nexus.get(stateKey));
+    }
 
-    setLockTask(
+    nexus.set({ [stateKey]: temporaryValue });
+
+    setTask(
       () => {
-        nexus.set({ [stateKey]: temporaryValue });
+        nexus.set({ [stateKey]: originalValues.get(stateKey) });
+        originalValues.delete(stateKey);
       },
       duration,
-      stateKey,
+      `setStateWithTimeout:${String(stateKey)}`,
+    );
+  },
+
+  syncStatusUpdate: (status: "success" | "error") => {
+    nexus.set({ syncStatus: `${status} fadeIn` });
+
+    setTask(
+      () => {
+        nexus.set({ syncStatus: `${status} fadeOut` });
+      },
+      1200,
+      "syncStatusFadeOut",
     );
 
-    // setTask(
-    //   () => {
-    //     nexus.set({ [stateKey]: originalValue });
-    //     originalValue = null;
-    //   },
-    //   duration,
-    //   `${stateKey}2`,
-    // );
-    setTask(() => {
-      nexus.set({ [stateKey]: originalValue });
-      originalValue = null;
-    }, duration);
+    setTask(
+      () => {
+        nexus.set({ syncStatus: null });
+      },
+      1600,
+      "syncStatusReset",
+    );
   },
 }));
 

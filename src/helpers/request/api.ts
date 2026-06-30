@@ -17,12 +17,16 @@ type AsApiMethod<F extends (...args: any[]) => any> = <R = any>(
   ...args: Parameters<F>
 ) => Promise<ApiResponse<R>>;
 
+export type SubscriptionPlan = "monthly" | "yearly";
+
 type ApiMethods = {
   authMe: AsApiMethod<(retries?: number) => void>;
   authRefresh: AsApiMethod<() => void>;
   authMagicLink: AsApiMethod<(email: string, deviceId: string) => void>;
   authLogout: AsApiMethod<(deviceId: string) => void>;
-  startPayment: AsApiMethod<(email: string, deviceId: string) => void>;
+  startPayment: AsApiMethod<
+    (email: string, deviceId: string, plan: SubscriptionPlan) => void
+  >;
   devicesReset: AsApiMethod<(deviceId: string) => void>;
 };
 
@@ -31,6 +35,7 @@ const api: ApiMethods = {
   authMe: async (retries) => {
     return safeFetch(`${API_URL}/auth/me`, {
       credentials: "include", // нужен для кук
+      cache: "no-store",
       retries,
     });
   },
@@ -38,6 +43,7 @@ const api: ApiMethods = {
   authRefresh: async () => {
     return safeFetch(`${API_URL}/auth/refresh`, {
       credentials: "include",
+      cache: "no-store",
     });
   },
 
@@ -58,11 +64,11 @@ const api: ApiMethods = {
     });
   },
 
-  startPayment: async (email, deviceId) => {
+  startPayment: async (email, deviceId, plan) => {
     return safeFetch(`${API_URL}/start-payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, deviceId }),
+      body: JSON.stringify({ email, deviceId, plan }),
     });
   },
 

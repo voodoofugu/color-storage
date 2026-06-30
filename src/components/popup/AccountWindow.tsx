@@ -144,8 +144,8 @@ function AccountWindow() {
                 <div className="popup-text bold">
                   Email:
                   <Button
-                    className={`restore-btn`}
-                    text="change"
+                    className="restore-btn"
+                    text={`${!isOnChainge ? "change" : "done"}`}
                     onClick={changeEmail}
                   />
                 </div>
